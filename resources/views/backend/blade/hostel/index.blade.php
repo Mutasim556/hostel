@@ -114,14 +114,14 @@
                                 <span class="text-danger err-mgs"></span>
                             </div>
                             <div class="col-lg-3 mt-2">
-                                <label for="concern_person_name"><strong>{{ __('admin_local.Concern Person Name') }}
+                                <label for="concern_person_name"><strong>{{ __('admin_local.Concern Person Name') }} *
                                         </strong></label>
                                 <input type="text" class="form-control" name="concern_person_name"
                                     id="concern_person_name">
                                 <span class="text-danger err-mgs"></span>
                             </div>
                             <div class="col-lg-3 mt-2">
-                                <label for="concern_person_phone"><strong>{{ __('admin_local.Concern Person Phone') }}
+                                <label for="concern_person_phone"><strong>{{ __('admin_local.Concern Person Phone') }} *
                                         </strong></label>
                                 <input type="text" class="form-control" name="concern_person_phone"
                                     id="concern_person_phone">
@@ -134,13 +134,7 @@
                                     id="concern_person_email">
                                 <span class="text-danger err-mgs"></span>
                             </div>
-                            <div class="col-lg-6 mt-2">
-                                <label for="concern_person_address"><strong>{{ __('admin_local.Concern Person Address') }}
-                                        </strong></label>
-                                <textarea class="form-control" name="concern_person_address"
-                                    id="concern_person_address"></textarea>
-                                <span class="text-danger err-mgs"></span>
-                            </div>
+
                         </div>
 
                         <div class="row mt-4 mb-2">
@@ -168,7 +162,7 @@
 
     <div class="modal fade" id="edit-hostel-modal" tabindex="-1" aria-labelledby="bs-example-modal-lg"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header d-flex align-items-center" style="border-bottom:1px dashed gray">
                     <h4 class="modal-title" id="myLargeModalLabel">
@@ -356,7 +350,7 @@
                                                     <div class="dropdown-content">
                                                         @if (hasPermission(['hostel-update']))
                                                         <a data-bs-toggle="modal" style="cursor: pointer;"
-                                                            data-bs-target="#edit-course-hostel-modal" class="text-primary"
+                                                            data-bs-target="#edit-hostel-modal" class="text-primary"
                                                             id="edit_button"><i class=" fa fa-edit mx-1"></i>{{ __('admin_local.Edit') }}</a>
                                                         @endif
                                                         @if (hasPermission(['hostel-delete']))

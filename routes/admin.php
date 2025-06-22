@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\Localization\ChangeLanguageController;
 use App\Http\Controllers\Admin\Localization\LanguageController;
 use App\Http\Controllers\Admin\Role\RoleAndPermissionController;
 use App\Http\Controllers\Admin\Rooms\RoomController;
-use App\Http\Controllers\Admin\Settings\MaintenanceModeController;
+use App\Http\Controllers\Admin\Settings\MaintenanceModeController; 
 use App\Http\Controllers\Admin\User\UserController;
 use Illuminate\Support\Facades\Route;
 use Stichoza\GoogleTranslate\GoogleTranslate;
@@ -43,13 +43,13 @@ Route::prefix('admin')->name('admin.')->group(function(){
             Route::post('/give-user-permissions','giveUserPermission')->name('giveUserPermission');
         });
 
-        //language controller 
+        //language controller
         Route::resource('language',LanguageController::class)->except(['craete','show']);
         Route::controller(LanguageController::class)->name('language.')->prefix('language')->group(function () {
             Route::get('/update/status/{id}/{status}', 'updateStatus')->name('language_status');
         });
 
-        //backend language controller 
+        //backend language controller
         Route::resource('backend/language',BackendLanguageController::class,['as'=>'backend'])->except(['craete','show','edit','distroy']);
         Route::controller(BackendLanguageController::class)->name('backend.language.')->prefix('backend/language')->group(function () {
             Route::post('/store/translate/string', 'storeTranslateString')->name('storeTranslateString');
@@ -76,7 +76,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
             }
             return [
                 'tdata'=>$data,
-                'langs'=>$langs 
+                'langs'=>$langs
             ];
         })->name('translateString');
 
@@ -88,7 +88,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         /** Hostel End */
 
         /** Room Start */
-        
+
         Route::controller(RoomController::class)->group(function(){
             Route::get('/rooms','index')->name('room.index');
             Route::get('/rooms/create','create')->name('room.create');
@@ -96,7 +96,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         });
 
         /** Room End */
-        
+
     });
 });
 

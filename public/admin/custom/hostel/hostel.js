@@ -10,7 +10,7 @@ $(document).on('change','#add_hostel_form #translate_autometic',function(){
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (data) {
-               
+
                $.each(data.langs,function(key,val){
                     $('#add_hostel_form #hostel_name_'+val.lang).val(data.tdata[key]);
                })
@@ -26,7 +26,7 @@ $(document).on('change','#add_hostel_form #translate_autometic',function(){
                     }).then(function(){
                         $('button[type=button]', '#add_hostel_form').click();
                     });
-                    
+
                 }else{
                     let err_message = err.responseJSON.message.split("(");
                     swal({
@@ -39,7 +39,7 @@ $(document).on('change','#add_hostel_form #translate_autometic',function(){
             }
         });
     }
-    
+
 });
 
 
@@ -54,7 +54,7 @@ $(document).on('change','#edit_hostel_form #translate_autometic',function(){
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (data) {
-               
+
                $.each(data.langs,function(key,val){
                     $('#edit_hostel_form #hostel_name_'+val.lang).val(data.tdata[key]);
                })
@@ -70,20 +70,20 @@ $(document).on('change','#edit_hostel_form #translate_autometic',function(){
                     }).then(function(){
                         $('button[type=button]', '#add_hostel_form').click();
                     });
-                    
+
                 }else{
                     let err_message = err.responseJSON.message.split("(");
                     swal({
                         icon: "warning",
                         title: "Warning !",
-                        text: err_message[0], 
+                        text: err_message[0],
                         confirmButtonText: "Ok",
                     });
                 }
             }
         });
     }
-    
+
 });
 
 $('#add_hostel_form').submit(function (e) {
@@ -98,9 +98,9 @@ $('#add_hostel_form').submit(function (e) {
         dataType: 'JSON',
         contentType: false,
         cache: false,
-        processData: false, 
+        processData: false,
         headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') 
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function (rdata) {
             $('button[type=submit]', '#add_hostel_form').html(submit_btn_before);
@@ -164,7 +164,7 @@ $('#add_hostel_form').submit(function (e) {
                 }).then(function(){
                     $('button[type=button]', '#add_hostel_form').click();
                 });
-                
+
             }
 
             $('#add_hostel_form .err-mgs').each(function(id,val){
@@ -178,4 +178,59 @@ $('#add_hostel_form').submit(function (e) {
             })
         }
     });
+});
+
+$(document).on('click', '#edit_button', function () {
+    $('#edit_hostel_form').trigger('reset');
+    $('#edit_hostel_form .err-mgs').each(function(id,val){
+        $(this).prev('input').removeClass('border-danger is-invalid')
+        $(this).prev('textarea').removeClass('border-danger is-invalid')
+        $(this).empty();
+    })
+    let cat = $(this).closest('tr').data('id');
+    $.ajax({
+        type: "get",
+        url: 'hostel/' + cat + "/edit",
+        dataType: 'JSON',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (data) {
+            $('#edit_hostel_form #hostel_id').val(data.id);
+            $('#edit_hostel_form #hostel_slug').val(data.hostel_slug);
+
+            $.each(data.translations,function(key,val){
+                if(val.locale=='en'){
+                    $('#edit_hostel_form #hostel_name').val(data.hostel_name);
+                }else{
+                    $('#edit_hostel_form #hostel_name_'+val.locale).val(val.value);
+                }
+            })
+            $('#edit_hostel_form #parent_hostel').val(data.parent_hostel_id);
+
+        },
+        error: function (err) {
+            if(err.status===403){
+                let err_message = err.responseJSON.message.split("(");
+                swal({
+                    icon: "warning",
+                    title: "Warning !",
+                    text: err_message[0],
+                    confirmButtonText: "Ok",
+                }).then(function(){
+                    $('button[type=button]', '#edit_hostel_form').click();
+                });
+
+            }else{
+                let err_message = err.responseJSON.message.split("(");
+                swal({
+                    icon: "warning",
+                    title: "Warning !",
+                    text: err_message[0],
+                    confirmButtonText: "Ok",
+                });
+            }
+        }
+    });
+
 });
