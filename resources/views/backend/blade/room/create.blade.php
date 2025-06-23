@@ -62,7 +62,7 @@
                                         @php
                                             $formatter = new \NumberFormatter('en_US', \NumberFormatter::ORDINAL);
                                         @endphp
-                                        @for ($i = 1; $i <= 20; $i++) 
+                                        @for ($i = 1; $i <= 20; $i++)
                                             <option value="{{ $formatter->format($i) }}-{{ $i }}">{{ $formatter->format($i) }}</option>
                                         @endfor
                                     </select>
@@ -138,14 +138,14 @@
                                 </div>
                                 <div class="form-group col-md-4 col-xs-6 col-sm-6" id="append_total_seats" style="display:none">
                                     <label for="">{{ __('admin_local.Total Seats') }}</label>
-                                    <input type="text" class="form-control" id="total_seats" name="total_seats">
+                                    <input type="number" class="form-control" id="total_seats" name="total_seats">
                                 </div>
                                 <div class="form-group col-md-4 col-xs-6 col-sm-6 pt-4" id="append_total_seats_button" style="display:none">
                                     <button type="button" class="btn btn-primary form-control mt-2" id="append_seats_btn" >{{ __('admin_local.Click here to add seat') }}</button>
                                 </div>
                             </div>
                             <div id="append_seat_div">
-                                
+
                             </div>
                         </form>
                     </div>
