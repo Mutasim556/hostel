@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\User\UserController;
 use Illuminate\Support\Facades\Route;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 
+
 Route::prefix('admin')->name('admin.')->group(function(){
     Route::controller(AdminAuthController::class)->group(function(){
         Route::post('/forget-password','forgetPassword')->name('forget_password');
@@ -84,6 +85,9 @@ Route::prefix('admin')->name('admin.')->group(function(){
         /** Hostel Start */
 
         Route::resource('hostel',HostelController::class)->except('create');
+        Route::controller(HostelController::class)->prefix('hostel')->group(function(){
+            Route::get('update/status/{id}/{status}','updateStatus');
+        });
 
         /** Hostel End */
 
@@ -93,6 +97,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
             Route::get('/rooms','index')->name('room.index');
             Route::get('/rooms/create','create')->name('room.create');
             Route::post('/rooms/store','store')->name('room.store');
+            Route::get('/rooms/get-floot-details/{hotel_id}/{floor}/{block?}','getFloorDetails');
         });
 
         /** Room End */

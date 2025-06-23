@@ -251,13 +251,7 @@
                                     id="concern_person_email">
                                 <span class="text-danger err-mgs"></span>
                             </div>
-                            <div class="col-lg-6 mt-2">
-                                <label for="concern_person_address"><strong>{{ __('admin_local.Concern Person Address') }}
-                                        </strong></label>
-                                <textarea class="form-control" name="concern_person_address"
-                                    id="concern_person_address"></textarea>
-                                <span class="text-danger err-mgs"></span>
-                            </div>
+                            
                         </div>
 
                         <div class="row mt-4 mb-2">
