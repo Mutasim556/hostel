@@ -33,9 +33,10 @@
                         <h3 class="card-title mb-0 text-center">{{ __('admin_local.Add Rooms') }}</h3>
                     </div>
                     <div class="card-body">
-                        <form class="form" action="">
+                        <form class="form" action="{{ route('admin.room.store') }}" method="POST" id="add_room_form">
+                            @csrf
                             <div class="row">
-                                 <div class="form-group col-md-2 col-xs-6 col-sm-6">
+                                 <div class="form-group col-md-4 col-xs-6 col-sm-6">
                                     <label for="">{{ __('admin_local.Hostel') }} *</label>
                                     <select class="form-control" name="hostel" id="hostel">
                                         <option value="">{{ __('admin_local.Select Please') }}</option>
@@ -46,16 +47,10 @@
                                             <option value="{{ $hostel->id }}">{{ $hostel->hostel_name }}</option>
                                         @endforeach
                                     </select>
+                                    <span class="text-danger err-mgs"></span>
                                 </div>
-                                <div class="form-group col-md-2 col-xs-6 col-sm-6">
-                                    <label for="">{{ __('admin_local.Room Type') }} *</label>
-                                    <select class="form-control" name="room_type" id="room_type">
-                                        <option value="">{{ __('admin_local.Select Please') }}</option>
-                                        <option value="AC">{{ __('admin_local.AC') }}</option>
-                                        <option value="NON-AC">{{ __('admin_local.NON-AC') }}</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-2">
+                                
+                                <div class="form-group col-md-4">
                                     <label for="">{{ __('admin_local.Floor') }} *</label>
                                     <select class="form-control" name="floor" id="floor" required>
                                         <option value="">{{ __('admin_local.Select Please') }}</option>
@@ -63,32 +58,75 @@
                                             $formatter = new \NumberFormatter('en_US', \NumberFormatter::ORDINAL);
                                         @endphp
                                         @for ($i = 1; $i <= 20; $i++)
-                                            <option value="{{ $formatter->format($i) }}-{{ $i }}">{{ $formatter->format($i) }}</option>
+                                            <option value="{{ $formatter->format($i) }}">{{ $formatter->format($i) }}</option>
                                         @endfor
                                     </select>
+                                    <span class="text-danger err-mgs"></span>
                                 </div>
-                                <div class="form-group col-md-2 col-xs-6 col-sm-6">
-                                    <label for="">{{ __('admin_local.Total Room') }}</label>
-                                    <input type="text" class="form-control" id="total_room" value="0" readonly>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-lg-12 mt-2">
+                                    <input type="checkbox" name="has_multiple_block" id="has_multiple_block" > &nbsp;
+                                    <label for="hostel_name"><strong>{{ __('admin_local.Has multiple block ?') }}</strong></label>
                                 </div>
-                                 <div class="form-group col-md-2 col-xs-6 col-sm-6">
-                                    <label for="">{{ __('admin_local.Block') }}</label>
-                                    <select class="form-control" name="block" id="block">
-                                        <option value="">{{ __('admin_local.Select Please') }}</option>
-                                        <option value="A">A</option>
-                                        <option value="B">B</option>
-                                        <option value="C">C</option>
-                                        <option value="D">D</option>
-                                        <option value="E">E</option>
-                                    </select>
+                            </div>
+                            <div id="append_block_room_div" style="display:none">
+                                <div class="row">
+                                    <div class="form-group col-md-3 col-xs-6 col-sm-6">
+                                        <label for="">{{ __('admin_local.Room Number') }}</label>
+                                        <input type="text" class="form-control" id="room_number" name="room_number"  placeholder="{{ __('admin_local.Example') }} : 101">
+                                        <span class="text-danger err-mgs"></span>
+                                    </div>
+                                    <div class="form-group col-md-3 col-xs-6 col-sm-6">
+                                        <label for="">{{ __('admin_local.Block') }}</label>
+                                        <select class="form-control" id="block" name="block">
+                                            <option value="">{{ __('admin_local.Select Please') }}</option>  
+                                            <option value="A">A</option>  
+                                            <option value="B">B</option>  
+                                            <option value="C">C</option>  
+                                            <option value="D">D</option>  
+                                            <option value="E">E</option>  
+                                        </select>
+                                        <span class="text-danger err-mgs"></span>
+                                    </div>
+                                    <div class="form-group col-md-3 col-xs-6 col-sm-6">
+                                        <label for="">{{ __('admin_local.Room Type') }} *</label>
+                                        <select class="form-control" name="room_type" id="room_type">
+                                            <option value="">{{ __('admin_local.Select Please') }}</option>
+                                            <option value="AC">{{ __('admin_local.AC') }}</option>
+                                            <option value="NON-AC">{{ __('admin_local.NON-AC') }}</option>
+                                        </select>
+                                        <span class="text-danger err-mgs"></span>
+                                    </div>
+                                    <div class="form-group col-md-3 col-xs-6 col-sm-6">
+                                        <label for="">{{ __('admin_local.Room Dimension') }} (sqf)</label>
+                                        <input type="text" class="form-control" id="room_dimension" name="room_dimension" placeholder="{{ __('admin_local.Example') }} : 1200">
+                                        <span class="text-danger err-mgs"></span>
+                                    </div>
                                 </div>
-                                <div class="form-group col-md-2 col-xs-6 col-sm-6">
-                                    <label for="">{{ __('admin_local.Room Number') }}</label>
-                                    <input type="text" class="form-control" id="room_number" name="room_number" value="0" readonly>
-                                </div>
-                                <div class="form-group col-md-3 col-xs-6 col-sm-6">
-                                    <label for="">{{ __('admin_local.Room Dimension') }} (sqf)</label>
-                                    <input type="text" class="form-control" id="room_dimension" name="room_dimension" placeholder="{{ __('admin_local.Example') }} : 1200">
+                            </div>
+                            <div id="append_wblock_room_div">
+                                <div class="row">
+                                    <div class="form-group col-md-4 col-xs-6 col-sm-6">
+                                        <label for="">{{ __('admin_local.Room Number') }}</label>
+                                        <input type="text" class="form-control" id="room_number" name="room_number"  placeholder="{{ __('admin_local.Example') }} : 101">
+                                        <span class="text-danger err-mgs"></span>
+                                    </div>
+                                    
+                                    <div class="form-group col-md-4 col-xs-6 col-sm-6">
+                                        <label for="">{{ __('admin_local.Room Type') }} *</label>
+                                        <select class="form-control" name="room_type" id="room_type">
+                                            <option value="">{{ __('admin_local.Select Please') }}</option>
+                                            <option value="AC">{{ __('admin_local.AC') }}</option>
+                                            <option value="NON-AC">{{ __('admin_local.NON-AC') }}</option>
+                                        </select>
+                                        <span class="text-danger err-mgs"></span>
+                                    </div>
+                                    <div class="form-group col-md-4 col-xs-6 col-sm-6">
+                                        <label for="">{{ __('admin_local.Room Dimension') }} (sqf)</label>
+                                        <input type="text" class="form-control" id="room_dimension" name="room_dimension" placeholder="{{ __('admin_local.Example') }} : 1200">
+                                        <span class="text-danger err-mgs"></span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
@@ -99,10 +137,12 @@
                                 <div class="form-group col-md-3 col-xs-6 col-sm-6" id="append_max_price" style="display:none">
                                     <label for="">{{ __('admin_local.Room Price') }}</label>
                                     <input type="text" class="form-control" id="room_max_price" name="room_max_price">
+                                    <span class="text-danger err-mgs"></span>
                                 </div>
                                 <div class="form-group col-md-3 col-xs-6 col-sm-6" id="append_min_price" style="display:none">
                                     <label for="">{{ __('admin_local.Room Minumm Price') }}</label>
                                     <input type="text" class="form-control" id="room_min_price" name="room_min_price">
+                                    <span class="text-danger err-mgs"></span>
                                 </div>
                             </div>
                             <div class="row">
@@ -118,34 +158,42 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="form-group col-md-4 col-xs-6 col-sm-6">
-                                    <label for="">{{ __('admin_local.Total Window') }}</label>
-                                    <input type="text" class="form-control" id="total_window" name="total_window">
-                                </div>
-                                <div class="form-group col-md-4 col-xs-6 col-sm-6">
-                                    <label for="">{{ __('admin_local.Total Fan') }}</label>
-                                    <input type="text" class="form-control" id="total_fan" name="total_fan">
-                                </div>
-                                <div class="form-group col-md-4 col-xs-6 col-sm-6">
-                                    <label for="">{{ __('admin_local.Total Light') }}</label>
-                                    <input type="text" class="form-control" id="total_light" name="total_light">
+                                <div class="col-lg-12 mt-2">
+                                    <input type="checkbox" name="is_smoking_allowed" id="is_smoking_allowed" > &nbsp;
+                                    <label for="is_smoking_allowed"><strong>{{ __('admin_local.Is smoking allowed ?') }}</strong></label>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-4 mt-2">
+                                <div class="col-lg-4 mt-2" id="has_seats_div">
                                     <input type="checkbox" name="has_seats" id="has_seats" > &nbsp;
                                     <label for="hostel_name"><strong>{{ __('admin_local.Has seats ?') }}</strong></label>
                                 </div>
-                                <div class="form-group col-md-4 col-xs-6 col-sm-6" id="append_total_seats" style="display:none">
-                                    <label for="">{{ __('admin_local.Total Seats') }}</label>
-                                    <input type="number" class="form-control" id="total_seats" name="total_seats">
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4 col-xs-6 col-sm-6">
+                                    <label for="">{{ __('admin_local.Total Window') }}</label>
+                                    <input type="number" class="form-control" id="total_window" name="total_window">
+                                    <span class="text-danger err-mgs"></span>
                                 </div>
-                                <div class="form-group col-md-4 col-xs-6 col-sm-6 pt-4" id="append_total_seats_button" style="display:none">
-                                    <button type="button" class="btn btn-primary form-control mt-2" id="append_seats_btn" >{{ __('admin_local.Click here to add seat') }}</button>
+                                <div class="form-group col-md-4 col-xs-6 col-sm-6">
+                                    <label for="">{{ __('admin_local.Total Fan') }}</label>
+                                    <input type="number" class="form-control" id="total_fan" name="total_fan">
+                                    <span class="text-danger err-mgs"></span>
+                                </div>
+                                <div class="form-group col-md-4 col-xs-6 col-sm-6">
+                                    <label for="">{{ __('admin_local.Total Light') }}</label>
+                                    <input type="number" class="form-control" id="total_light" name="total_light">
+                                    <span class="text-danger err-mgs"></span>
                                 </div>
                             </div>
+                            
                             <div id="append_seat_div">
 
+                            </div>
+                            <div class="row">
+                                 <div class="col-lg-12 mt-2">
+                                    <button class="btn btn-success" type="submit" id="submit_btn" style="float:right"><strong>{{ __('admin_local.Submit') }}</strong></button>
+                                 </div>
                             </div>
                         </form>
                     </div>
@@ -175,8 +223,12 @@
         });
         var oTable = $("#basic-1").DataTable();
 
-        var form_url = "{{ route('admin.language.store') }}";
+        var form_url = "{{ route('admin.room.store') }}";
         var translate_url = `{{ route('admin.translateString') }}`;
+        var submit_btn_after = `<strong>{{ __('admin_local.Submitting') }} &nbsp; <i class="fa fa-rotate-right fa-spin"></i></strong>`;
+        var submit_btn_before = `<strong><i class="fa fa-paper-plane"></i> &nbsp; {{ __('admin_local.Submit') }}</strong>`;
+
+        
     </script>
     <script src="{{ asset('public/admin/custom/rooms/add_room.js') }}"></script>
 @endpush

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin\Rooms;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class RoomController extends Controller
 {
@@ -13,6 +15,8 @@ class RoomController extends Controller
          $this->middleware('permission:room-index,admin')->only('index');
     }
     public function index(){
+        $rooms = Room::with('createdBy:id,name','hostel:id,hostel_name')->get();
+        dd($rooms);
         return view('backend.blade.room.index');
     }
 
@@ -20,8 +24,63 @@ class RoomController extends Controller
         return view('backend.blade.room.create');
     }
 
-    public function store(){
+    public function store(Request $data){
+       
+        $data->validate([
+            'hostel'=>'required',
+            'floor'=>'required',
+            'room_number'=>['required',Rule::unique('rooms')->where(function($q)use($data){
+                if($data->has_multiple_block){
+                    return $q->where([['room_number',$data->room_number],['block',$data->block],['floor',$data->floor],['hostel_id',$data->hostel],['status',1],['delete',0]]);
+                }else{
+                    return $q->where([['room_number',$data->room_number],['block','N/A'],['floor',$data->floor],['hostel_id',$data->hostel],['status',1],['delete',0]]);
+                }
+             })],
+            'room_type'=>'required',
+            'block'=>'required_if:has_multiple_block,on',
+            'room_max_price'=>'required_if:is_full_room_bookable,on',
+            'room_min_price'=>'required_if:is_full_room_bookable,on',
+            'total_window'=>'required',
+            'total_fan'=>'required',
+            'total_light'=>'required',
+        ],[
+            'hostel.required'=>__('admin_local.Please select hostel'),
+            'floor.required'=>__('admin_local.Please select floor'),
+            'room_number.required'=>__('admin_local.Please enter room number'),
+            'room_number.unique'=>__('admin_local.This room number already used'),
+            'room_type.required'=>__('admin_local.Please select room type'),
+            'block.required_if'=>__('admin_local.Block is required'),
+            'room_max_price.required_if'=>__('admin_local.Room price required'),
+            'room_min_price.required_if'=>__('admin_local.Room minimum price required'),
+            'total_window.required'=>__('admin_local.Total window is required'),
+            'total_fan.required'=>__('admin_local.Total fan is required'),
+            'total_light.required'=>__('admin_local.Total light is required'),
+        ]);
 
+        $room = new Room();
+        $room->hostel_id = $data->hostel;
+        $room->room_type = $data->room_type;
+        $room->floor = $data->floor;
+        $room->block = $data->block??'N/A';
+        $room->room_number = $data->room_number;
+        $room->room_dimension = $data->room_dimension;
+        $room->is_full_bookable = $data->is_full_room_bookable?1:0;
+        $room->full_room_max_price = $data->room_max_price;
+        $room->full_room_min_price = $data->room_min_price;
+        $room->has_attached_bath_room = $data->has_attached_bathroom?1:0;
+        $room->has_attached_balcony = $data->has_attached_balcony?1:0;
+        $room->is_smoking_allowed = $data->is_smoking_allowed?1:0;
+        $room->total_window = $data->total_window;
+        $room->total_fan = $data->total_fan;
+        $room->total_light = $data->total_light;
+        $room->created_by = Auth::guard('admin')->user()->id;
+
+        $room->save();
+        return [
+            'title'=>__('admin_local.Congratulations !'),
+            'text'=>__('admin_local.Language updated successfully.'),
+            'confirmButtonText'=>__('admin_local.Ok'),
+        ];
     }
 
     public function getFloorDetails(Request $data){
