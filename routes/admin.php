@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\Localization\ChangeLanguageController;
 use App\Http\Controllers\Admin\Localization\LanguageController;
 use App\Http\Controllers\Admin\Role\RoleAndPermissionController;
 use App\Http\Controllers\Admin\Rooms\RoomController;
-use App\Http\Controllers\Admin\Settings\MaintenanceModeController; 
+use App\Http\Controllers\Admin\Settings\MaintenanceModeController;
 use App\Http\Controllers\Admin\User\UserController;
 use Illuminate\Support\Facades\Route;
 use Stichoza\GoogleTranslate\GoogleTranslate;
@@ -98,6 +98,10 @@ Route::prefix('admin')->name('admin.')->group(function(){
             Route::get('/rooms/create','create')->name('room.create');
             Route::post('/rooms/store','store')->name('room.store');
             Route::get('/rooms/get-floot-details/{hotel_id}/{floor}/{block?}','getFloorDetails');
+            Route::get('/rooms/{id}/edit','edit')->name('room.edit');
+            Route::put('/rooms/update/{id}','update')->name('room.update');
+            Route::get('rooms/update/status/{id}/{status}','updateStatus');
+            Route::delete('rooms/delete/{id}','destroy');
         });
 
         /** Room End */
