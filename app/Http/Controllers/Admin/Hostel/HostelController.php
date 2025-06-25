@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Hostel;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Hostel;
+use App\Models\Admin\HostelBuilding;
 use App\Models\Admin\Language;
 use App\Models\Admin\Translation;
 use Carbon\Carbon;
@@ -50,7 +51,6 @@ class HostelController extends Controller
             'concern_person_name.required'=>__('admin_local.Concern person name is required'),
             'concern_person_phone.required'=>__('admin_local.Concern person phone is required'),
         ]);
-
         $hostel = new Hostel();
         $hostel->hostel_name = $data->hostel_name;
         $hostel->hostel_type = $data->hostel_type;
@@ -62,6 +62,14 @@ class HostelController extends Controller
         $hostel->concern_person_email = $data->concern_person_email;
 
         $hostel->save();
+        if($data->has_multiple_building){
+            foreach($data->buiding_number as $key=>$value){
+                $hostel_building = new HostelBuilding();
+                $hostel_building->hotel_id = $hostel->id;
+                $hostel_building->buiding_number = $value;
+                $hostel_building->save();
+            }
+        }
         $languages =  Language::where([['status',1],['delete',0]])->get();
         $hostelData = [];
         foreach($languages as $lang){

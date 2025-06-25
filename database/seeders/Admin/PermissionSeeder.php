@@ -53,5 +53,11 @@ class PermissionSeeder extends Seeder
         // Permission::create(['guard_name'=>'admin','name'=>'hostel-update','group_name'=>'Hosteles']);
         // Permission::create(['guard_name'=>'admin','name'=>'hostel-delete','group_name'=>'Hosteles']);
 
+
+        // Permission::create(['guard_name'=>'admin','name'=>'seat-index','group_name'=>'Seats']);
+        // Permission::create(['guard_name'=>'admin','name'=>'seat-create','group_name'=>'Seats']);
+        // Permission::create(['guard_name'=>'admin','name'=>'seat-update','group_name'=>'Seats']);
+        // Permission::create(['guard_name'=>'admin','name'=>'seat-delete','group_name'=>'Seats']);
+
     }
 }

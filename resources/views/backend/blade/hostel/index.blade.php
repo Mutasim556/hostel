@@ -136,17 +136,28 @@
                             </div>
 
                         </div>
+                        <div class="row mb-4">
+                            <div class="col-lg-4 mt-2">
+                                <input type="checkbox" name="has_multiple_building" id="has_multiple_building" > &nbsp;
+                                <label for="hostel_name"><strong>{{ __('admin_local.Has multiple building ?') }}</strong></label>
+                            </div>
+                            <div class="col-lg-4 mt-2">
+                                <button class="btn btn-info" type="button" id="add_building_btn" style="display:none">+{{ __('admin_local.Add Building') }}</button>
+                            </div>
+                        </div>
+                        <div class="row mb-3" id="append_building_div" >
+
+                        </div>
 
                         <div class="row mt-4 mb-2">
                             <div class="form-group col-lg-12">
-
                                 <button class="btn btn-danger text-white font-weight-medium waves-effect text-start"
                                     data-bs-dismiss="modal" style="float: right" type="button">{{ __('admin_local.Close') }}</button>
                                 <button class="btn btn-primary mx-2" style="float: right"
                                     type="submit">{{ __('admin_local.Submit') }}</button>
                             </div>
-
                         </div>
+                        
                     </form>
                 </div>
 
@@ -252,6 +263,12 @@
                                 <span class="text-danger err-mgs"></span>
                             </div>
                             
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 mt-2">
+                                <input type="checkbox" name="has_multiple_building" id="has_multiple_building" > &nbsp;
+                                <label for="hostel_name"><strong>{{ __('admin_local.Has multiple building ?') }}</strong></label>
+                            </div>
                         </div>
 
                         <div class="row mt-4 mb-2">
@@ -431,6 +448,44 @@
         var no_file = `{{ __('admin_local.No file') }}`;
         var base_url = `{{ baseUrl() }}`;
         var translate_url = `{{ route('admin.translateString') }}`;
+
+        $(document).on('change','#has_multiple_building',function(){
+            if($(this).is(':checked')){
+                $('#add_building_btn','#add_hostel_form').show('slow');
+                $('#append_building_div','#add_hostel_form').empty().append(`
+                   
+                    <div class="col-md-4 mb-2">
+                        <label for="buiding_number"><strong>{{ __('admin_local.Buiding Number') }} <span id="building_number_counter">1</span>
+                                        </strong></label>
+                        <input type="text" class="form-control" name="buiding_number[]"
+                            id="buiding_number">
+                        <span class="text-danger err-mgs"></span>
+                    </div>
+                `);
+            }
+        })
+
+        $(document).on('click','#add_hostel_form #add_building_btn',function(){
+            var count_div = $('.col-md-4','#add_hostel_form').length;
+            // alert(count_div);
+            $('#append_building_div','#add_hostel_form').append(`
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-danger px-1 py-0" id="remove_btn" style="float:right">{{ __('admin_local.Remove') }}</button>
+                    <label for="buiding_number"><strong>{{ __('admin_local.Buiding Number') }} <span id="building_number_counter">${count_div+1}</span>
+                                    </strong></label>
+                    <input type="text" class="form-control" name="buiding_number[]"
+                        id="buiding_number">
+                    <span class="text-danger err-mgs"></span>
+                </div>
+            `);
+        })
+
+        $(document).on('click','#remove_btn',function(){
+            $(this).closest('.col-md-4').remove();
+            $('.col-md-4','#add_hostel_form #append_building_div').each(function(key,val){
+                $('#building_number_counter',this).empty().append(key+1);
+            })
+        })
     </script>
     <script src="{{ asset(env('ASSET_DIRECTORY','public').'/'.'admin/custom/hostel/hostel.js') }}"></script>
     {{-- <script src="{{ asset(env('ASSET_DIRECTORY').'/'.'inventory/custom/user/user_list.js') }}"></script> --}}

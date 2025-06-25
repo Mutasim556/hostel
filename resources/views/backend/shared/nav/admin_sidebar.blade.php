@@ -19,23 +19,34 @@
             </ul>
         </li>
     @endif
-    @if (hasPermission(['room-index', 'room-create', 'room-update', 'room-delete']))
+    @if (hasPermission(['room-index', 'room-create', 'room-update', 'room-delete','seat-create']))
         <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="javascript:void(0)" aria-expanded="false">
                 <i data-feather="inbox"></i>
                 <span class="lan-3">{{ __('admin_local.Rooms') }}</span>
             </a>
             <ul class="sidebar-submenu">
+                @if (hasPermission(['room-create']))
                 <li>
                     <a href="{{ route('admin.room.create') }}" class="sidebar-link">
                         <span> {{ __('admin_local.Add Room') }} </span>
                     </a>
                 </li>
+                @endif
+                @if (hasPermission(['seat-create']))
+                <li>
+                    <a href="{{ route('admin.room.create') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Add Seats') }} </span>
+                    </a>
+                </li>
+                @endif
+                @if (hasPermission(['room-index']))
                 <li>
                     <a href="{{ route('admin.room.index') }}" class="sidebar-link">
                         <span> {{ __('admin_local.Room List') }} </span>
                     </a>
                 </li>
+                @endif
             </ul>
         </li>
     @endif
