@@ -63,6 +63,13 @@
                                     </select>
                                     <span class="text-danger err-mgs"></span>
                                 </div>
+                                 <div class="form-group col-md-4" id="building_number_div" style="display:none">
+                                    <label for="">{{ __('admin_local.Building Number') }} *</label>
+                                    <select class="form-control" name="building_number" id="building_number" required>
+                                        
+                                    </select>
+                                    <span class="text-danger err-mgs"></span>
+                                </div>
                             </div>
                             <div class="row mb-4">
                                 <div class="col-lg-12 mt-2">

@@ -135,8 +135,11 @@ $('#add_hostel_form').submit(function (e) {
 
 
                 // let cat_image = data.hostel_image?'<img style="height: 50px;width:50px;" src="'+base_url+'/'+data.hostel_image+'">':no_file;
-
-                $('#basic-1 tbody').append(`<tr id="trid-${data.id}" data-id="${data.id}"><td>${data.hostel_name}</td><td>${data.hostel_type}</td><td>${data.hostel_phone}</td><td>${data.hostel_email}</td><td>${data.hostel_address}</td><td>${data.concern_person_name}</td><td>${data.concern_person_phone}</td><td>${data.concern_person_email}</td>
+                var buildingArray = [];
+                $.each(data.building,function(k,v){
+                    buildingArray.push(v.building_name);
+                })
+                $('#basic-1 tbody').append(`<tr id="trid-${data.id}" data-id="${data.id}"><td>${data.hostel_name}</td><td>${data.hostel_type}</td><td>${buildingArray.join(',')}</td><td>${data.hostel_phone}</td><td>${data.hostel_email}</td><td>${data.hostel_address}</td><td>${data.concern_person_name}</td><td>${data.concern_person_phone}</td><td>${data.concern_person_email}</td>
                 <td class="text-center">${update_status_btn}</td>
                 <td>${action_option}</td></tr>`);
 
@@ -167,14 +170,23 @@ $('#add_hostel_form').submit(function (e) {
 
             }
 
-            $('#add_hostel_form .err-mgs').each(function(id,val){
+           $('#add_hostel_form .err-mgs').each(function(id,val){
                 $(this).prev('input').removeClass('border-danger is-invalid')
                 $(this).prev('textarea').removeClass('border-danger is-invalid')
+                $(this).prev('span').find('.select2-selection--single').attr('id','')
                 $(this).empty();
             })
             $.each(err.responseJSON.errors,function(idx,val){
-                $('#add_hostel_form #'+idx).addClass('border-danger is-invalid')
-                $('#add_hostel_form #'+idx).next('.err-mgs').empty().append(val);
+                // console.log('#add_hostel_form #'+idx);
+                var exp = idx.replace('.','_');
+                var exp2 = exp.replace('_0','');
+                
+                $('#add_hostel_form #'+exp).addClass('border-danger is-invalid')
+                $('#add_hostel_form #'+exp2).addClass('border-danger is-invalid')
+                $('#add_hostel_form #'+exp).next('span').find('.select2-selection--single').attr('id','invalid-selec2')
+                $('#add_hostel_form #'+exp).next('.err-mgs').empty().append(val);
+
+                $('#add_hostel_form #'+exp+"_err").empty().append(val);
             })
         }
     });
@@ -214,6 +226,18 @@ $(document).on('click', '#edit_button', function () {
             $('#edit_hostel_form #concern_person_phone').val(data.concern_person_phone);
             $('#edit_hostel_form #concern_person_email').val(data.concern_person_email);
 
+            if(data.has_multiple_building==1){
+                $('#edit_hostel_form #has_multiple_building').prop('checked',true);
+                $('#edit_hostel_form #append_building_div').show();
+                $('#edit_hostel_form #append_building_div').empty();
+                $('#edit_hostel_form #add_building_btn').show();
+                $.each(data.building,function(key,val){
+                    append_content(key+1,val.building_number);
+                })
+            }else{
+                $('#edit_hostel_form #append_building_div').empty();
+                $('#edit_hostel_form #add_building_btn').hide();
+            }
         },
         error: function (err) {
             if(err.status===403){
@@ -264,14 +288,19 @@ $('#edit_hostel_form').submit(function (e) {
             console.log(data);
             $('button[type=submit]', '#edit_hostel_form').html(submit_btn_before);
             $('button[type=submit]', '#edit_hostel_form').removeClass('disabled');
+            var buildingArray = [];
+            $.each(data.hostel.building,function(k,v){
+                buildingArray.push(v.building_number);
+            })
             $('td:nth-child(1)',trid).html(data.hostel.hostel_name);
             $('td:nth-child(2)',trid).html(data.hostel.hostel_type);
-            $('td:nth-child(3)',trid).html(data.hostel.hostel_phone);
-            $('td:nth-child(4)',trid).html(data.hostel.hostel_email);
-            $('td:nth-child(5)',trid).html(data.hostel.hostel_address);
-            $('td:nth-child(6)',trid).html(data.hostel.concern_person_name);
-            $('td:nth-child(7)',trid).html(data.hostel.concern_person_email);
-            $('td:nth-child(8)',trid).html(data.hostel.concern_person_phone);
+            $('td:nth-child(3)',trid).html(buildingArray.join('</br>'));
+            $('td:nth-child(4)',trid).html(data.hostel.hostel_phone);
+            $('td:nth-child(5)',trid).html(data.hostel.hostel_email);
+            $('td:nth-child(6)',trid).html(data.hostel.hostel_address);
+            $('td:nth-child(7)',trid).html(data.hostel.concern_person_name);
+            $('td:nth-child(8)',trid).html(data.hostel.concern_person_email);
+            $('td:nth-child(9)',trid).html(data.hostel.concern_person_phone);
             swal({
                 icon: "success",
                 title: data.title,

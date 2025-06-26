@@ -264,11 +264,17 @@
                             </div>
                             
                         </div>
-                        <div class="row">
+                        <div class="row mb-4">
                             <div class="col-lg-4 mt-2">
                                 <input type="checkbox" name="has_multiple_building" id="has_multiple_building" > &nbsp;
                                 <label for="hostel_name"><strong>{{ __('admin_local.Has multiple building ?') }}</strong></label>
                             </div>
+                            <div class="col-lg-4 mt-2">
+                                <button class="btn btn-info" type="button" id="add_building_btn" style="display:none">+{{ __('admin_local.Add Building') }}</button>
+                            </div>
+                        </div>
+                        <div class="row mb-3" id="append_building_div" >
+
                         </div>
 
                         <div class="row mt-4 mb-2">
@@ -318,6 +324,7 @@
                                     <tr>
                                         <th>{{ __('admin_local.Hostel Name') }}</th>
                                         <th>{{ __('admin_local.Hostel Type') }}</th>
+                                        <th>{{ __('admin_local.Hostel Building') }}</th>
                                         <th>{{ __('admin_local.Hostel Phone') }}</th>
                                         <th>{{ __('admin_local.Hostel Email') }}</th>
                                         <th>{{ __('admin_local.Hostel Address') }}</th>
@@ -330,10 +337,19 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($hosteles as $hostel)
+                                        @php
+                                            $building = [];
+                                            if($hostel->has_multiple_building==1){
+                                                foreach ($hostel->building as $key => $build) {
+                                                    $building[]=$build->building_number;
+                                                }
+                                            }
+                                        @endphp
                                         <tr id="trid-{{ $hostel->id }}"
                                             data-id="{{ $hostel->id }}">
                                             <td>{{ $hostel->hostel_name }}</td>
                                             <td>{{ $hostel->hostel_type }}</td>
+                                            <td>{!! $hostel->has_multiple_building?implode('<br>',$building):'N/A' !!}</td>
                                             <td>{{ $hostel->hostel_phone }}</td>
                                             <td>{{ $hostel->hostel_email }}</td>
                                             <td>{{ $hostel->hostel_address }}</td>
@@ -449,19 +465,41 @@
         var base_url = `{{ baseUrl() }}`;
         var translate_url = `{{ route('admin.translateString') }}`;
 
-        $(document).on('change','#has_multiple_building',function(){
+        $(document).on('change','#add_hostel_form #has_multiple_building',function(){
             if($(this).is(':checked')){
                 $('#add_building_btn','#add_hostel_form').show('slow');
                 $('#append_building_div','#add_hostel_form').empty().append(`
                    
                     <div class="col-md-4 mb-2">
-                        <label for="buiding_number"><strong>{{ __('admin_local.Buiding Number') }} <span id="building_number_counter">1</span>
+                        <label for="building_number"><strong>{{ __('admin_local.Buiding Number') }} <span id="building_number_counter">1</span>
                                         </strong></label>
-                        <input type="text" class="form-control" name="buiding_number[]"
-                            id="buiding_number">
-                        <span class="text-danger err-mgs"></span>
+                        <input type="text" class="form-control" name="building_number[]"
+                            id="building_number">
+                        <span class="text-danger err-mgs"  id="building_number_0_err"></span>
                     </div>
                 `);
+            }else{
+                $('#add_building_btn','#add_hostel_form').hide('slow');
+                $('#append_building_div','#add_hostel_form').empty();
+            }
+        })
+
+        $(document).on('change','#edit_hostel_form #has_multiple_building',function(){
+            if($(this).is(':checked')){
+                $('#add_building_btn','#edit_hostel_form').show('slow');
+                $('#append_building_div','#edit_hostel_form').empty().append(`
+                   
+                    <div class="col-md-4 mb-2">
+                        <label for="building_number"><strong>{{ __('admin_local.Buiding Number') }} <span id="building_number_counter">1</span>
+                                        </strong></label>
+                        <input type="text" class="form-control" name="building_number[]"
+                            id="building_number">
+                        <span class="text-danger err-mgs"  id="building_number_0_err"></span>
+                    </div>
+                `);
+            }else{
+                $('#add_building_btn','#edit_hostel_form').hide('slow');
+                $('#append_building_div','#edit_hostel_form').empty();
             }
         })
 
@@ -471,11 +509,26 @@
             $('#append_building_div','#add_hostel_form').append(`
                 <div class="col-md-4">
                     <button type="button" class="btn btn-danger px-1 py-0" id="remove_btn" style="float:right">{{ __('admin_local.Remove') }}</button>
-                    <label for="buiding_number"><strong>{{ __('admin_local.Buiding Number') }} <span id="building_number_counter">${count_div+1}</span>
+                    <label for="building_number"><strong>{{ __('admin_local.Buiding Number') }} <span id="building_number_counter">${count_div+1}</span>
                                     </strong></label>
-                    <input type="text" class="form-control" name="buiding_number[]"
-                        id="buiding_number">
-                    <span class="text-danger err-mgs"></span>
+                    <input type="text" class="form-control" name="building_number[]"
+                        id="building_number">
+                    <span class="text-danger err-mgs"  id="building_number_0_err"></span>
+                </div>
+            `);
+        })
+
+        $(document).on('click','#edit_hostel_form #add_building_btn',function(){
+            var count_div = $('.col-md-4','#edit_hostel_form').length;
+            // alert(count_div);
+            $('#append_building_div','#edit_hostel_form').append(`
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-danger px-1 py-0" id="remove_btn" style="float:right">{{ __('admin_local.Remove') }}</button>
+                    <label for="building_number"><strong>{{ __('admin_local.Buiding Number') }} <span id="building_number_counter">${count_div+1}</span>
+                                    </strong></label>
+                    <input type="text" class="form-control" name="building_number[]"
+                        id="building_number">
+                    <span class="text-danger err-mgs"  id="building_number_0_err"></span>
                 </div>
             `);
         })
@@ -486,6 +539,17 @@
                 $('#building_number_counter',this).empty().append(key+1);
             })
         })
+
+        function append_content(counter,value=null){
+            $('#edit_hostel_form #append_building_div').append(`<div class="col-md-4 mb-2">
+                <label for="building_number"><strong>{{ __('admin_local.Buiding Number') }} <span id="building_number_counter">${counter}</span>
+                                </strong></label>
+                <input type="text" class="form-control" name="building_number[]"
+                    id="building_number" value="${value}">
+                <span class="text-danger err-mgs"  id="building_number_0_err"></span>
+            </div>`);
+        }
+        
     </script>
     <script src="{{ asset(env('ASSET_DIRECTORY','public').'/'.'admin/custom/hostel/hostel.js') }}"></script>
     {{-- <script src="{{ asset(env('ASSET_DIRECTORY').'/'.'inventory/custom/user/user_list.js') }}"></script> --}}

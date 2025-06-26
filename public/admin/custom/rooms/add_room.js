@@ -1,23 +1,38 @@
-// $(document).on('change','#floor',function(){
-//     if($('#floor').val()!=''){
-//         $.ajax({
-//             type: "get",
-//             url: 'get-floot-details/'+$('#hotel').val()+"/"+$(this).val()+"/"+$('#block').val(),
-//             success: function (data) {
-//                 $('#room_number').val(data);
-//             },
-//             error: function (err) {
-//                 var err_message = err.responseJSON.message.split("(");
-//                 swal({
-//                     icon: "warning",
-//                     title: "Warning !",
-//                     text: err_message[0],
-//                     confirmButtonText: "Ok",
-//                 });
-//             }
-//         });
-//     }
-// });
+$(document).on('change','#hostel',function(){
+    if($('#hostel').val()!=''){
+        $.ajax({
+            type: "get",
+            url: 'get-building-details/'+$('#hostel').val(),
+            success: function (data) {
+                if(data.length>0){
+                    $('#building_number_div').show();
+                    $('#building_number').empty();
+                    $.each(data,function(key,val){
+                        $('#building_number').append(`
+                            <option value="${val.id}">${val.building_number}</option>    
+                        `);
+                    })
+                }else{
+                    $('#building_number_div').hide();
+                    $('#building_number').empty();
+                }
+                
+            },
+            error: function (err) {
+                var err_message = err.responseJSON.message.split("(");
+                swal({
+                    icon: "warning",
+                    title: "Warning !",
+                    text: err_message[0],
+                    confirmButtonText: "Ok",
+                });
+            }
+        });
+    }else{
+        $('#building_number_div').hide();
+        $('#building_number').empty();
+    }
+});
 
 $(document).on('change','#has_multiple_block',function(){
     if($(this).is(':checked')){
@@ -196,6 +211,8 @@ $('#add_room_form').submit(function (e) {
                 $('#block','#append_block_room_div').prop('disabled',true);
                 $('#room_type','#append_block_room_div').prop('disabled',true);
                 $('#room_dimension','#append_block_room_div').prop('disabled',true);
+                $('#building_number_div').hide();
+                $('#building_number').empty();
                  $('#add_room_form')[0].reset();
             });
         },

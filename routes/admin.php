@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Localization\ChangeLanguageController;
 use App\Http\Controllers\Admin\Localization\LanguageController;
 use App\Http\Controllers\Admin\Role\RoleAndPermissionController;
 use App\Http\Controllers\Admin\Rooms\RoomController;
+use App\Http\Controllers\Admin\Rooms\SeatController;
 use App\Http\Controllers\Admin\Settings\MaintenanceModeController;
 use App\Http\Controllers\Admin\User\UserController;
 use Illuminate\Support\Facades\Route;
@@ -73,7 +74,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
             $langs = getLangs();
             foreach($langs as $lang){
                 $darr =  GoogleTranslate::trans(request()->tdata, $lang->lang, 'en');
-                array_push($data,$darr);
+                array_push($data,$darr); 
             }
             return [
                 'tdata'=>$data,
@@ -97,7 +98,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
             Route::get('/rooms','index')->name('room.index');
             Route::get('/rooms/create','create')->name('room.create');
             Route::post('/rooms/store','store')->name('room.store');
-            Route::get('/rooms/get-floot-details/{hotel_id}/{floor}/{block?}','getFloorDetails');
+            Route::get('/rooms/get-building-details/{hostel_id}','getHostelDetails');
             Route::get('/rooms/{id}/edit','edit')->name('room.edit');
             Route::put('/rooms/update/{id}','update')->name('room.update');
             Route::get('rooms/update/status/{id}/{status}','updateStatus');
@@ -105,6 +106,10 @@ Route::prefix('admin')->name('admin.')->group(function(){
         });
 
         /** Room End */
+
+        /** Seats End*/
+        Route::resource('/seats',SeatController::class);
+        /** Seats End */
 
     });
 });

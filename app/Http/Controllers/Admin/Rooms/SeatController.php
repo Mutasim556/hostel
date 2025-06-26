@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Rooms;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\Hostel;
 use Illuminate\Http\Request;
 
 class SeatController extends Controller
@@ -12,7 +13,7 @@ class SeatController extends Controller
      */
     public function index()
     {
-        //
+        return view('backend.blade.seats.index');
     }
 
     /**
@@ -20,7 +21,8 @@ class SeatController extends Controller
      */
     public function create()
     {
-        //
+        $hostels = Hostel::where([['status',1],['delete',0]])->get();
+        return view('backend.blade.seats.create',compact('hostels'));
     }
 
     /**

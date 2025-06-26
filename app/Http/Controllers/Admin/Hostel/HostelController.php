@@ -18,7 +18,8 @@ class HostelController extends Controller
      */
     public function index()
     {
-        $hosteles = Hostel::where([['status',1],['delete',0]])->get();
+        $hosteles = Hostel::with('building')->where([['status',1],['delete',0]])->get();
+        // dd($hosteles);
         return view('backend.blade.hostel.index',compact('hosteles'));
     }
 
@@ -42,6 +43,7 @@ class HostelController extends Controller
             'hostel_email'=>'email|max:40',
             'concern_person_name'=>'required',
             'concern_person_phone'=>'required',
+            'building_number.*'=>'required_if:has_multiple_building,on',
         ],[
             'hostel_name.required'=>__('admin_local.Hostel name is required'),
             'hostel_type.required'=>__('admin_local.Hostel type is required'),
@@ -50,6 +52,7 @@ class HostelController extends Controller
             'hostel_email.email'=>__('admin_local.Invalid email'),
             'concern_person_name.required'=>__('admin_local.Concern person name is required'),
             'concern_person_phone.required'=>__('admin_local.Concern person phone is required'),
+            'building_number.*.required_if'=>__('admin_local.Building number is required'),
         ]);
         $hostel = new Hostel();
         $hostel->hostel_name = $data->hostel_name;
@@ -60,13 +63,14 @@ class HostelController extends Controller
         $hostel->concern_person_name = $data->concern_person_name;
         $hostel->concern_person_phone = $data->concern_person_phone;
         $hostel->concern_person_email = $data->concern_person_email;
+        $hostel->has_multiple_building = $data->has_multiple_building?1:0;
 
         $hostel->save();
         if($data->has_multiple_building){
-            foreach($data->buiding_number as $key=>$value){
+            foreach($data->building_number as $key=>$value){
                 $hostel_building = new HostelBuilding();
-                $hostel_building->hotel_id = $hostel->id;
-                $hostel_building->buiding_number = $value;
+                $hostel_building->hostel_id = $hostel->id;
+                $hostel_building->building_number = $value;
                 $hostel_building->save();
             }
         }
@@ -113,7 +117,7 @@ class HostelController extends Controller
      */
     public function edit(string $id)
     {
-        $hostel = Hostel::withoutGlobalScope('translate')->findOrFail($id);
+        $hostel = Hostel::with('building')->withoutGlobalScope('translate')->findOrFail($id);
         return $hostel;
     }
 
@@ -151,7 +155,15 @@ class HostelController extends Controller
         $hostel->concern_person_email = $data->concern_person_email;
 
         $hostel->save();
-
+            if($data->has_multiple_building){
+            $delete = HostelBuilding::where('hostel_id',$id)->delete();
+            foreach($data->building_number as $key=>$value){
+                $hostel_building = new HostelBuilding();
+                $hostel_building->hostel_id = $hostel->id;
+                $hostel_building->building_number = $value;
+                $hostel_building->save();
+            }
+        }
         $languages =  Language::where([['status', 1], ['delete', 0]])->get();
         foreach ($languages as $lang) {
             $hostel_name = $lang->lang != 'en' ? 'hostel_name_' . $lang->lang : 'hostel_name';
@@ -171,7 +183,7 @@ class HostelController extends Controller
         }
 
         return response()->json([
-            'hostel' => Hostel::findOrFail($id),
+            'hostel' => Hostel::with('building')->findOrFail($id),
             'title'=>__('admin_local.Congratulations !'),
             'text'=>__('admin_local.Hostel updated successfully.'),
             'confirmButtonText'=>__('admin_local.Ok'),

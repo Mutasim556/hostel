@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Rooms;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\HostelBuilding;
 use App\Models\Admin\Room;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -33,9 +34,18 @@ class RoomController extends Controller
             'floor'=>'required',
             'room_number'=>['required',Rule::unique('rooms')->where(function($q)use($data){
                 if($data->has_multiple_block){
-                    return $q->where([['room_number',$data->room_number],['block',$data->block],['floor',$data->floor],['hostel_id',$data->hostel],['status',1],['delete',0]]);
+                    if($data->building_number){
+                        return $q->where([['room_number',$data->room_number],['block',$data->block],['floor',$data->floor],['hostel_id',$data->hostel],['status',1],['delete',0],['building_id',$data->building_number]]);
+                    }else{
+                        return $q->where([['room_number',$data->room_number],['block',$data->block],['floor',$data->floor],['hostel_id',$data->hostel],['status',1],['delete',0]]);
+                    }
+                    
                 }else{
-                    return $q->where([['room_number',$data->room_number],['block','N/A'],['floor',$data->floor],['hostel_id',$data->hostel],['status',1],['delete',0]]);
+                    if($data->building_number){
+                        return $q->where([['room_number',$data->room_number],['block','N/A'],['floor',$data->floor],['hostel_id',$data->hostel],['status',1],['delete',0],['building_id',$data->building_number]]);
+                    }else{
+                        return $q->where([['room_number',$data->room_number],['block','N/A'],['floor',$data->floor],['hostel_id',$data->hostel],['status',1],['delete',0]]);
+                    }
                 }
              })],
             'room_type'=>'required',
@@ -62,6 +72,7 @@ class RoomController extends Controller
         $room = new Room();
         $room->hostel_id = $data->hostel;
         $room->room_type = $data->room_type;
+        $room->building_id = $data->building_number;
         $room->floor = $data->floor;
         $room->block = $data->block??'N/A';
         $room->room_number = $data->room_number;
@@ -86,29 +97,13 @@ class RoomController extends Controller
         ];
     }
 
-    public function getFloorDetails(Request $data){
-        $room = Room::where([['delete',0],['status',1]]);
-        $floor = explode('-',$data->floor);
-        if($data->hostel_id){
-            $room = $room->where('hostel_id',$data->hostel_id);
-        }
-        if($data->floor){
-            $room = $room->where('floor',$floor[0]);
-        }
-        if($data->block){
-            $room = $room->where('block',$data->block);
-        }
-        $room = $room->get();
-
-        $room_number = ($floor[1]).(str_pad(count($room)>0?count($room):1, 2, '0', STR_PAD_LEFT));
-        if($data->block){
-            $room_number = $room_number."-".$data->block;
-        }
-        return $room_number;
+    public function getHostelDetails(Request $data){
+        $building  = HostelBuilding::where('hostel_id',$data->hostel_id)->select('id','building_number')->get();
+        return $building;
     }
 
     public function edit(string $id){
-        $room = Room::with('hostel:id,hostel_name')->where([['id',$id],['status',1],['delete',0]])->first();
+        $room = Room::with('hostel:id,hostel_name','building')->where([['id',$id],['status',1],['delete',0]])->first();
         return view('backend.blade.room.edit',compact('room'));
     }
 

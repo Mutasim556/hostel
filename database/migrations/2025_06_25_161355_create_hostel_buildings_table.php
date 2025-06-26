@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('hostel_buildings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('hostel_id')->references('id')->on('hostels');
-            $table->string('buiding_number');
+            $table->string('building_number');
             $table->boolean('status')->default(1);
             $table->boolean('delete')->default(0);
             $table->timestamps();

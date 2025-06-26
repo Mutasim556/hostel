@@ -65,6 +65,13 @@
                                     </select>
                                     <span class="text-danger err-mgs"></span>
                                 </div>
+                                <div class="form-group col-md-4" id="building_number_div" @if(!$room->building) style="display:none" @endif>
+                                    <label for="">{{ __('admin_local.Building Number') }} *</label>
+                                    <select class="form-control" name="building_number" id="building_number" required disabled>
+                                            <option value="{{ $room->building }}">{{ $room->building->building_number }}</option>
+                                    </select>
+                                    <span class="text-danger err-mgs"></span>
+                                </div>
                             </div>
                             <div class="row mb-4">
                                 <div class="col-lg-12 mt-2">

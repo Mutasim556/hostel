@@ -10,6 +10,9 @@ class Hostel extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    public function building(){
+        return $this->hasMany(HostelBuilding::class,'hostel_id','id');
+    }
     
     public function translations()
     {

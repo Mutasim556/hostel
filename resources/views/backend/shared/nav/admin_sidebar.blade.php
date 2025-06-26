@@ -35,7 +35,7 @@
                 @endif
                 @if (hasPermission(['seat-create']))
                 <li>
-                    <a href="{{ route('admin.room.create') }}" class="sidebar-link">
+                    <a href="{{ route('admin.seats.create') }}" class="sidebar-link">
                         <span> {{ __('admin_local.Add Seats') }} </span>
                     </a>
                 </li>
