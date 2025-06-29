@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\Auth\AdminLoginController;
+use App\Http\Controllers\Admin\Booking\BookingController;
 use App\Http\Controllers\Admin\Hostel\HostelController;
 use App\Http\Controllers\Admin\Localization\BackendLanguageController;
 use App\Http\Controllers\Admin\Localization\ChangeLanguageController;
@@ -74,7 +75,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
             $langs = getLangs();
             foreach($langs as $lang){
                 $darr =  GoogleTranslate::trans(request()->tdata, $lang->lang, 'en');
-                array_push($data,$darr); 
+                array_push($data,$darr);
             }
             return [
                 'tdata'=>$data,
@@ -111,6 +112,10 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::resource('/seats',SeatController::class);
         /** Seats End */
 
+        /** Booking Start */
+        Route::resource('/booking',BookingController::class);
+        Route::post('/get/available/seats',[BookingController::class,'getAvailableSeats'])->name('booking.getAvailableSeats');
+        /** Booking End */
     });
 });
 

@@ -17,4 +17,8 @@ class Room extends Model
     public function createdBy(){
         return $this->belongsTo(Admin::class,'created_by','id');
     }
+
+    public function seats(){
+        return $this->hasMany(Seat::class,'room_id','id')->where([['status',1],['delete',0]]);
+    }
 }

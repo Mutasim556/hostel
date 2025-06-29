@@ -12,7 +12,7 @@
             padding: 10px 0px;
         }
 
-        .loader-box .loader-35:after { 
+        .loader-box .loader-35:after {
             height: 20px;
             width: 10px;
         }
@@ -41,6 +41,7 @@
                                         <div class="col-md-6">
                                             <label for="">{{ __('admin_local.Select Hostel') }}</label>
                                             <select type="text" class="form-control" name="hostel" id="hostel">
+                                                <option value="">{{ __('admin_local.Select Please') }}</option>
                                                 @foreach ($hostels as $hostel)
                                                     <option value="{{ $hostel->id }}">{{ $hostel->hostel_name }}</option>
                                                 @endforeach
@@ -50,7 +51,7 @@
                                         <div class="col-md-6">
                                             <label for="">{{ __('admin_local.Select Building') }}</label>
                                             <select type="text" class="form-control" name="building" id="building">
-                                                
+
                                             </select>
                                             <span class="text-danger err-mgs"></span>
                                         </div>
@@ -59,16 +60,14 @@
                                         <div class="col-md-6">
                                             <label for="">{{ __('admin_local.Select Floor') }}</label>
                                             <select type="text" class="form-control" name="floor" id="floor">
-                                                @foreach ($hostels as $hostel)
-                                                    <option value="{{ $hostel->id }}">{{ $hostel->hostel_name }}</option>
-                                                @endforeach
+
                                             </select>
                                             <span class="text-danger err-mgs"></span>
                                         </div>
                                         <div class="col-md-6">
                                             <label for="">{{ __('admin_local.Select Block') }}</label>
                                             <select type="text" class="form-control" name="block" id="block">
-                                                
+
                                             </select>
                                             <span class="text-danger err-mgs"></span>
                                         </div>
@@ -76,8 +75,8 @@
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="">{{ __('admin_local.Select Room') }}</label>
-                                            <select type="text" class="form-control" name="room" id="block">
-                                                
+                                            <select type="text" class="form-control" name="room" id="room">
+
                                             </select>
                                             <span class="text-danger err-mgs"></span>
                                         </div>
@@ -98,13 +97,21 @@
                                             <input type="text" class="form-control" name="seat_minimum_price" id="seat_minimum_price">
                                             <span class="text-danger err-mgs"></span>
                                         </div>
+                                        <div class="col-md-6 mt-2">
+                                            <label for="">{{ __('admin_local.Price For') }}</label>
+                                            <select class="form-control" name="price_for" id="price_for">
+                                                <option value="day">{{ __('admin_local.Per-day') }}</option>
+                                                <option value="month">{{ __('admin_local.Per-month') }}</option>
+                                            </select>
+                                            <span class="text-danger err-mgs"></span>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <input type="checkbox" name="has_any_service_charge" id="has_any_service_charge">
                                             <label for="">{{ __('admin_local.Has any service charge ?') }}</label>
                                         </div>
-                                        
+
                                     </div>
                                     <div class="row" id="service_charge_row" style="display:none">
                                         <div class="col-md-6">
@@ -112,7 +119,7 @@
                                             <span class="text-danger err-mgs"></span>
                                         </div>
                                     </div>
-                                    <div class="row">
+                                    {{-- <div class="row">
                                         <div class="col-md-6">
                                             <input type="checkbox" name="has_any_other_charge" id="has_any_other_charge">
                                             <label for="">{{ __('admin_local.Has any other charge ?') }}</label>
@@ -123,16 +130,16 @@
                                     </div>
                                     <div id="append_other_charge_div">
 
-                                    </div>
+                                    </div> --}}
                                  </div>
                                  {{-- <div class="col-md-6 rounded py-4" style="box-shadow: 0px 0px 10px gray">
-                                    
+
                                  </div> --}}
                             </div>
-                            
+
                             <div class="row">
                                  <div class="col-lg-12 mt-2">
-                                    <button class="btn btn-success" type="submit" id="submit_btn" style="float:right"><strong>{{ __('admin_local.Submit') }}</strong></button>
+                                    <button class="btn btn-success" type="submit" id="submit_btn" style="float:left"><strong>{{ __('admin_local.Submit') }}</strong></button>
                                  </div>
                             </div>
                         </form>
@@ -169,7 +176,7 @@
         var submit_btn_before = `<strong><i class="fa fa-paper-plane"></i> &nbsp; {{ __('admin_local.Submit') }}</strong>`;
 
         $(document).on('change','#has_any_service_charge',function(){
-            
+
             if($(this).is(':checked')){
                 $('#service_charge_row').show('slow');
             }else{
@@ -199,7 +206,7 @@
                 $('#append_other_charge_div').empty();
             }
         });
-        
+
     </script>
-    <script src="{{ asset('public/admin/custom/seatss/add_seats.js') }}"></script>
+    <script src="{{ asset('public/admin/custom/seats/add_seats.js') }}"></script>
 @endpush

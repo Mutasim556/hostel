@@ -50,6 +50,26 @@
             </ul>
         </li>
     @endif
+    @if (hasPermission(['booking-index', 'booking-create', 'booking-update', 'booking-delete']))
+        <li class="sidebar-list">
+            <a class="sidebar-link sidebar-title" href="javascript:void(0)" aria-expanded="false">
+                <i data-feather="inbox"></i>
+                <span class="lan-3">{{ __('admin_local.Booking') }}</span>
+            </a>
+            <ul class="sidebar-submenu">
+                <li>
+                    <a href="{{ route('admin.booking.create') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Booking') }} </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.booking.index') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Booking List') }} </span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    @endif
     @if (hasPermission(['user-index', 'user-create', 'user-update', 'user-delete']))
         <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="javascript:void(0)" aria-expanded="false">
