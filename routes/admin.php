@@ -115,6 +115,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         /** Booking Start */
         Route::resource('/booking',BookingController::class);
         Route::post('/get/available/seats',[BookingController::class,'getAvailableSeats'])->name('booking.getAvailableSeats');
+        Route::get('/get/booking/invoices/{id}',[BookingController::class,'getBookingInvoices'])->name('booking.getBookingInvoices');
         /** Booking End */
     });
 });

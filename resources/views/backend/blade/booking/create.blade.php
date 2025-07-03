@@ -21,12 +21,18 @@
             width: 20px;
             height: 10px;
         }
+
+        .selectedClass{
+            background-color: rgb(244, 69, 250);
+            color: rgb(255, 255, 255);
+            border: 1px solid black;
+        }
     </style>
 @endpush
 @section('content')
 
 
-    {{-- <div class="modal fade" id="add-booking-modal" tabindex="-1" aria-labelledby="bs-example-modal-lg"
+    <div class="modal fade" id="add-booking-modal" tabindex="-1" aria-labelledby="bs-example-modal-lg"
         aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -40,96 +46,107 @@
                 <p class="px-3 text-danger"><i>{{ __('admin_local.The field labels marked with * are required input fields.') }}</i>
                 </p>
                 <div class="modal-body" style="margin-top: -20px">
-                    <form method="POSt" action="" id="add_booking_form" enctype="multipart/form-data">
+                    <form method="POST" action="" id="add_booking_form" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
-                            <div class="col-lg-6 mt-2">
-                                <label for="booking_name"><strong>{{ __('admin_local.booking Name') }} ({{ __('admin_local.Default') }})
-                                        *</strong></label>
-                                <input type="text" class="form-control" name="booking_name"
-                                    id="booking_name">
-                                <span class="text-danger err-mgs"></span>
-                            </div>
-                            @foreach (getLangs() as $lang)
-                            <div class="col-lg-6 mt-2">
-                                <label for="booking_name"><strong>{{ __('admin_local.booking Name') }} ( {{ $lang->name }} )
-                                    *</strong></label>
-                                <input type="text" class="form-control" name="booking_name_{{ $lang->lang }}"
-                                    id="booking_name_{{ $lang->lang }}">
-                                <span class="text-danger err-mgs"></span>
-                            </div>
-                            @endforeach
-                            <div class="col-lg-3 mt-2">
-                                <input type="checkbox" name="translate_autometic" id="translate_autometic" > &nbsp;
-                                <label for="booking_name"><strong>{{ __('admin_local.Translate Autometic') }}</strong></label>
-                            </div>
-                            <div class="col-lg-3 mt-2">
-                                <label for="booking_name"><strong>{{ __('admin_local.booking Type') }}
-                                        *</strong></label>
-                                <select class="form-control" name="booking_type" id="booking_type">
-                                    <option value="">{{ __('admin_local.Select Please') }}</option>
-                                    <option value="Boys">{{ __('admin_local.Boys') }}</option>
-                                    <option value="Girls">{{ __('admin_local.Girls') }}</option>
-                                    <option value="All">{{ __('admin_local.All') }}</option>
-                                </select>
-                                <span class="text-danger err-mgs"></span>
-                            </div>
-                            <div class="col-lg-3 mt-2">
-                                <label for="booking_phone"><strong>{{ __('admin_local.booking Phone') }}
-                                        *</strong></label>
-                                <input type="text" class="form-control" name="booking_phone"
-                                    id="booking_phone">
-                                <span class="text-danger err-mgs"></span>
-                            </div>
-                            <div class="col-lg-3 mt-2">
-                                <label for="booking_email"><strong>{{ __('admin_local.booking Email') }}
-                                        </strong></label>
-                                <input type="text" class="form-control" name="booking_email"
-                                    id="booking_email">
-                                <span class="text-danger err-mgs"></span>
-                            </div>
-                            <div class="col-lg-6 mt-2">
-                                <label for="booking_address"><strong>{{ __('admin_local.booking Address') }}
-                                        </strong></label>
-                                <textarea class="form-control" name="booking_address"
-                                    id="booking_address"></textarea>
-                                <span class="text-danger err-mgs"></span>
-                            </div>
-                            <div class="col-lg-3 mt-2">
-                                <label for="concern_person_name"><strong>{{ __('admin_local.Concern Person Name') }} *
-                                        </strong></label>
-                                <input type="text" class="form-control" name="concern_person_name"
-                                    id="concern_person_name">
-                                <span class="text-danger err-mgs"></span>
-                            </div>
-                            <div class="col-lg-3 mt-2">
-                                <label for="concern_person_phone"><strong>{{ __('admin_local.Concern Person Phone') }} *
-                                        </strong></label>
-                                <input type="text" class="form-control" name="concern_person_phone"
-                                    id="concern_person_phone">
-                                <span class="text-danger err-mgs"></span>
-                            </div>
-                            <div class="col-lg-3 mt-2">
-                                <label for="concern_person_email"><strong>{{ __('admin_local.Concern Person Email') }}
-                                        </strong></label>
-                                <input type="text" class="form-control" name="concern_person_email"
-                                    id="concern_person_email">
-                                <span class="text-danger err-mgs"></span>
-                            </div>
+                            <div id="append_hidden_inputs">
 
-                        </div>
-                        <div class="row mb-4">
-                            <div class="col-lg-4 mt-2">
-                                <input type="checkbox" name="has_multiple_building" id="has_multiple_building" > &nbsp;
-                                <label for="booking_name"><strong>{{ __('admin_local.Has multiple building ?') }}</strong></label>
                             </div>
-                            <div class="col-lg-4 mt-2">
-                                <button class="btn btn-info" type="button" id="add_building_btn" style="display:none">+{{ __('admin_local.Add Building') }}</button>
-                            </div>
-                        </div>
-                        <div class="row mb-3" id="append_building_div" >
+                            <div class="row" id="append_booking_seats">
 
+                            </div>
+                            <div class="row mt-4">
+                                <u><h5>{{ __('admin_local.Booking Informations') }}</h5></u>
+                                <div class="col-md-3 mb-3">
+                                    <label for="">{{ __('admin_local.Booking Start Date') }}</label>
+                                    <input type="date" name="booking_start_date" id="booking_start_date" class="form-control">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="">{{ __('admin_local.Booking End Date') }}</label>
+                                    <input type="date" name="booking_end_date" id="booking_end_date" class="form-control">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="">{{ __('admin_local.Booking Total Days') }}</label>
+                                    <input type="number" name="booking_total_days" id="booking_total_days" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="">{{ __('admin_local.Total Price') }}</label>
+                                    <input type="text" name="booking_total_price" id="booking_total_price" class="form-control" >
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="">{{ __('admin_local.Total Service Charge') }}</label>
+                                    <input type="text" name="booking_total_service_charge" id="booking_total_service_charge" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="">{{ __('admin_local.Total Discount') }}</label>
+                                    <input type="text" name="booking_total_discount" id="booking_total_discount" class="form-control" value="0">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="">{{ __('admin_local.Total Payable') }}</label>
+                                    <input type="text" name="booking_total_payable" id="booking_total_payable" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="">{{ __('admin_local.Total Paid') }}</label>
+                                    <input type="text" name="booking_total_paid" id="booking_total_paid" class="form-control" >
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="">{{ __('admin_local.Total Due') }}</label>
+                                    <input type="text" name="booking_total_due" id="booking_total_due" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+
+                                <u><h5>{{ __('admin_local.Booking Person Informations') }}</h5></u>
+                                <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.Phone Number') }}</label>
+                                    <input type="text" name="booking_phone_number" id="booking_phone_number" class="form-control">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.Person Email') }}</label>
+                                    <input type="text" name="booking_person_email" id="booking_person_email" class="form-control">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.Person Name') }}</label>
+                                    <input type="text" name="booking_person_name" id="booking_person_name" class="form-control">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.Gender') }}</label><br>
+                                    <input type="radio" name="booking_person_gender" value="Male"> {{ __('admin_local.Male') }} &nbsp; &nbsp;
+                                    <input type="radio" name="booking_person_gender" value="Female"> {{ __('admin_local.Female') }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.Date Of Birth') }}</label>
+                                    <input type="date" name="booking_person_dob" id="booking_person_dob" class="form-control">
+                                </div>
+
+                                 <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.NID Number') }}</label>
+                                    <input type="text" name="booking_nid_number" id="booking_nid_number" class="form-control">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.Address') }}</label>
+                                    <textarea class="form-control" name="booking_person_address" id="booking_person_address" placeholder="Division,District,Thana,Village/Street/Road No"></textarea>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.Service ID') }}</label>
+                                    <input type="text" name="booking_service_id" id="booking_service_id" class="form-control">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.Workplace Address') }}</label>
+                                    <textarea class="form-control" name="booking_person_workplace_address" id="booking_person_workplace_address"></textarea>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.Image') }}</label>
+                                    <input type="file" name="booking_person_image" id="booking_person_image" class="form-control">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="">{{ __('admin_local.NID') }}</label>
+                                    <input type="file" name="booking_person_nid" id="booking_person_nid" class="form-control">
+                                </div>
+                            </div>
                         </div>
+
 
                         <div class="row mt-4 mb-2">
                             <div class="form-group col-lg-12">
@@ -147,7 +164,7 @@
             <!-- /.modal-content -->
         </div>
         <!-- /.modal-dialog -->
-    </div> --}}
+    </div>
 
     {{-- Add User Modal End --}}
 
@@ -403,10 +420,18 @@
                             </div>
                         </form>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" id="room_card_body" style="display:none">
                         <div class="row" id="append_room_div_main">
                             <h4 class="text-center" id="append_room_div" style="display: none">{{ __('admin_local.Available Rooms/Seats') }}</h4>
 
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" id="book_now_btn" class="btn btn-info" style="float:right" data-bs-toggle="modal" data-bs-target="#add-booking-modal" disabled>{{__('admin_local.Book Now')}}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -469,8 +494,13 @@
         var form_url = "{{ route('admin.booking.store') }}";
         var search_url = "{{ route('admin.booking.getAvailableSeats') }}";
         var search_btn_after = `{{ __('admin_local.Getting data') }}`;
-        var search_btn_before = `{{ __('admin_local.View Available Rooms') }}`;
+        var search_btn_before = `{{ __('admin_local.View Available Rooms/Seats') }}`;
+
+        var submit_btn_after = `{{ __('admin_local.Submitting') }}`;
+        var submit_btn_before = `{{ __('admin_local.Submit') }}`;
+
         var no_permission_mgs = `{{ __('admin_local.No Permission') }}`;
+
 
 
         var delete_swal_title = `{{ __('admin_local.Are you sure?') }}`;
