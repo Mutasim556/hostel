@@ -57,10 +57,11 @@
                 <div class="header-logo-wrapper col-auto p-0">
                     <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle" data-feather="grid"> </i>
                     </div>
-                    <div class="logo-header-main"><a href="index.html"><img class="img-fluid for-light img-100"
-                                src="{{ asset('public/admin/assets/images/logo/logo2.png') }}" alt=""><img
-                                class="img-fluid for-dark" src="{{ asset('public/admin/assets/images/logo/logo.png') }}"
-                                alt=""></a></div>
+                    <div class="logo-header-main"><a href="index.html">
+                        {{-- <img class="img-fluid for-light img-100" src="{{ asset('public/admin/assets/images/logo/logo2.png') }}" alt="">
+                        <img class="img-fluid for-dark" src="{{ asset('public/admin/assets/images/logo/logo.png') }}" alt="">0 --}}
+                        NAEM
+                    </a></div>
                 </div>
                 <div class="left-header col horizontal-wrapper ps-0">
                     <div class="left-menu-header">
@@ -179,8 +180,10 @@
             <!-- Page Sidebar Start-->
             <div class="sidebar-wrapper">
                 <div>
-                    <div class="logo-wrapper"><a href="index.html"><img class="img-fluid for-light"
-                                src="{{ asset('public/admin/assets/images/logo/logo.png') }}" alt=""></a>
+                    <div class="logo-wrapper"><a href="index.html">
+                        {{-- <img class="img-fluid for-light" src="{{ asset('public/admin/assets/images/logo/logo.png') }}" alt=""> --}}
+                        <h4 class="text-center">NAEM</h4>
+                    </a>
                         <div class="back-btn"><i data-feather="grid"></i></div>
                         <div class="toggle-sidebar icon-box-sidebar"><i class="status_toggle middle sidebar-toggle"
                                 data-feather="grid"> </i></div>
@@ -207,7 +210,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-6 p-0 footer-left">
-                            <p class="mb-0">Copyright © 2023 Tivo. All rights reserved. </p>
+                            <p class="mb-0">Copyright © {{ date('Y') }} NAEM. All rights reserved. </p>
                         </div>
                         <div class="col-md-6 p-0 footer-right">
                             <p class="mb-0">Hand-crafted & made with <i class="fa fa-heart font-danger"></i></p>

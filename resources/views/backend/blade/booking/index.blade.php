@@ -453,8 +453,8 @@
                                                                      {{ __('admin_local.Edit') }}</a>
                                                              @endif
                                                              @if (hasPermission(['booking-update']))
-                                                                 <a style="cursor: pointer;"
-                                                                     href="{{ route('admin.booking.edit', $booking->id) }}"><i
+                                                                 <a target="__blank" style="cursor: pointer;"
+                                                                     href="{{ route('admin.booking.getBookingInvoices', $booking->id) }}"><i
                                                                          class=" fa fa-print mx-1"></i>
                                                                      {{ __('admin_local.Print Invoice') }}</a>
                                                              @endif

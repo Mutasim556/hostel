@@ -25,8 +25,8 @@ class BookingController extends Controller
      */
     public function index()
     {
-        $bookings  = BookingInvoice::with('bookingperson','rooms')->orderBy('id','DESC')->get();
-        return view('backend.blade.booking.index',compact('bookings'));
+        $bookings  = BookingInvoice::with('bookingperson', 'rooms')->orderBy('id', 'DESC')->get();
+        return view('backend.blade.booking.index', compact('bookings'));
     }
 
     /**
@@ -44,10 +44,10 @@ class BookingController extends Controller
     public function store(Request $data)
     {
         $data->validate([
-            'booking_total_paid'=>'required',
+            'booking_total_paid' => 'required',
         ]);
-        $check = BookingPerson::where([['booking_phone_number',$data->booking_phone_number]])->first();
-        if(!$check){
+        $check = BookingPerson::where([['booking_phone_number', $data->booking_phone_number]])->first();
+        if (!$check) {
             $bookingP = new BookingPerson();
             $bookingP->booking_phone_number = $data->booking_phone_number;
             $bookingP->booking_person_email = $data->booking_person_email;
@@ -59,31 +59,31 @@ class BookingController extends Controller
             $bookingP->booking_service_id = $data->booking_service_id;
             $bookingP->booking_person_workplace_address = $data->booking_person_workplace_address;
 
-            if($data->booking_person_image){
+            if ($data->booking_person_image) {
                 $files = $data->booking_person_image;
-                $file = time().'bpimage.'.$files->getClientOriginalExtension();
-                $file_name = 'public/admin/upload/person_image/'.$file;
+                $file = time() . 'bpimage.' . $files->getClientOriginalExtension();
+                $file_name = 'public/admin/upload/person_image/' . $file;
                 $manager = new ImageManager(new Driver);
-                $manager->read($data->booking_person_image)->resize(300,300)->save('public/admin/upload/person_image/'.$file);
-                $bookingP->booking_person_image=$file_name;
+                $manager->read($data->booking_person_image)->resize(300, 300)->save('public/admin/upload/person_image/' . $file);
+                $bookingP->booking_person_image = $file_name;
             }
 
             $fileName = null;
-            if($data->booking_person_nid){
+            if ($data->booking_person_nid) {
                 $file = $data->booking_person_nid;
-                $fileName = "NID".time().'.'.$file->getClientOriginalExtension();
-                $file->move('public/admin/upload/nid_image/',$fileName);
-                $fileName ='public/admin/upload/nid_image/'.$fileName;
-            }else{
+                $fileName = "NID" . time() . '.' . $file->getClientOriginalExtension();
+                $file->move('public/admin/upload/nid_image/', $fileName);
+                $fileName = 'public/admin/upload/nid_image/' . $fileName;
+            } else {
                 $fileName = null;
             }
 
-            $bookingP->booking_person_nid=$file_name;
+            $bookingP->booking_person_nid = $file_name;
 
 
             $bookingP->save();
-        }else{
-            $bookingP = BookingPerson::where('booking_phone_number',$data->booking_phone_number)->firstOrFail();
+        } else {
+            $bookingP = BookingPerson::where('booking_phone_number', $data->booking_phone_number)->firstOrFail();
             $bookingP->booking_phone_number = $data->booking_phone_number;
             $bookingP->booking_person_email = $data->booking_person_email;
             $bookingP->booking_person_name = $data->booking_person_name;
@@ -94,38 +94,38 @@ class BookingController extends Controller
             $bookingP->booking_service_id = $data->booking_service_id;
             $bookingP->booking_person_workplace_address = $data->booking_person_workplace_address;
 
-            if($data->booking_person_image){
+            if ($data->booking_person_image) {
                 $files = $data->booking_person_image;
-                $file = time().'bpimage.'.$files->getClientOriginalExtension();
-                $file_name = 'public/admin/upload/person_image/'.$file;
+                $file = time() . 'bpimage.' . $files->getClientOriginalExtension();
+                $file_name = 'public/admin/upload/person_image/' . $file;
                 $manager = new ImageManager(new Driver);
-                $manager->read($data->booking_person_image)->resize(300,300)->save('public/admin/upload/person_image/'.$file);
-                $bookingP->booking_person_image=$file_name;
-            }else{
-                $bookingP->booking_person_image=$bookingP->booking_person_image;
+                $manager->read($data->booking_person_image)->resize(300, 300)->save('public/admin/upload/person_image/' . $file);
+                $bookingP->booking_person_image = $file_name;
+            } else {
+                $bookingP->booking_person_image = $bookingP->booking_person_image;
             }
 
-            if($data->booking_person_nid){
+            if ($data->booking_person_nid) {
                 $file = $data->booking_person_nid;
-                $fileName = "NID".time().'.'.$file->getClientOriginalExtension();
-                $file->move('public/admin/upload/nid_image/',$fileName);
-                $fileName ='public/admin/upload/nid_image/'.$fileName;
-            }else{
+                $fileName = "NID" . time() . '.' . $file->getClientOriginalExtension();
+                $file->move('public/admin/upload/nid_image/', $fileName);
+                $fileName = 'public/admin/upload/nid_image/' . $fileName;
+            } else {
                 $fileName = $bookingP->booking_person_image;
             }
 
-            $bookingP->booking_person_nid=$fileName;
+            $bookingP->booking_person_nid = $fileName;
 
 
             $bookingP->save();
         }
-        $bookingP = BookingPerson::where([['booking_phone_number',$data->booking_phone_number]])->first();
+        $bookingP = BookingPerson::where([['booking_phone_number', $data->booking_phone_number]])->first();
 
         $bookingI = new BookingInvoice();
         $bookingI->booking_person = $bookingP->id;
         $bookingI->service_id = $data->booking_service_type;
-        $bookingI->booking_start_date = date('Y-m-d',strtotime($data->booking_start_date));
-        $bookingI->booking_end_date = date('Y-m-d',strtotime($data->booking_end_date));
+        $bookingI->booking_start_date = date('Y-m-d', strtotime($data->booking_start_date));
+        $bookingI->booking_end_date = date('Y-m-d', strtotime($data->booking_end_date));
         $bookingI->seat_price = $data->booking_total_price;
         $bookingI->seat_service_charge = $data->booking_total_service_charge;
         $bookingI->discount = $data->booking_total_discount;
@@ -133,7 +133,7 @@ class BookingController extends Controller
         $bookingI->total_payable = $data->booking_total_payable;
         $bookingI->total_paid = $data->booking_total_paid;
         $bookingI->total_due = $data->booking_total_due;
-        $bookingI->payment_status = $data->booking_total_payable==0?0:($data->booking_total_payable==$data->booking_total_paid?1:2);
+        $bookingI->payment_status = $data->booking_total_payable == 0 ? 0 : ($data->booking_total_payable == $data->booking_total_paid ? 1 : 2);
         $bookingI->created_by = Auth::guard('admin')->user()->id;
         $bookingI->status = 1;
         $bookingI->delete = 0;
@@ -152,7 +152,7 @@ class BookingController extends Controller
         $bookingPay->created_by = Auth::guard('admin')->user()->id;
         $bookingPay->save();
 
-        foreach($data->booking_seat_number as $key=>$value){
+        foreach ($data->booking_seat_number as $key => $value) {
             $booking = new Booking();
             $booking->invoice_id  = $bookingI->id;
             $booking->hostel_id = $data->h_hostel[$key];
@@ -161,27 +161,26 @@ class BookingController extends Controller
             $booking->room_id = $data->h_room_id[$key];
             $booking->seat_id = $data->h_seat_id[$key];
             $booking->booking_person = $bookingP->id;
-            $booking->booking_start_date = date('Y-m-d',strtotime($data->booking_start_date));
-            $booking->booking_end_date = date('Y-m-d',strtotime($data->booking_end_date));
+            $booking->booking_start_date = date('Y-m-d', strtotime($data->booking_start_date));
+            $booking->booking_end_date = date('Y-m-d', strtotime($data->booking_end_date));
             $booking->status = 1;
             $booking->delete = 0;
             $booking->save();
 
-            $seat = Seat::where([['id',$data->h_seat_id[$key]]])->firstOrFail();
-            $seat->last_booking_start_date =date('Y-m-d',strtotime($data->booking_start_date));
-            $seat->last_booking_end_date = date('Y-m-d',strtotime($data->booking_end_date));
+            $seat = Seat::where([['id', $data->h_seat_id[$key]]])->firstOrFail();
+            $seat->last_booking_start_date = date('Y-m-d', strtotime($data->booking_start_date));
+            $seat->last_booking_end_date = date('Y-m-d', strtotime($data->booking_end_date));
             $seat->last_booking_status = 1;
             $seat->save();
         }
 
 
-         return response([
+        return response([
             'bookingI' => $bookingI,
             'title' => __('admin_local.Congratulations !'),
             'text' => __('admin_local.Booking create successfully.'),
             'confirmButtonText' => __('admin_local.Ok'),
         ], 200);
-
     }
 
     /**
@@ -197,18 +196,147 @@ class BookingController extends Controller
      */
     public function edit(string $id)
     {
-        $invoice = BookingInvoice::with('bookingperson','bookings.seat','bookings.room')->where([['id',$id]])->first();
+        $invoice = BookingInvoice::with('bookingperson', 'bookings.seat', 'bookings.room')->where([['id', $id]])->first();
         // dd($invoice);
-        $services = ServiceType::where([['room_type',$invoice->bookings[0]->room->room_type]])->get();
-        return view('backend.blade.booking.edit',compact('invoice','services'));
+        $services = ServiceType::where([['room_type', $invoice->bookings[0]->room->room_type]])->get();
+        return view('backend.blade.booking.edit', compact('invoice', 'services'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $data, string $id)
     {
-        //
+        $data->validate([
+            'booking_total_paid' => 'required',
+        ]);
+        $check = BookingPerson::where([['booking_phone_number', $data->booking_phone_number]])->first();
+        if (!$check) {
+            $bookingP = new BookingPerson();
+            $bookingP->booking_phone_number = $data->booking_phone_number;
+            $bookingP->booking_person_email = $data->booking_person_email;
+            $bookingP->booking_person_name = $data->booking_person_name;
+            $bookingP->booking_person_gender = $data->booking_person_gender;
+            $bookingP->booking_person_dob = $data->booking_person_dob;
+            $bookingP->booking_nid_number = $data->booking_nid_number;
+            $bookingP->booking_person_address = $data->booking_person_address;
+            $bookingP->booking_service_id = $data->booking_service_id;
+            $bookingP->booking_person_workplace_address = $data->booking_person_workplace_address;
+
+            if ($data->booking_person_image) {
+                $files = $data->booking_person_image;
+                $file = time() . 'bpimage.' . $files->getClientOriginalExtension();
+                $file_name = 'public/admin/upload/person_image/' . $file;
+                $manager = new ImageManager(new Driver);
+                $manager->read($data->booking_person_image)->resize(300, 300)->save('public/admin/upload/person_image/' . $file);
+                $bookingP->booking_person_image = $file_name;
+            }
+
+            $fileName = null;
+            if ($data->booking_person_nid) {
+                $file = $data->booking_person_nid;
+                $fileName = "NID" . time() . '.' . $file->getClientOriginalExtension();
+                $file->move('public/admin/upload/nid_image/', $fileName);
+                $fileName = 'public/admin/upload/nid_image/' . $fileName;
+            } else {
+                $fileName = null;
+            }
+
+            $bookingP->booking_person_nid = $file_name;
+
+
+            $bookingP->save();
+        } else {
+            $bookingP = BookingPerson::where('booking_phone_number', $data->booking_phone_number)->firstOrFail();
+            $bookingP->booking_phone_number = $data->booking_phone_number;
+            $bookingP->booking_person_email = $data->booking_person_email;
+            $bookingP->booking_person_name = $data->booking_person_name;
+            $bookingP->booking_person_gender = $data->booking_person_gender;
+            $bookingP->booking_person_dob = $data->booking_person_dob;
+            $bookingP->booking_nid_number = $data->booking_nid_number;
+            $bookingP->booking_person_address = $data->booking_person_address;
+            $bookingP->booking_service_id = $data->booking_service_id;
+            $bookingP->booking_person_workplace_address = $data->booking_person_workplace_address;
+
+            if ($data->booking_person_image) {
+                $files = $data->booking_person_image;
+                $file = time() . 'bpimage.' . $files->getClientOriginalExtension();
+                $file_name = 'public/admin/upload/person_image/' . $file;
+                $manager = new ImageManager(new Driver);
+                $manager->read($data->booking_person_image)->resize(300, 300)->save('public/admin/upload/person_image/' . $file);
+                $bookingP->booking_person_image = $file_name;
+            } else {
+                $bookingP->booking_person_image = $bookingP->booking_person_image;
+            }
+
+            if ($data->booking_person_nid) {
+                $file = $data->booking_person_nid;
+                $fileName = "NID" . time() . '.' . $file->getClientOriginalExtension();
+                $file->move('public/admin/upload/nid_image/', $fileName);
+                $fileName = 'public/admin/upload/nid_image/' . $fileName;
+            } else {
+                $fileName = $bookingP->booking_person_image;
+            }
+
+            $bookingP->booking_person_nid = $fileName;
+
+
+            $bookingP->save();
+        }
+        $bookingP = BookingPerson::where([['booking_phone_number', $data->booking_phone_number]])->first();
+
+        $bookingI = BookingInvoice::findOrFail($id);
+        $bookingI->booking_person = $bookingP->id;
+        $bookingI->service_id = $data->booking_service_type;
+        $bookingI->booking_start_date = date('Y-m-d', strtotime($data->booking_start_date));
+        $bookingI->booking_end_date = date('Y-m-d', strtotime($data->booking_end_date));
+        $bookingI->seat_price = $data->booking_total_price;
+        $bookingI->seat_service_charge = $data->booking_total_service_charge;
+        $bookingI->discount = $data->booking_total_discount;
+        $bookingI->discount_price = $data->booking_total_payable;
+
+        $payable_diff = $bookingI->total_payable-$data->booking_total_payable;
+
+
+
+        $bookingI->total_payable = $data->booking_total_payable;
+        $bookingI->total_paid = $data->booking_total_paid;
+        $bookingI->total_due = $data->booking_total_due;
+        $bookingI->payment_status = $data->booking_total_payable == 0 ? 0 : ($data->booking_total_payable == $data->booking_total_paid ? 1 : 2);
+        // $bookingI->created_by = Auth::guard('admin')->user()->id;
+        $bookingI->updated_by = Auth::guard('admin')->user()->id;
+        $bookingI->status = 1;
+        $bookingI->delete = 0;
+
+        $bookingI->save();
+        $prev_due = '';
+        foreach (BookingPayment::where([['invoice_id', $id]])->orderBy('id', 'ASC')->get() as $key => $payment) {
+
+            if ($key == 0) {
+                $bookingPay = BookingPayment::where([['id', $payment->id]])->firstOrFail();
+                $bookingPay->payable_amount = $bookingI->total_payable;
+                // $bookingPay->pay_amount = $bookingI->total_paid;
+                $bookingPay->due_amount = $bookingI->total_payable-$bookingPay->pay_amount;
+                $bookingPay->payment_method = 'CASH';
+                $bookingPay->note = 'Initial Payment';
+                $bookingPay->invoice_status = $bookingI->payment_status;
+                $bookingPay->created_by = Auth::guard('admin')->user()->id;
+                $bookingPay->save();
+            } else {
+                $bookingPay = BookingPayment::where([['id', $payment->id]])->firstOrFail();
+                $bookingPay->payable_amount = $prev_due;
+                $bookingPay->due_amount = $prev_due-$bookingPay->pay_amount;
+                $bookingPay->payment_method = 'CASH';
+                $bookingPay->note = 'Initial Payment';
+                $bookingPay->invoice_status = $bookingI->payment_status;
+                $bookingPay->created_by = Auth::guard('admin')->user()->id;
+                // dd( $bookingPay);
+                $bookingPay->save();
+            }
+            $prev_due = $bookingPay->due_amount;
+        }
+
+        return back()->with('success',1);
     }
 
     /**
@@ -219,79 +347,84 @@ class BookingController extends Controller
         //
     }
 
-    public function getAvailableSeats(Request $data){
-        if($data->booking_type=='day'){
-            $rooms = Room::when(isset($data->hostel),function($q)use($data){
-                        return $q->where('hostel_id',$data->hostel);
-                    })
-                    ->when(isset($data->building),function($q)use($data){
-                        return $q->where('building_id',$data->building);
-                    })
-                    ->when(isset($data->floor),function($q)use($data){
-                        return $q->where('floor',$data->floor);
-                    })
-                    ->get();
+    public function getAvailableSeats(Request $data)
+    {
+        if ($data->booking_type == 'day') {
+            $rooms = Room::when(isset($data->hostel), function ($q) use ($data) {
+                return $q->where('hostel_id', $data->hostel);
+            })
+                ->when(isset($data->building), function ($q) use ($data) {
+                    return $q->where('building_id', $data->building);
+                })
+                ->when(isset($data->floor), function ($q) use ($data) {
+                    return $q->where('floor', $data->floor);
+                })
+                ->get();
 
-           foreach($rooms as $key=>$room){
-                $seats1 = Seat::when(isset($data->hostel),function($q)use($data){
-                    return $q->where('hostel_id',$data->hostel);
+            foreach ($rooms as $key => $room) {
+                $seats1 = Seat::when(isset($data->hostel), function ($q) use ($data) {
+                    return $q->where('hostel_id', $data->hostel);
                 })
-                ->when(isset($data->building),function($q)use($data){
-                    return $q->where('building_id',$data->building);
-                })
-                ->when(isset($data->floor),function($q)use($data){
-                    return $q->where('floor',$data->floor);
-                })
-                ->when(isset($room->id),function($q)use($room){
-                    return $q->where('room_id',$room->id);
-                })
-                ->whereDate('last_booking_end_date','<',$data->start_date)->get();
+                    ->when(isset($data->building), function ($q) use ($data) {
+                        return $q->where('building_id', $data->building);
+                    })
+                    ->when(isset($data->floor), function ($q) use ($data) {
+                        return $q->where('floor', $data->floor);
+                    })
+                    ->when(isset($room->id), function ($q) use ($room) {
+                        return $q->where('room_id', $room->id);
+                    })
+                    ->whereDate('last_booking_end_date', '<', $data->start_date)->get();
 
-                $seats2 = Seat::when(isset($data->hostel),function($q)use($data){
-                    return $q->where('hostel_id',$data->hostel);
+                $seats2 = Seat::when(isset($data->hostel), function ($q) use ($data) {
+                    return $q->where('hostel_id', $data->hostel);
                 })
-                ->when(isset($data->building),function($q)use($data){
-                    return $q->where('building_id',$data->building);
-                })
-                ->when(isset($data->floor),function($q)use($data){
-                    return $q->where('floor',$data->floor);
-                })
-                ->when(isset($room->id),function($q)use($room){
-                    return $q->where('room_id',$room->id);
-                })
-                ->where('last_booking_end_date',null)->get();
+                    ->when(isset($data->building), function ($q) use ($data) {
+                        return $q->where('building_id', $data->building);
+                    })
+                    ->when(isset($data->floor), function ($q) use ($data) {
+                        return $q->where('floor', $data->floor);
+                    })
+                    ->when(isset($room->id), function ($q) use ($room) {
+                        return $q->where('room_id', $room->id);
+                    })
+                    ->where('last_booking_end_date', null)->get();
 
                 $rooms[$key]->seats = $seats1->merge($seats2);
-           }
+            }
             return $rooms;
         }
-
     }
-    public function getBookingCustomer(string $phone){
-        $customer = BookingPerson::where([['booking_phone_number','like','%'.$phone.'%'],['delete',0],['status',1]])->first();
+    public function getBookingCustomer(string $phone)
+    {
+        $customer = BookingPerson::where([['booking_phone_number', 'like', '%' . $phone . '%'], ['delete', 0], ['status', 1]])->first();
         return $customer;
     }
-    public function getBookingInvoices(string $id){
-        $bookingI = BookingInvoice::with('bookings','bookingperson','service')->where('id',$id)->first();
+    public function getBookingInvoices(string $id)
+    {
+        $bookingI = BookingInvoice::with('bookings', 'bookingperson', 'service')->where('id', $id)->first();
         $data = [
-            'bookingI'=>$bookingI,
+            'bookingI' => $bookingI,
         ];
         $pdf = Pdf::loadView('backend.blade.booking.pdf.booking', $data);
         return $pdf->stream('invoice.pdf');
     }
 
 
-    public function getBookingPayments(string $id){
-        $payments = BookingPayment::with('createdBy','invoice')->where([['invoice_id',$id],['delete',0]])->orderBy('id','DESC')->get();
+    public function getBookingPayments(string $id)
+    {
+        $payments = BookingPayment::with('createdBy', 'invoice')->where([['invoice_id', $id], ['delete', 0]])->orderBy('id', 'DESC')->get();
         return $payments;
     }
 
-    public function getBookingPaymentReceipt(string $id){
-        $receipt = BookingPayment::with('bookings.hostel','createdBy','invoice.bookingperson')->where([['id',$id],['delete',0]])->first();
+    public function getBookingPaymentReceipt(string $id)
+    {
+        $receipt = BookingPayment::with('bookings.hostel', 'createdBy', 'invoice.bookingperson')->where([['id', $id], ['delete', 0]])->first();
         return $receipt;
     }
 
-    public function makeBookingPayments(Request $data){
+    public function makeBookingPayments(Request $data)
+    {
 
         $data->merge([
             'paying_amount' => (int) $data->input('paying_amount'),
@@ -299,13 +432,13 @@ class BookingController extends Controller
         // dd($data);
         $data->validate([
             'paying_amount' => 'required|integer|min:1',
-        ],[
-            'paying_amount.min'=>__('admin_local.Paying amount is required')
+        ], [
+            'paying_amount.min' => __('admin_local.Paying amount is required')
         ]);
-        $invoice = BookingInvoice::where('id',$data->payment_invoice_id)->firstOrFail();
-        $invoice->total_paid = $invoice->total_paid+$data->paying_amount;
-        $invoice->total_due = $invoice->total_due-$data->paying_amount;
-        $invoice->payment_status = $invoice->total_due==0?1:2;
+        $invoice = BookingInvoice::where('id', $data->payment_invoice_id)->firstOrFail();
+        $invoice->total_paid = $invoice->total_paid + $data->paying_amount;
+        $invoice->total_due = $invoice->total_due - $data->paying_amount;
+        $invoice->payment_status = $invoice->total_due == 0 ? 1 : 2;
         $invoice->save();
 
 
@@ -322,21 +455,22 @@ class BookingController extends Controller
         $bookingPay->save();
 
         return response([
-            'payment'=> BookingPayment::with('createdBy','invoice')->findOrFail($bookingPay->id),
-            'title'=>__('admin_local.Congratulations !'),
-            'text'=>__('admin_local.Payment successfully done'),
-            'confirmButtonText'=>__('admin_local.Ok'),
+            'payment' => BookingPayment::with('createdBy', 'invoice')->findOrFail($bookingPay->id),
+            'title' => __('admin_local.Congratulations !'),
+            'text' => __('admin_local.Payment successfully done'),
+            'confirmButtonText' => __('admin_local.Ok'),
         ]);
         // dd($invoice);
     }
 
-    public function getBookingPaymentDelete(string $id){
+    public function getBookingPaymentDelete(string $id)
+    {
         $payment = BookingPayment::findOrFail($id);
-        $payments = BookingPayment::where([['invoice_id',$payment->invoice_id],['id','>',$id]])->get();
-        foreach($payments as $key=>$value){
+        $payments = BookingPayment::where([['invoice_id', $payment->invoice_id], ['id', '>', $id]])->get();
+        foreach ($payments as $key => $value) {
             $update = BookingPayment::findOrFail($value->id);
-            $update->payable_amount = $update->payable_amount+$payment->pay_amount;
-            $update->due_amount = $update->due_amount+$payment->pay_amount;
+            $update->payable_amount = $update->payable_amount + $payment->pay_amount;
+            $update->due_amount = $update->due_amount + $payment->pay_amount;
             $update->updated_by = Auth::guard('admin')->user()->id;
             $update->save();
         }
@@ -349,11 +483,11 @@ class BookingController extends Controller
         $payment->delete = 1;
         $payment->updated_by = Auth::guard('admin')->user()->id;
         $payment->save();
-         return response([
-            'invoice'=>$invoice,
-            'title'=>__('admin_local.Congratulations !'),
-            'text'=>__('admin_local.Payment deleted successfully.'),
-            'confirmButtonText'=>__('admin_local.Ok'),
+        return response([
+            'invoice' => $invoice,
+            'title' => __('admin_local.Congratulations !'),
+            'text' => __('admin_local.Payment deleted successfully.'),
+            'confirmButtonText' => __('admin_local.Ok'),
         ]);
     }
 }

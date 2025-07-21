@@ -90,31 +90,43 @@
              <div class="col-lg-12 mx-auto">
                  <div class="card">
                      <div class="card-header py-3" style="border-bottom: 2px dashed gray">
-                         <h3 class="card-title mb-0 text-center">{{ __('admin_local.Edit Booking') }} {{ __('admin_local.Invoice') }} : #{{ str_pad( $invoice->id, 8, '0', STR_PAD_LEFT); }}</h3>
+                         <h3 class="card-title mb-0 text-center">{{ __('admin_local.Edit Booking') }}
+                             {{ __('admin_local.Invoice') }} : #{{ str_pad($invoice->id, 8, '0', STR_PAD_LEFT) }}</h3>
                      </div>
 
                      <div class="card-body">
-                         <form method="POST" action="" id="add_booking_form" enctype="multipart/form-data">
+                        @if(session()->has('success'))
+                         <div class="alert alert-success dark alert-dismissible fade show" role="alert"><i
+                                 data-feather="thumbs-up"></i>
+                             <p> {{ __('admin_local.Booking updated successfully') }}</p>
+                             <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                         </div>
+                         @endif
+                         <form method="POST" action="{{ route('admin.booking.update', $invoice->id) }}"
+                             id="add_booking_form" enctype="multipart/form-data">
                              @csrf
+                             @method('PUT')
                              <div class="row">
                                  <div id="append_hidden_inputs">
-                                    @foreach ($invoice->bookings as $booking)
-                                     <input type="hidden" id="h_hostel" name="h_hostel[]"
-                                         value="{{ $booking->hostel_id }}">
-                                     <input type="hidden" id="h_building" name="h_building[]"
-                                         value="{{ $booking->building_id }}">
-                                     <input type="hidden" id="h_floor" name="h_floor[]" value="{{ $booking->floor }}">
-                                     <input type="hidden" id="h_room_id" name="h_room_id[]"
-                                         value="{{ $booking->room_id }}">
-                                     <input type="hidden" id="h_seat_id" name="h_seat_id[]" value="{{ $booking->seat_id }}">
+                                     @foreach ($invoice->bookings as $booking)
+                                         <input type="hidden" id="h_hostel" name="h_hostel[]"
+                                             value="{{ $booking->hostel_id }}">
+                                         <input type="hidden" id="h_building" name="h_building[]"
+                                             value="{{ $booking->building_id }}">
+                                         <input type="hidden" id="h_floor" name="h_floor[]"
+                                             value="{{ $booking->floor }}">
+                                         <input type="hidden" id="h_room_id" name="h_room_id[]"
+                                             value="{{ $booking->room_id }}">
+                                         <input type="hidden" id="h_seat_id" name="h_seat_id[]"
+                                             value="{{ $booking->seat_id }}">
                                      @endforeach
                                  </div>
                                  <div class="row" id="append_booking_seats">
-                                    @foreach ($invoice->bookings as $booking)
-                                     <div class="col-lg-3 mt-2">
-                                         <input type="text" name="booking_seat_number[]" class="form-control"
-                                             value="{{ $booking->seat->seat_number }}" readonly>
-                                     </div>
+                                     @foreach ($invoice->bookings as $booking)
+                                         <div class="col-lg-3 mt-2">
+                                             <input type="text" name="booking_seat_number[]" class="form-control"
+                                                 value="{{ $booking->seat->seat_number }}" readonly>
+                                         </div>
                                      @endforeach
                                  </div>
                                  <div class="row mt-4">
@@ -135,31 +147,36 @@
                                          <label for="">{{ __('admin_local.Service Type') }}</label>
                                          <select name="booking_service_type" id="booking_service_type" class="form-control">
 
-                                            @foreach ($services as $service)
-                                                <option value="{{ $service->id }}" {{ $service->id==$invoice->service_id?'selected':'' }}>{{ $service->service_type }}-{{ $service->service_code }}</option>
-                                            @endforeach
+                                             @foreach ($services as $service)
+                                                 <option value="{{ $service->id }}"
+                                                     {{ $service->id == $invoice->service_id ? 'selected' : '' }}>
+                                                     {{ $service->service_type }}-{{ $service->service_code }}</option>
+                                             @endforeach
                                          </select>
                                      </div>
                                      <div class="col-md-3 mb-3">
                                          <label for="">{{ __('admin_local.Booking Total Days') }}</label>
                                          <input type="number" name="booking_total_days" id="booking_total_days"
-                                             class="form-control" value="{{ \Carbon\Carbon::parse($invoice->booking_start_date)->diffInDays(\Carbon\Carbon::parse($invoice->booking_end_date)) }}" readonly>
+                                             class="form-control"
+                                             value="{{ \Carbon\Carbon::parse($invoice->booking_start_date)->diffInDays(\Carbon\Carbon::parse($invoice->booking_end_date)) }}"
+                                             readonly>
                                      </div>
 
                                      <div class="col-md-3 mb-3">
                                          <label for="">{{ __('admin_local.Total Price') }}</label>
                                          <input type="text" name="booking_total_price" id="booking_total_price"
-                                             class="form-control" value="{{ $invoice->seat_price }}">
+                                             class="form-control" value="{{ $invoice->seat_price }}" readonly>
                                      </div>
                                      <div class="col-md-3 mb-3">
                                          <label for="">{{ __('admin_local.Total Service Charge') }}</label>
                                          <input type="text" name="booking_total_service_charge"
-                                             id="booking_total_service_charge" class="form-control" value="{{ $invoice->seat_service_charge }}" readonly>
+                                             id="booking_total_service_charge" class="form-control"
+                                             value="{{ $invoice->seat_service_charge }}" readonly>
                                      </div>
                                      <div class="col-md-3 mb-3">
                                          <label for="">{{ __('admin_local.Total Discount') }}</label>
                                          <input type="text" name="booking_total_discount" id="booking_total_discount"
-                                             class="form-control" value="{{ $invoice->discount }}">
+                                             class="form-control" value="{{ $invoice->discount }}" readonly>
                                      </div>
                                      <div class="col-md-3 mb-3">
                                          <label for="">{{ __('admin_local.Total Payable') }}</label>
@@ -169,7 +186,7 @@
                                      <div class="col-md-3 mb-3">
                                          <label for="">{{ __('admin_local.Total Paid') }}</label>
                                          <input type="text" name="booking_total_paid" id="booking_total_paid"
-                                             class="form-control" value="{{ $invoice->total_paid }}">
+                                             class="form-control" value="{{ $invoice->total_paid }}" readonly>
                                      </div>
                                      <div class="col-md-3 mb-3">
                                          <label for="">{{ __('admin_local.Total Due') }}</label>
@@ -185,35 +202,44 @@
                                      <div class="col-md-4 mb-3">
                                          <label for="">{{ __('admin_local.Phone Number') }}</label>
                                          <input type="text" name="booking_phone_number" id="booking_phone_number"
-                                             class="form-control" value="{{ $invoice->bookingperson->booking_phone_number }}">
+                                             class="form-control"
+                                             value="{{ $invoice->bookingperson->booking_phone_number }}">
                                      </div>
                                      <div class="col-md-4 mb-3">
                                          <label for="">{{ __('admin_local.Person Email') }}</label>
                                          <input type="text" name="booking_person_email" id="booking_person_email"
-                                             class="form-control" value="{{ $invoice->bookingperson->booking_person_email }}">
+                                             class="form-control"
+                                             value="{{ $invoice->bookingperson->booking_person_email }}">
                                      </div>
                                      <div class="col-md-4 mb-3">
                                          <label for="">{{ __('admin_local.Person Name') }}</label>
                                          <input type="text" name="booking_person_name" id="booking_person_name"
-                                             class="form-control" value="{{ $invoice->bookingperson->booking_person_name }}">
+                                             class="form-control"
+                                             value="{{ $invoice->bookingperson->booking_person_name }}">
                                      </div>
                                      <div class="col-md-4 mb-3">
                                          <label for="">{{ __('admin_local.Gender') }}</label><br>
                                          <input type="radio" name="booking_person_gender" id="gender_male"
-                                             value="Male" {{ $invoice->bookingperson->booking_person_gender=='Male'?'checked':'' }}> {{ __('admin_local.Male') }} &nbsp; &nbsp;
+                                             value="Male"
+                                             {{ $invoice->bookingperson->booking_person_gender == 'Male' ? 'checked' : '' }}>
+                                         {{ __('admin_local.Male') }} &nbsp; &nbsp;
                                          <input type="radio" name="booking_person_gender" id="gender_female"
-                                             value="Female" {{ $invoice->bookingperson->booking_person_gender=='Female'?'checked':'' }}> {{ __('admin_local.Female') }}
+                                             value="Female"
+                                             {{ $invoice->bookingperson->booking_person_gender == 'Female' ? 'checked' : '' }}>
+                                         {{ __('admin_local.Female') }}
                                      </div>
                                      <div class="col-md-4 mb-3">
                                          <label for="">{{ __('admin_local.Date Of Birth') }}</label>
                                          <input type="date" name="booking_person_dob" id="booking_person_dob"
-                                             class="form-control" value="{{ $invoice->bookingperson->booking_person_dob }}" >
+                                             class="form-control"
+                                             value="{{ $invoice->bookingperson->booking_person_dob }}">
                                      </div>
 
                                      <div class="col-md-4 mb-3">
                                          <label for="">{{ __('admin_local.NID Number') }}</label>
                                          <input type="text" name="booking_nid_number" id="booking_nid_number"
-                                             class="form-control" value="{{ $invoice->bookingperson->booking_nid_number }}">
+                                             class="form-control"
+                                             value="{{ $invoice->bookingperson->booking_nid_number }}">
                                      </div>
                                      <div class="col-md-4 mb-3">
                                          <label for="">{{ __('admin_local.Address') }}</label>
@@ -224,7 +250,8 @@
                                      <div class="col-md-4 mb-3">
                                          <label for="">{{ __('admin_local.Service ID') }}</label>
                                          <input type="text" name="booking_service_id" id="booking_service_id"
-                                             class="form-control" value="{{ $invoice->bookingperson->booking_service_id }}">
+                                             class="form-control"
+                                             value="{{ $invoice->bookingperson->booking_service_id }}">
                                      </div>
                                      <div class="col-md-4 mb-3">
                                          <label for="">{{ __('admin_local.Workplace Address') }}</label>
