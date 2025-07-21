@@ -21,7 +21,6 @@
             width: 20px;
             height: 10px;
         }
-
     </style>
 @endpush
 @section('content')
@@ -30,122 +29,261 @@
             <div class="col-lg-12 mx-auto">
                 <div class="card">
                     <div class="card-header py-3" style="border-bottom: 2px dashed gray">
-                        <h3 class="card-title mb-0 text-center">{{ __('admin_local.Add Seats') }}</h3>
+                        <h3 class="card-title mb-0 text-center">{{ __('admin_local.Seats') }}</h3>
                     </div>
                     <div class="card-body">
-                        <form class="form" action="{{ route('admin.seats.store') }}" method="POST" id="add_seat_form">
-                            @csrf
-                            <div class="row">
-                                 <div class="col-md-6 rounded py-4" style="box-shadow: 0px 0px 10px gray">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="">{{ __('admin_local.Select Hostel') }}</label>
-                                            <select type="text" class="form-control" name="hostel" id="hostel">
-                                                <option value="">{{ __('admin_local.Select Please') }}</option>
-                                                @foreach ($hostels as $hostel)
-                                                    <option value="{{ $hostel->id }}">{{ $hostel->hostel_name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <span class="text-danger err-mgs"></span>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="">{{ __('admin_local.Select Building') }}</label>
-                                            <select type="text" class="form-control" name="building" id="building">
-
-                                            </select>
-                                            <span class="text-danger err-mgs"></span>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="">{{ __('admin_local.Select Floor') }}</label>
-                                            <select type="text" class="form-control" name="floor" id="floor">
-
-                                            </select>
-                                            <span class="text-danger err-mgs"></span>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="">{{ __('admin_local.Select Block') }}</label>
-                                            <select type="text" class="form-control" name="block" id="block">
-
-                                            </select>
-                                            <span class="text-danger err-mgs"></span>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="">{{ __('admin_local.Select Room') }}</label>
-                                            <select type="text" class="form-control" name="room" id="room">
-
-                                            </select>
-                                            <span class="text-danger err-mgs"></span>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="">{{ __('admin_local.Seat Number') }}</label>
-                                            <input type="text" class="form-control" name="seat_number" id="seat_number">
-                                            <span class="text-danger err-mgs"></span>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="">{{ __('admin_local.Seat Maximum Price') }}</label>
-                                            <input type="text" class="form-control" name="seat_maximum_price" id="seat_maximum_price">
-                                            <span class="text-danger err-mgs"></span>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="">{{ __('admin_local.Seat Minimum Price') }}</label>
-                                            <input type="text" class="form-control" name="seat_minimum_price" id="seat_minimum_price">
-                                            <span class="text-danger err-mgs"></span>
-                                        </div>
-                                        <div class="col-md-6 mt-2">
-                                            <label for="">{{ __('admin_local.Price For') }}</label>
-                                            <select class="form-control" name="price_for" id="price_for">
-                                                <option value="day">{{ __('admin_local.Per-day') }}</option>
-                                                <option value="month">{{ __('admin_local.Per-month') }}</option>
-                                            </select>
-                                            <span class="text-danger err-mgs"></span>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3" id="append_service_types">
-
-                                    </div>
+                        <div class="row">
+                            <div class="col-lg-6" style="padding-right:30px">
+                                <h4 class="text-center">{{ __('admin_local.Add Seat') }}</h4>
+                                <form class="form" action="{{ route('admin.seats.store') }}" method="POST"
+                                    id="add_seat_form">
+                                    @csrf
                                     <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="checkbox" name="has_any_service_charge" id="has_any_service_charge">
-                                            <label for="">{{ __('admin_local.Has any service charge ?') }}</label>
-                                        </div>
+                                        <div class="col-md-12 rounded py-4" style="box-shadow: 0px 0px 10px gray">
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Select Hostel') }}</label>
+                                                    <select type="text" class="form-control" name="hostel"
+                                                        id="hostel">
+                                                        <option value="">{{ __('admin_local.Select Please') }}
+                                                        </option>
+                                                        @foreach ($hostels as $hostel)
+                                                            <option value="{{ $hostel->id }}">{{ $hostel->hostel_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Select Building') }}</label>
+                                                    <select type="text" class="form-control" name="building"
+                                                        id="building">
 
-                                    </div>
-                                    <div class="row" id="service_charge_row" style="display:none">
-                                        <div class="col-md-6">
-                                            <input type="text" class="form-control" name="service_charge" id="service_charge" placeholder="{{ __('admin_local.Example') }} - 1200">
-                                            <span class="text-danger err-mgs"></span>
-                                        </div>
-                                    </div>
-                                    {{-- <div class="row">
-                                        <div class="col-md-6">
-                                            <input type="checkbox" name="has_any_other_charge" id="has_any_other_charge">
-                                            <label for="">{{ __('admin_local.Has any other charge ?') }}</label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <button type="button" class="btn btn-info px-1 py-0">{{ __('admin_local.Add new charge') }}</button>
-                                        </div>
-                                    </div>
-                                    <div id="append_other_charge_div">
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Select Floor') }}</label>
+                                                    <select type="text" class="form-control" name="floor"
+                                                        id="floor">
 
-                                    </div> --}}
-                                 </div>
-                                 {{-- <div class="col-md-6 rounded py-4" style="box-shadow: 0px 0px 10px gray">
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Select Block') }}</label>
+                                                    <select type="text" class="form-control" name="block"
+                                                        id="block">
+
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Select Room') }}</label>
+                                                    <select type="text" class="form-control" name="room"
+                                                        id="room">
+
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Seat Number') }}</label>
+                                                    <input type="text" class="form-control" name="seat_number"
+                                                        id="seat_number">
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label
+                                                        for="">{{ __('admin_local.Seat Maximum Price') }}</label>
+                                                    <input type="text" class="form-control" name="seat_maximum_price"
+                                                        id="seat_maximum_price">
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label
+                                                        for="">{{ __('admin_local.Seat Minimum Price') }}</label>
+                                                    <input type="text" class="form-control" name="seat_minimum_price"
+                                                        id="seat_minimum_price">
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                                <div class="col-md-6 mt-2">
+                                                    <label for="">{{ __('admin_local.Price For') }}</label>
+                                                    <select class="form-control" name="price_for" id="price_for">
+                                                        <option value="day">{{ __('admin_local.Per-day') }}</option>
+                                                        <option value="month">{{ __('admin_local.Per-month') }}</option>
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3" id="append_service_types">
+
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="checkbox" name="has_any_service_charge"
+                                                        id="has_any_service_charge">
+                                                    <label
+                                                        for="">{{ __('admin_local.Has any service charge ?') }}</label>
+                                                </div>
+
+                                            </div>
+                                            <div class="row" id="service_charge_row" style="display:none">
+                                                <div class="col-md-6">
+                                                    <input type="text" class="form-control" name="service_charge"
+                                                        id="service_charge"
+                                                        placeholder="{{ __('admin_local.Example') }} - 1200">
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- <div class="col-md-6 rounded py-4" style="box-shadow: 0px 0px 10px gray">
 
                                  </div> --}}
-                            </div>
+                                    </div>
 
-                            <div class="row">
-                                 <div class="col-lg-12 mt-2">
-                                    <button class="btn btn-success" type="submit" id="submit_btn" style="float:left"><strong>{{ __('admin_local.Submit') }}</strong></button>
-                                 </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 mt-2">
+                                            <button class="btn btn-success" type="submit" id="submit_btn"
+                                                style="float:left"><strong>{{ __('admin_local.Submit') }}</strong></button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                            <div class="col-lg-6">
+                                <h4 class="text-center">{{ __('admin_local.Edit Seat') }}</h4>
+                                <form class="form" action="{{ route('admin.seats.store') }}" method="POST"
+                                    id="edit_seat_form">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="row">
+                                        <div class="col-md-12 rounded py-4" style="box-shadow: 0px 0px 10px gray">
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Select Hostel') }}</label>
+                                                    <select type="text" class="form-control" name="hostel"
+                                                        id="hostel">
+                                                        <option value="">{{ __('admin_local.Select Please') }}
+                                                        </option>
+                                                        @foreach ($hostels as $hostel)
+                                                            <option value="{{ $hostel->id }}">
+                                                                {{ $hostel->hostel_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Select Building') }}</label>
+                                                    <select type="text" class="form-control" name="building"
+                                                        id="building">
+
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Select Floor') }}</label>
+                                                    <select type="text" class="form-control" name="floor"
+                                                        id="floor">
+
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Select Block') }}</label>
+                                                    <select type="text" class="form-control" name="block"
+                                                        id="block">
+
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Select Room') }}</label>
+                                                    <select type="text" class="form-control" name="room"
+                                                        id="room">
+
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="">{{ __('admin_local.Seat Number') }}</label>
+                                                    <select class="form-control" name="seat_number"
+                                                        id="seat_number">
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label
+                                                        for="">{{ __('admin_local.Seat Maximum Price') }}</label>
+                                                    <input type="text" class="form-control" name="seat_maximum_price"
+                                                        id="seat_maximum_price">
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label
+                                                        for="">{{ __('admin_local.Seat Minimum Price') }}</label>
+                                                    <input type="text" class="form-control" name="seat_minimum_price"
+                                                        id="seat_minimum_price">
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                                <div class="col-md-6 mt-2">
+                                                    <label for="">{{ __('admin_local.Price For') }}</label>
+                                                    <select class="form-control" name="price_for" id="price_for">
+                                                        <option value="day">{{ __('admin_local.Per-day') }}</option>
+                                                        <option value="month">{{ __('admin_local.Per-month') }}</option>
+                                                    </select>
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3" id="append_service_types">
+
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="checkbox" name="has_any_service_charge"
+                                                        id="has_any_service_charge">
+                                                    <label
+                                                        for="">{{ __('admin_local.Has any service charge ?') }}</label>
+                                                </div>
+
+                                            </div>
+                                            <div class="row" id="service_charge_row" style="display:none">
+                                                <div class="col-md-6">
+                                                    <input type="text" class="form-control" name="service_charge"
+                                                        id="service_charge"
+                                                        placeholder="{{ __('admin_local.Example') }} - 1200">
+                                                    <span class="text-danger err-mgs"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- <div class="col-md-6 rounded py-4" style="box-shadow: 0px 0px 10px gray">
+
+                                 </div> --}}
+                                    </div>
+
+                                    <div class="row px-0">
+                                        <div class="col-lg-12 mt-2 px-2">
+                                            <button class="btn btn-success" type="submit" id="submit_btn"
+                                                style="float:right"><strong>{{ __('admin_local.Update') }}</strong></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row">
+                            
+                        </div>
                     </div>
                 </div>
             </div>
@@ -175,25 +313,40 @@
 
         var form_url = "{{ route('admin.seats.store') }}";
         var translate_url = `{{ route('admin.translateString') }}`;
-        var submit_btn_after = `<strong>{{ __('admin_local.Submitting') }} &nbsp; <i class="fa fa-rotate-right fa-spin"></i></strong>`;
+        var submit_btn_after =
+            `<strong>{{ __('admin_local.Submitting') }} &nbsp; <i class="fa fa-rotate-right fa-spin"></i></strong>`;
         var submit_btn_before = `<strong><i class="fa fa-paper-plane"></i> &nbsp; {{ __('admin_local.Submit') }}</strong>`;
 
-        $(document).on('change','#has_any_service_charge',function(){
+         var update_btn_after =
+            `<strong>{{ __('admin_local.Updating') }} &nbsp; <i class="fa fa-rotate-right fa-spin"></i></strong>`;
+        var update_btn_before = `<strong><i class="fa fa-paper-plane"></i> &nbsp; {{ __('admin_local.Update') }}</strong>`;
+        var baseUrl = `{{ \URL::to('/') }}`;
 
-            if($(this).is(':checked')){
-                $('#service_charge_row').show('slow');
-            }else{
-                $('#service_charge_row').hide('slow');
+        $(document).on('change', '#add_seat_form #has_any_service_charge', function() {
+
+            if ($(this).is(':checked')) {
+                $('#add_seat_form #service_charge_row').show('slow');
+            } else {
+                $('#add_seat_form #service_charge_row').hide('slow');
+            }
+        });
+
+        $(document).on('change', '#edit_seat_form #has_any_service_charge', function() {
+
+            if ($(this).is(':checked')) {
+                $('#edit_seat_form #service_charge_row').show('slow');
+            } else {
+                $('#edit_seat_form #service_charge_row').hide('slow');
             }
         });
 
 
 
-        $(document).on('change','#has_any_other_charge',function(){
-            if($(this).is(':checked')){
-                $('#append_other_charge_div').empty();
+        $(document).on('change', '#add_seat_form #has_any_other_charge', function() {
+            if ($(this).is(':checked')) {
+                $('#add_seat_form #append_other_charge_div').empty();
 
-                $('#append_other_charge_div').append(`
+                $('#add_seat_form #append_other_charge_div').append(`
                     <div class="row mb-3" id="other_charge_row">
                         <div class="col-md-6">
                             <input type="text" class="form-control" name="charge_name" id="charge_name" placeholder="{{ __('admin_local.Charge Name') }}">
@@ -205,23 +358,43 @@
                         </div>
                     </div>
                 `);
-            }else{
-                $('#append_other_charge_div').empty();
+            } else {
+                $('#add_seat_form #append_other_charge_div').empty();
             }
         });
+         $(document).on('change', '#edit_seat_form #has_any_other_charge', function() {
+            if ($(this).is(':checked')) {
+                $('#edit_seat_form #append_other_charge_div').empty();
 
+                $('#edit_seat_form #append_other_charge_div').append(`
+                    <div class="row mb-3" id="other_charge_row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="charge_name" id="charge_name" placeholder="{{ __('admin_local.Charge Name') }}">
+                            <span class="text-danger err-mgs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="charge_amount" id="charge_amount" placeholder="{{ __('admin_local.Charge Amount') }}">
+                            <span class="text-danger err-mgs"></span>
+                        </div>
+                    </div>
+                `);
+            } else {
+                $('#edit_seat_form #append_other_charge_div').empty();
+            }
+        });
     </script>
     <script src="{{ asset('public/admin/custom/seats/add_seats.js') }}"></script>
 
     <script>
-        $(document).on('change','#room',function(){
-            $('#append_service_types').empty();
+        $(document).on('change','#add_seat_form #room', function() {
+            $('#add_seat_form #append_service_types').empty();
             $.ajax({
-                type:'get',
-                url : ''+$(this).val()+'-room',
-                success : function (data){
+                type: 'get',
+                url: '' + $(this).val() + '-room',
+                success: function(data) {
                     var service = ``;
-                    $.each(data.service,function(key,val){val
+                    $.each(data.service, function(key, val) {
+                        val
                         service = service + `<div class="col-md-6">
                                                 <label for="">{{ __('admin_local.Service Type') }} ( ${val.room_type} )</label>
                                                 <input type="text" class="form-control" value="${val.service_type}-${val.service_code}" readonly required>
@@ -233,9 +406,55 @@
                                             </div>`
                     })
 
-                    $('#append_service_types').append(service);
+                    $('#add_seat_form #append_service_types').append(service);
                 }
             })
         });
+        $(document).on('change', '#edit_seat_form #room', function() {
+            $('#edit_seat_form #append_service_types').empty();
+            $.ajax({
+                type: 'get',
+                url: '' + $(this).val() + '-room',
+                success: function(data) {
+                    var service = ``;
+                    var seats = `<option value="">{{ __('admin_local.Select Please') }}</option>`;
+                    $.each(data.service, function(key, val) {
+                        service = service + `<div class="col-md-6">
+                                                <label for="">{{ __('admin_local.Service Type') }} ( ${val.room_type} )</label>
+                                                <input type="text" class="form-control" value="${val.service_type}-${val.service_code}" readonly required>
+                                                <input type="hidden" name="service_type[]" class="form-control" value="${val.id}" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="">{{ __('admin_local.Charge') }}</label>
+                                                <input type="number" name="type_charge[]" class="form-control" value="${val.charge}" required>
+                                            </div>`
+                        
+                    })
+                     $.each(data.seats, function(key, val) {
+                        seats = seats + `<option val="${val.id}">${val.seat_number}</option>`
+                     })
+                    
+                    $('#edit_seat_form #seat_number').append(seats);
+                    $('#edit_seat_form #append_service_types').append(service);
+                }
+            })
+        });
+
+        $(document).on('change','#edit_seat_form #seat_number',function(){
+            $.ajax({
+                type: 'get',
+                url: '' + $(this).val() + '-seat',
+                success: function(data) {
+                      $('#edit_seat_form #seat_maximum_price').val(data.seat.seat_maximum_price);
+                      $('#edit_seat_form #seat_minimum_price').val(data.seat.seat_minimum_price);
+                      $('#edit_seat_form #has_any_service_charge').prop('checked',false);
+                      $('#edit_seat_form #service_charge').val('');
+                      if(data.seat.has_any_service_charge==1){
+                        $('#edit_seat_form #has_any_service_charge').click();
+                        $('#edit_seat_form #service_charge').val(data.seat.service_charge);
+                      }
+                }
+            })
+        })
     </script>
 @endpush

@@ -113,8 +113,15 @@ class SeatController extends Controller
         }elseif($data[1]=='room'){
             $room = Room::where([['id',$data[0]]])->firstOrFail();
             $service = ServiceType::where('room_type',$room->room_type)->get();
+            $seats = Seat::where([['status',1],['delete',0],['room_id',$room->id]])->get();
             return [
                 'service'=>$service,
+                'seats'=>$seats,
+            ];
+        }elseif($data[1]=='seat'){
+            $seat = Seat::where([['id',$data[0]]])->firstOrFail();
+            return [
+                'seat'=>$seat,
             ];
         }
 
@@ -132,9 +139,39 @@ class SeatController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $data, string $id)
     {
-        //
+        $data->validate([
+            'hostel'=>'required',
+            'floor'=>'required',
+            'room'=>'required',
+            'seat_number'=>'required',
+            'seat_maximum_price'=>'required',
+            'seat_minimum_price'=>'required',
+            'price_for'=>'required',
+        ]);
+        // dd($data->room);
+        $room = Room::findOrFail($data->room);
+        $seat = Seat::findOrFail($id);
+        $seat->hostel_id = $data->hostel;
+        $seat->building_id = $data->building;
+        $seat->floor = $data->floor;
+        $seat->block = $data->block;
+        $seat->room_id = $data->room;
+        $seat->room_number = $room->room_number;
+        $seat->room_type = $room->room_type;
+        $seat->seat_number = $data->seat_number;
+        $seat->seat_maximum_price = $data->seat_maximum_price;
+        $seat->seat_minimum_price = $data->seat_minimum_price;
+        $seat->price_for = $data->price_for;
+        $seat->has_any_service_charge = $data->has_any_service_charge?1:0;
+        $seat->service_charge = $data->service_charge??0;
+        $seat->save();
+        return [
+            'title'=>__('admin_local.Congratulations !'),
+            'text'=>__('admin_local.Seat updated successfully.'),
+            'confirmButtonText'=>__('admin_local.Ok'),
+        ];
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Models\Admin\BookingPayment;
 use App\Models\Admin\BookingPerson;
 use App\Models\Admin\Room;
 use App\Models\Admin\Seat;
+use App\Models\Admin\ServiceType;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -196,7 +197,10 @@ class BookingController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $invoice = BookingInvoice::with('bookingperson','bookings.seat','bookings.room')->where([['id',$id]])->first();
+        // dd($invoice);
+        $services = ServiceType::where([['room_type',$invoice->bookings[0]->room->room_type]])->get();
+        return view('backend.blade.booking.edit',compact('invoice','services'));
     }
 
     /**

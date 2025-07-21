@@ -40,6 +40,7 @@
                     </a>
                 </li>
                 @endif
+                
                 @if (hasPermission(['room-index']))
                 <li>
                     <a href="{{ route('admin.room.index') }}" class="sidebar-link">
