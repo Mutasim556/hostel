@@ -430,7 +430,7 @@
                     <div class="card-body" id="room_card_body" style="display:none">
                         <div class="row" id="append_room_div_main">
                             <h4 class="text-center" id="append_room_div" style="display: none">{{ __('admin_local.Available Rooms/Seats') }}</h4>
-
+ 
                         </div>
                         <div class="row">
                             <div class="col-md-8">

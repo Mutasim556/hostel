@@ -74,10 +74,14 @@ $('#search_form').submit(function (e) {
                     seats = seats + ` <span class="badge badge-success p-2 mt-3" style="cursor:pointer" data-hostel="${val.hostel_id}" data-building="${val.building_id}" data-floor="${val.floor}" data-block="${val.block}" data-room-id="${val.id}" data-seat-number="${v.seat_number}" data-id="${v.id}" data-seat-min-price="${v.seat_minimum_price}" data-seat-max-price="${v.seat_maximum_price}" data-room-type="${val.room_type}" data-seat-service-charge="${v.service_charge}" id="booking_seats" >Seat ${v.seat_number}</span>`;
                 })
                 $('#append_room_div').after(`
-                        <div class="col-md-4 p-3 mx-2 rounded" style="box-shadow:0px 0px 10px grey">
-                            <h5>Block: ${val.block}</h5>
-                            <h5>Room Number : ${val.room_number} ( ${val.room_type} )</h5>
-                            ${seats}
+                        <div class="col-md-4 px-3 rounded" style="padding:20px">
+                            <div class="row">
+                                <div class="col-md-12" style="padding:20px;box-shadow:0px 0px 10px lightgray">
+                                    <h5>Block: ${val.block}</h5>
+                                    <h5>Room Number : ${val.room_number} ( ${val.room_type} )</h5>
+                                    ${seats}
+                                </div>
+                            </div>
                         </div>
                     `);
 
