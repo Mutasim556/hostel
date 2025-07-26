@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\Auth\AdminLoginController;
 use App\Http\Controllers\Admin\Booking\BookingController;
+use App\Http\Controllers\Admin\CancelPolicyController;
 use App\Http\Controllers\Admin\Hostel\HostelController;
 use App\Http\Controllers\Admin\Localization\BackendLanguageController;
 use App\Http\Controllers\Admin\Localization\ChangeLanguageController;
@@ -125,6 +126,11 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::post('/make/booking/payments',[BookingController::class,'makeBookingPayments'])->name('booking.makeBookingPayments');
 
         /** Booking End */
+
+        /** Cancel Policy Start */
+        Route::get('cancel-policy',[CancelPolicyController::class,'index'])->name('cancelPolicy.index');
+        Route::post('cancel-policy',[CancelPolicyController::class,'store'])->name('cancelPolicy.store');
+        /** Cancel Policy End */
     });
 });
 

@@ -66,5 +66,6 @@ class PermissionSeeder extends Seeder
         // Permission::create(['guard_name'=>'admin','name'=>'booking-delete','group_name'=>'Booking']);
         // Permission::create(['guard_name'=>'admin','name'=>'booking-payment','group_name'=>'Booking']);
         // Permission::create(['guard_name'=>'admin','name'=>'booking-invoice','group_name'=>'Booking']);
+        Permission::create(['guard_name'=>'admin','name'=>'cancel-policies','group_name'=>'Booking']);
     }
 }

@@ -27,8 +27,8 @@ class DatabaseSeeder extends Seeder
             // $admin->username = 'mutasim';
             // $admin->password = Hash::make('admin');
             // $admin->save();
-        $this->call(RoleSeeder::class);
+        // $this->call(RoleSeeder::class);
         $this->call(PermissionSeeder::class);
-        $this->call(AdminSeeder::class);
+        // $this->call(AdminSeeder::class);
     }
 }

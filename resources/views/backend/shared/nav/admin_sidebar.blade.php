@@ -40,7 +40,7 @@
                     </a>
                 </li>
                 @endif
-                
+
                 @if (hasPermission(['room-index']))
                 <li>
                     <a href="{{ route('admin.room.index') }}" class="sidebar-link">
@@ -51,7 +51,7 @@
             </ul>
         </li>
     @endif
-    @if (hasPermission(['booking-index', 'booking-create', 'booking-update', 'booking-delete']))
+    @if (hasPermission(['booking-index', 'booking-create', 'booking-update', 'booking-delete','cancel-policies']))
         <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="javascript:void(0)" aria-expanded="false">
                 <i data-feather="inbox"></i>
@@ -68,6 +68,13 @@
                         <span> {{ __('admin_local.Booking List') }} </span>
                     </a>
                 </li>
+                @if (hasPermission(['cancel-policies']))
+                <li>
+                    <a href="{{ route('admin.cancelPolicy.index') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Cancel Policies') }} </span>
+                    </a>
+                </li>
+                @endif
             </ul>
         </li>
     @endif
