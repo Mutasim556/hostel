@@ -99,7 +99,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::controller(RoomController::class)->group(function(){
             Route::get('/rooms','index')->name('room.index');
             Route::get('/rooms/create','create')->name('room.create');
-            Route::post('/rooms/store','store')->name('room.store');
+            Route::post('/rooms/store','store')->name('room.store'); 
             Route::get('/rooms/get-building-details/{hostel_id}','getHostelDetails');
             Route::get('/rooms/{id}/edit','edit')->name('room.edit');
             Route::put('/rooms/update/{id}','update')->name('room.update');

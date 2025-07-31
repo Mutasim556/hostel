@@ -137,7 +137,7 @@
                                 <h4 class="text-center my-3"><u>{{ __("admin_local.Five Day Before Booking") }}</u></h4>
                                 <div class="col-lg-3">
                                     <input type="checkbox"
-                                        name="has_policy_before_five_day" id="has_policy_before_three_day"> {{ __('admin_local.Has policy before five day ?') }}
+                                        name="has_policy_before_five_day" id="has_policy_before_five_day"> {{ __('admin_local.Has policy before five day ?') }}
                                     <label for=""></label>
                                 </div>
                                 <div class="col-lg-3">
@@ -158,7 +158,7 @@
                                 <h4 class="text-center my-3"><u>{{ __("admin_local.Seven Day Before Booking") }}</u></h4>
                                 <div class="col-lg-3">
                                     <input type="checkbox"
-                                        name="has_policy_before_seven_day" id="has_policy_before_three_day"> {{ __('admin_local.Has policy before seven day ?') }}
+                                        name="has_policy_before_seven_day" id="has_policy_before_seven_day"> {{ __('admin_local.Has policy before seven day ?') }}
                                     <label for=""></label>
                                 </div>
                                 <div class="col-lg-3">
@@ -179,7 +179,7 @@
                                 <h4 class="text-center my-3"><u>{{ __("admin_local.More Then Seven Day Before Booking") }}</u></h4>
                                 <div class="col-lg-3">
                                     <input type="checkbox"
-                                        name="has_policy_before_eight_day" id="has_policy_before_three_day"> {{ __('admin_local.Has policy before more then seven day ?') }}
+                                        name="has_policy_before_eight_day" id="has_policy_before_eight_day"> {{ __('admin_local.Has policy before more then seven day ?') }}
                                     <label for=""></label>
                                 </div>
                                 <div class="col-lg-3">
