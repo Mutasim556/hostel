@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Hostel\HostelController;
 use App\Http\Controllers\Admin\Localization\BackendLanguageController;
 use App\Http\Controllers\Admin\Localization\ChangeLanguageController;
 use App\Http\Controllers\Admin\Localization\LanguageController;
+use App\Http\Controllers\Admin\OtpController;
 use App\Http\Controllers\Admin\Role\RoleAndPermissionController;
 use App\Http\Controllers\Admin\Rooms\RoomController;
 use App\Http\Controllers\Admin\Rooms\SeatController;
@@ -99,7 +100,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::controller(RoomController::class)->group(function(){
             Route::get('/rooms','index')->name('room.index');
             Route::get('/rooms/create','create')->name('room.create');
-            Route::post('/rooms/store','store')->name('room.store'); 
+            Route::post('/rooms/store','store')->name('room.store');
             Route::get('/rooms/get-building-details/{hostel_id}','getHostelDetails');
             Route::get('/rooms/{id}/edit','edit')->name('room.edit');
             Route::put('/rooms/update/{id}','update')->name('room.update');
@@ -123,7 +124,23 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::get('/get/booking/payments/{id}',[BookingController::class,'getBookingPayments'])->name('booking.getBookingPayments');
         Route::get('/get/booking/payment/receipt/{id}',[BookingController::class,'getBookingPaymentReceipt'])->name('booking.getBookingPaymentReceipt');
         Route::delete('/get/booking/payment/delete/{id}',[BookingController::class,'getBookingPaymentDelete'])->name('booking.getBookingPaymentDelete');
+
+        Route::get('/get/booking/cancel/data/{id}',[BookingController::class,'getBookingCancelData'])->name('booking.getBookingCancelData');
+        Route::get('/get/booking/cancel/otp',[BookingController::class,'getBookingCancelOtp'])->name('booking.getBookingCancelOtp');
+        Route::put('/post/booking/cancel/{id}',[BookingController::class,'getBookingCancel'])->name('booking.getBookingCancel');
+
         Route::post('/make/booking/payments',[BookingController::class,'makeBookingPayments'])->name('booking.makeBookingPayments');
+
+        /** Canceled Bookings Start */
+        Route::get('/get/canceled/bookings',[BookingController::class,'getCanceledBooking'])->name('booking.getCanceledBooking');
+        /** Canceled Booking End */
+
+        /** Check Out Start */
+        Route::get('/get/booking/checkout/data/{id}',[BookingController::class,'getBookingCheckoutData'])->name('booking.getBookingCheckoutData');
+        Route::put('/post/booking/checkout/{id}',[BookingController::class,'getBookingCheckout'])->name('booking.getBookingCheckout');
+        Route::get('/get/checkedout/bookings',[BookingController::class,'getCheckedoutBooking'])->name('booking.getCheckedoutBooking');
+        /** Check Out End */
+
 
         /** Booking End */
 
@@ -131,6 +148,10 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::get('cancel-policy',[CancelPolicyController::class,'index'])->name('cancelPolicy.index');
         Route::post('cancel-policy',[CancelPolicyController::class,'store'])->name('cancelPolicy.store');
         /** Cancel Policy End */
+
+        /** OTP Start */
+         Route::get('/get/otp/{type}/{id?}',OtpController::class);
+        /** OTP End */
     });
 });
 

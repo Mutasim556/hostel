@@ -68,6 +68,16 @@
                         <span> {{ __('admin_local.Booking List') }} </span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('admin.booking.getCanceledBooking') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Canceled List') }} </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.booking.getCheckedoutBooking') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Checkout List') }} </span>
+                    </a>
+                </li>
                 @if (hasPermission(['cancel-policies']))
                 <li>
                     <a href="{{ route('admin.cancelPolicy.index') }}" class="sidebar-link">

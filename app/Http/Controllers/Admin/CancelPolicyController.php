@@ -18,7 +18,7 @@ class CancelPolicyController extends Controller
             $create->save();
         }
         $rpolicies = CancelPolicy::first();
-        return view('backend.blade.booking.cancel_policies.index',compact('rpolicies')); 
+        return view('backend.blade.booking.cancel_policies.index',compact('rpolicies'));
     }
 
     function store(Request $data){
@@ -43,7 +43,7 @@ class CancelPolicyController extends Controller
         $update->three_day_deduction = $data->three_day_deduction??0;
         $update->three_day_service_charge_deduction = $data->three_day_service_charge_deduction??0;
         $update->three_day_maximum_refund = $data->three_day_maximum_refund??0;
-        
+
         $update->has_policy_before_five_day = $data->has_policy_before_five_day?1:0;
         $update->five_day_deduction = $data->five_day_deduction??0;
         $update->five_day_service_charge_deduction = $data->five_day_service_charge_deduction??0;
@@ -60,5 +60,7 @@ class CancelPolicyController extends Controller
         $update->eight_day_maximum_refund = $data->eight_day_maximum_refund??0;
 
         $update->save();
+
+        return back();
     }
 }

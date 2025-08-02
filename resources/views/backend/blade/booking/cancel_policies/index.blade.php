@@ -52,21 +52,20 @@
                             <div class="row">
                                 <h4 class="text-center my-3"><u>{{ __("admin_local.After Booking Started") }}</u></h4>
                                 <div class="col-lg-3">
-                                    <input type="checkbox"
-                                        name="has_policy_after_booking_started" id="has_policy_after_booking_started"> {{ __('admin_local.Has policy after booking started ?') }}
+                                    <input type="checkbox" name="has_policy_after_booking_started" id="has_policy_after_booking_started" {{ $rpolicies->has_policy_after_booking_started==1?'checked':'' }}> {{ __('admin_local.Has policy after booking started ?') }}
                                     <label for=""></label>
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Deduction') }}</label>
-                                    <input type="text" name="started_deduction" id="started_deduction" class="form-control">
+                                    <input type="text" name="started_deduction" id="started_deduction" class="form-control" value="{{ $rpolicies->started_deduction>0?$rpolicies->started_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Service Charge Deduction') }}</label>
-                                    <input type="text" name="started_service_charge_deduction" id="started_service_charge_deduction" class="form-control">
+                                    <input type="text" name="started_service_charge_deduction" id="started_service_charge_deduction" class="form-control" value="{{ $rpolicies->started_service_charge_deduction>0?$rpolicies->started_service_charge_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Maximum Refund') }}</label>
-                                    <input type="text" name="started_maximum_refund" id="started_maximum_refund" class="form-control">
+                                    <input type="text" name="started_maximum_refund" id="started_maximum_refund" class="form-control" value="{{ $rpolicies->started_maximum_refund>0?$rpolicies->started_maximum_refund:0 }}">
                                 </div>
                             </div>
                             <hr>
@@ -74,20 +73,20 @@
                                 <h4 class="text-center my-3"><u>{{ __("admin_local.One Day Before Booking") }}</u></h4>
                                 <div class="col-lg-3">
                                     <input type="checkbox"
-                                        name="has_policy_before_one_day" id="has_policy_before_one_day"> {{ __('admin_local.Has policy before one day ?') }}
+                                        name="has_policy_before_one_day" id="has_policy_before_one_day" {{ $rpolicies->has_policy_before_one_day==1?'checked':'' }}> {{ __('admin_local.Has policy before one day ?') }}
                                     <label for=""></label>
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Deduction') }}</label>
-                                    <input type="text" name="one_day_deduction" id="one_day_deduction" class="form-control">
+                                    <input type="text" name="one_day_deduction" id="one_day_deduction" class="form-control" value="{{ $rpolicies->one_day_deduction>0?$rpolicies->one_day_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Service Charge Deduction') }}</label>
-                                    <input type="text" name="one_day_service_charge_deduction" id="one_day_service_charge_deduction" class="form-control">
+                                    <input type="text" name="one_day_service_charge_deduction" id="one_day_service_charge_deduction" class="form-control" value="{{ $rpolicies->one_day_service_charge_deduction>0? $rpolicies->one_day_service_charge_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Maximum Refund') }}</label>
-                                    <input type="text" name="one_day_maximum_refund" id="one_day_maximum_refund" class="form-control">
+                                    <input type="text" name="one_day_maximum_refund" id="one_day_maximum_refund" class="form-control" value="{{ $rpolicies->one_day_maximum_refund>0?$rpolicies->one_day_maximum_refund:0 }}">
                                 </div>
                             </div>
                             <hr>
@@ -95,20 +94,20 @@
                                 <h4 class="text-center my-3"><u>{{ __("admin_local.Two Day Before Booking") }}</u></h4>
                                 <div class="col-lg-3">
                                     <input type="checkbox"
-                                        name="has_policy_before_two_day" id="has_policy_before_two_day"> {{ __('admin_local.Has policy before two day ?') }}
+                                        name="has_policy_before_two_day" id="has_policy_before_two_day" {{ $rpolicies->has_policy_before_two_day==1?'checked':'' }} > {{ __('admin_local.Has policy before two day ?') }}
                                     <label for=""></label>
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Deduction') }}</label>
-                                    <input type="text" name="two_day_deduction" id="two_day_deduction" class="form-control">
+                                    <input type="text" name="two_day_deduction" id="two_day_deduction" class="form-control" value="{{ $rpolicies->two_day_deduction>0?$rpolicies->two_day_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Service Charge Deduction') }}</label>
-                                    <input type="text" name="two_day_service_charge_deduction" id="two_day_service_charge_deduction" class="form-control">
+                                    <input type="text" name="two_day_service_charge_deduction" id="two_day_service_charge_deduction" class="form-control" value="{{ $rpolicies->two_day_service_charge_deduction>0?$rpolicies->two_day_service_charge_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Maximum Refund') }}</label>
-                                    <input type="text" name="two_day_maximum_refund" id="two_day_maximum_refund" class="form-control">
+                                    <input type="text" name="two_day_maximum_refund" id="two_day_maximum_refund" class="form-control" value="{{ $rpolicies->two_day_maximum_refund>0?$rpolicies->two_day_maximum_refund:0 }}">
                                 </div>
                             </div>
                             <hr>
@@ -116,20 +115,20 @@
                                 <h4 class="text-center my-3"><u>{{ __("admin_local.Three Day Before Booking") }}</u></h4>
                                 <div class="col-lg-3">
                                     <input type="checkbox"
-                                        name="has_policy_before_three_day" id="has_policy_before_three_day"> {{ __('admin_local.Has policy before three day ?') }}
+                                        name="has_policy_before_three_day" id="has_policy_before_three_day"{{ $rpolicies->has_policy_before_three_day==1?'checked':'' }}> {{ __('admin_local.Has policy before three day ?') }}
                                     <label for=""></label>
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Deduction') }}</label>
-                                    <input type="text" name="three_day_deduction" id="three_day_deduction" class="form-control">
+                                    <input type="text" name="three_day_deduction" id="three_day_deduction" class="form-control" value="{{ $rpolicies->three_day_deduction>0?$rpolicies->three_day_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Service Charge Deduction') }}</label>
-                                    <input type="text" name="three_day_service_charge_deduction" id="three_day_service_charge_deduction" class="form-control">
+                                    <input type="text" name="three_day_service_charge_deduction" id="three_day_service_charge_deduction" class="form-control" value="{{ $rpolicies->three_day_service_charge_deduction>0?$rpolicies->three_day_service_charge_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Maximum Refund') }}</label>
-                                    <input type="text" name="three_day_maximum_refund" id="three_day_maximum_refund" class="form-control">
+                                    <input type="text" name="three_day_maximum_refund" id="three_day_maximum_refund" class="form-control" value="{{ $rpolicies->three_day_maximum_refund>0?$rpolicies->three_day_maximum_refund:0 }}">
                                 </div>
                             </div>
                             <hr>
@@ -137,20 +136,20 @@
                                 <h4 class="text-center my-3"><u>{{ __("admin_local.Five Day Before Booking") }}</u></h4>
                                 <div class="col-lg-3">
                                     <input type="checkbox"
-                                        name="has_policy_before_five_day" id="has_policy_before_five_day"> {{ __('admin_local.Has policy before five day ?') }}
+                                        name="has_policy_before_five_day" id="has_policy_before_five_day" {{ $rpolicies->has_policy_before_five_day==1?'checked':'' }}> {{ __('admin_local.Has policy before five day ?') }}
                                     <label for=""></label>
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Deduction') }}</label>
-                                    <input type="text" name="five_day_deduction" id="five_day_deduction" class="form-control">
+                                    <input type="text" name="five_day_deduction" id="five_day_deduction" class="form-control" value="{{ $rpolicies->five_day_deduction>0?$rpolicies->five_day_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Service Charge Deduction') }}</label>
-                                    <input type="text" name="five_day_service_charge_deduction" id="five_day_service_charge_deduction" class="form-control">
+                                    <input type="text" name="five_day_service_charge_deduction" id="five_day_service_charge_deduction" class="form-control" value="{{ $rpolicies->five_day_service_charge_deduction>0?$rpolicies->five_day_service_charge_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Maximum Refund') }}</label>
-                                    <input type="text" name="five_day_maximum_refund" id="five_day_maximum_refund" class="form-control">
+                                    <input type="text" name="five_day_maximum_refund" id="five_day_maximum_refund" class="form-control" value="{{ $rpolicies->five_day_maximum_refund>0?$rpolicies->five_day_maximum_refund:0 }}">
                                 </div>
                             </div>
                             <hr>
@@ -158,20 +157,20 @@
                                 <h4 class="text-center my-3"><u>{{ __("admin_local.Seven Day Before Booking") }}</u></h4>
                                 <div class="col-lg-3">
                                     <input type="checkbox"
-                                        name="has_policy_before_seven_day" id="has_policy_before_seven_day"> {{ __('admin_local.Has policy before seven day ?') }}
+                                        name="has_policy_before_seven_day" id="has_policy_before_seven_day" {{ $rpolicies->has_policy_before_seven_day==1?'checked':'' }}> {{ __('admin_local.Has policy before seven day ?') }}
                                     <label for=""></label>
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Deduction') }}</label>
-                                    <input type="text" name="seven_day_deduction" id="seven_day_deduction" class="form-control">
+                                    <input type="text" name="seven_day_deduction" id="seven_day_deduction" class="form-control" value="{{ $rpolicies->seven_day_deduction>0?$rpolicies->seven_day_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Service Charge Deduction') }}</label>
-                                    <input type="text" name="seven_day_service_charge_deduction" id="seven_day_service_charge_deduction" class="form-control">
+                                    <input type="text" name="seven_day_service_charge_deduction" id="seven_day_service_charge_deduction" class="form-control" value="{{ $rpolicies->seven_day_service_charge_deduction>0?$rpolicies->seven_day_service_charge_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Maximum Refund') }}</label>
-                                    <input type="text" name="seven_day_maximum_refund" id="seven_day_maximum_refund" class="form-control">
+                                    <input type="text" name="seven_day_maximum_refund" id="seven_day_maximum_refund" class="form-control" value="{{ $rpolicies->seven_day_maximum_refund>0?$rpolicies->seven_day_maximum_refund:0 }}">
                                 </div>
                             </div>
                             <hr>
@@ -179,20 +178,20 @@
                                 <h4 class="text-center my-3"><u>{{ __("admin_local.More Then Seven Day Before Booking") }}</u></h4>
                                 <div class="col-lg-3">
                                     <input type="checkbox"
-                                        name="has_policy_before_eight_day" id="has_policy_before_eight_day"> {{ __('admin_local.Has policy before more then seven day ?') }}
+                                        name="has_policy_before_eight_day" id="has_policy_before_eight_day" {{ $rpolicies->has_policy_before_eight_day==1?'checked':'' }}> {{ __('admin_local.Has policy before more then seven day ?') }}
                                     <label for=""></label>
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Deduction') }}</label>
-                                    <input type="text" name="eight_day_deduction" id="eight_day_deduction" class="form-control">
+                                    <input type="text" name="eight_day_deduction" id="eight_day_deduction" class="form-control" value="{{ $rpolicies->eight_day_deduction>0?$rpolicies->eight_day_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Service Charge Deduction') }}</label>
-                                    <input type="text" name="eight_day_service_charge_deduction" id="eight_day_service_charge_deduction" class="form-control">
+                                    <input type="text" name="eight_day_service_charge_deduction" id="eight_day_service_charge_deduction" class="form-control" value="{{ $rpolicies->eight_day_service_charge_deduction>0?$rpolicies->eight_day_service_charge_deduction:0 }}">
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="">{{ __('admin_local.Maximum Refund') }}</label>
-                                    <input type="text" name="eight_day_maximum_refund" id="eight_day_maximum_refund" class="form-control">
+                                    <input type="text" name="eight_day_maximum_refund" id="eight_day_maximum_refund" class="form-control" value="{{ $rpolicies->eight_day_maximum_refund>0?$rpolicies->eight_day_maximum_refund:0 }}">
                                 </div>
                             </div>
                             <div class="row mt-5">

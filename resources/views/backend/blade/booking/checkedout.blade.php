@@ -1,6 +1,6 @@
  @extends('backend.shared.layouts.admin')
  @push('title')
-     {{ __('admin_local.booking List') }}
+     {{ __('admin_local.Checkout List') }}
  @endpush
  @push('css')
      <link rel="stylesheet" href="{{ asset('public/admin/assets/css/custom.css') }}">
@@ -105,10 +105,7 @@
                                      href="#pills-payments" role="tab" aria-controls="pills-payments"
                                      aria-selected="true"><i class="icofont icofont-notepad"
                                          style="font-size:22px"></i>Payments</a></li>
-                             <li class="nav-item"><a class="nav-link" id="pills-makepayment-tab" data-bs-toggle="pill"
-                                     href="#pills-makepayment" role="tab" aria-controls="pills-makepayment"
-                                     aria-selected="false"><i class="icofont icofont-pay" style="font-size:22px"></i>Make
-                                     Payment</a></li>
+
                          </ul>
                          <div class="tab-content px-0 " id="pills-warningtabContent">
                              <div class="tab-pane fade show active" id="pills-payments" role="tabpanel"
@@ -132,51 +129,6 @@
 
                                  </table>
                              </div>
-                             <div class="tab-pane fade" id="pills-makepayment" role="tabpanel"
-                                 aria-labelledby="pills-makepayment-tab">
-                                 <div>
-                                     <form class="form" action="" id="make_payment_form">
-                                         @csrf
-                                         <input type="hidden" name="payment_invoice_id" id="payment_invoice_id">
-                                         <div class="row mt-3 px-3">
-                                             <div class="form-group col-md-6">
-                                                 <label for="">{{ __('admin_local.Payable Amount') }}</label>
-                                                 <input type="text" class="form-control" name="payable_amount"
-                                                     id="payable_amount" readonly>
-                                             </div>
-                                             <div class="form-group col-md-6">
-                                                 <label for="">{{ __('admin_local.Paying Amount') }}</label>
-                                                 <input type="text" class="form-control" name="paying_amount"
-                                                     id="paying_amount" required>
-                                                 <span class="text-danger err-mgs" id="paying_amount_err"></span>
-                                             </div>
-                                             <div class="form-group col-md-6">
-                                                 <label for="">{{ __('admin_local.Remaining Due') }}</label>
-                                                 <input type="text" class="form-control" name="remaining_due"
-                                                     id="remaining_due" readonly>
-                                             </div>
-                                             <div class="form-group col-md-6">
-                                                 <label for="">{{ __('admin_local.Payment Method') }}</label>
-                                                 <select class="form-control" name="payment_method" id="payment_method">
-                                                     <option value="CASH" selected>CASH</option>
-                                                 </select>
-                                             </div>
-                                         </div>
-                                         <div class="row mt-4 mb-2 px-3">
-                                             <div class="form-group col-lg-12">
-
-                                                 <button
-                                                     class="btn btn-danger text-white font-weight-medium waves-effect text-start"
-                                                     data-bs-dismiss="modal" style="float: right"
-                                                     type="button">{{ __('admin_local.Close') }}</button>
-                                                 <button class="btn btn-primary mx-2" style="float: right"
-                                                     type="submit">{{ __('admin_local.Submit') }}</button>
-                                             </div>
-                                         </div>
-                                     </form>
-                                 </div>
-                             </div>
-
                          </div>
 
                      </div>
@@ -289,225 +241,6 @@
          <!-- /.modal-dialog -->
      </div>
 
-     {{-- Add booking Modal End --}}
-
-     <div class="modal fade" id="edit-payment-modal" tabindex="-1" aria-labelledby="bs-example-modal-lg"
-         aria-hidden="true">
-         <div class="modal-dialog modal-lg" style="margin-top: 200px;">
-             <div class="modal-content">
-                 <div class="modal-header d-flex align-items-center bg-primary" style="border-bottom:1px dashed gray">
-                     <h4 class="modal-title" id="myLargeModalLabel">
-                         {{ __('admin_local.Receipt') }} <span id="receipt_id_append"></span>
-                     </h4>
-                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                 </div>
-                 <div class="modal-body bg-info">
-                     <div class="row my-4">
-                         <form class="form" action="" id="edit_payment_form">
-                             @csrf
-                             <input type="hidden" name="payment_invoice_id" id="epayment_invoice_id">
-                             <div class="row mt-3 px-3">
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Payable Amount') }}</label>
-                                     <input type="text" class="form-control" name="payable_amount"
-                                         id="epayable_amount" readonly>
-                                 </div>
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Paying Amount') }}</label>
-                                     <input type="text" class="form-control" name="paying_amount" id="epaying_amount"
-                                         required>
-                                     <span class="text-danger err-mgs" id="epaying_amount_err"></span>
-                                 </div>
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Remaining Due') }}</label>
-                                     <input type="text" class="form-control" name="remaining_due" id="eremaining_due"
-                                         readonly>
-                                 </div>
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Payment Method') }}</label>
-                                     <select class="form-control" name="payment_method" id="epayment_method">
-                                         <option value="CASH" selected>CASH</option>
-                                     </select>
-                                 </div>
-                             </div>
-                             <div class="row mt-4 mb-2 px-3">
-                                 <div class="form-group col-lg-12">
-
-                                     <button class="btn btn-danger text-white font-weight-medium waves-effect text-start"
-                                         data-bs-dismiss="modal" style="float: right"
-                                         type="button">{{ __('admin_local.Close') }}</button>
-                                     <button class="btn btn-primary mx-2" style="float: right"
-                                         type="submit">{{ __('admin_local.Submit') }}</button>
-                                 </div>
-                             </div>
-                         </form>
-                     </div>
-                 </div>
-
-             </div>
-             <!-- /.modal-content -->
-         </div>
-         <!-- /.modal-dialog -->
-     </div>
-
-     {{-- Add booking Modal End --}}
-
-     <div class="modal fade" id="booking-cancel-modal" tabindex="-1" aria-labelledby="bs-example-modal-lg"
-         aria-hidden="true">
-         <div class="modal-dialog modal-lg">
-             <div class="modal-content">
-                 <div class="modal-header d-flex align-items-center" style="border-bottom:1px dashed gray">
-                     <h4 class="modal-title" id="myLargeModalLabel">
-                         {{ __('admin_local.Cancel Booking') }} <span id="cinvoice_id_append"></span>
-                     </h4>
-                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                 </div>
-                 <div class="modal-body">
-                     <div class="row my-4">
-                         <form class="form" action="" id="cancel_form">
-                             @csrf
-                             @method('PUT')
-                             <input type="hidden" name="payment_invoice_id" id="cpayment_invoice_id">
-                             <div class="row mt-3 px-3">
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Payable Amount') }}</label>
-                                     <input type="text" class="form-control" name="payable_amount"
-                                         id="cpayable_amount" readonly>
-                                 </div>
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Paid Amount') }}</label>
-                                     <input type="text" class="form-control" name="paid_amount" id="cpaid_amount"
-                                         readonly>
-                                 </div>
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Refund Service Charge') }}</label>
-                                     <input type="text" class="form-control" name="refund_service_charge"
-                                         id="refund_service_charge" readonly>
-                                 </div>
-
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Refund Amount') }}</label>
-                                     <input type="text" class="form-control" name="refund_amount" id="refund_amount"
-                                         readonly>
-                                 </div>
-
-                             </div>
-                             <div class="row px-3 d-none" id="append_if_due">
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Paying Amount') }}</label>
-                                     <input type="text" class="form-control" name="paying_amount" id="cpaying_amount"
-                                         readonly>
-                                 </div>
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Payment Method') }}</label>
-                                     <select class="form-control" name="payment_method" id="cpayment_method" radonly>
-                                         <option value="CASH" selected>CASH</option>
-                                     </select>
-                                 </div>
-
-
-                             </div>
-                             <div class="row px-3">
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.OTP') }}</label>
-                                     <div class="input-group">
-                                         <input class="form-control" name="cancel_otp" id="cancel_otp" type="text"
-                                             placeholder="OTP">
-                                         <span class="input-group-text bg-info" style="cursor:pointer"
-                                             id="send_cancel_otp_btn">{{ __('admin_local.Send OTP') }}</span>
-                                     </div>
-                                 </div>
-                                 <div class="div col-md-12">
-                                     <button class="btn btn-danger" style="float:right"
-                                         type="submit">{{ __('admin_local.Cancel') }}</button>
-                                 </div>
-                             </div>
-                         </form>
-                     </div>
-                 </div>
-
-             </div>
-             <!-- /.modal-content -->
-         </div>
-         <!-- /.modal-dialog -->
-     </div>
-     <div class="modal fade" id="checkout-modal" tabindex="-1" aria-labelledby="bs-example-modal-lg"
-         aria-hidden="true">
-         <div class="modal-dialog modal-lg">
-             <div class="modal-content">
-                 <div class="modal-header d-flex align-items-center" style="border-bottom:1px dashed gray">
-                     <h4 class="modal-title" id="myLargeModalLabel">
-                         {{ __('admin_local.Checkout') }} <span id="chinvoice_id_append"></span>
-                     </h4>
-                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                 </div>
-                 <div class="modal-body">
-                     <div class="row my-4">
-                         <form class="form" action="" id="checkout_form">
-                             @csrf
-                             @method('PUT')
-                             <input type="hidden" name="payment_invoice_id" id="chpayment_invoice_id">
-                             <div class="row mt-3 px-3">
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Payable Amount') }}</label>
-                                     <input type="text" class="form-control" name="payable_amount"
-                                         id="chpayable_amount" readonly>
-                                 </div>
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Paid Amount') }}</label>
-                                     <input type="text" class="form-control" name="paid_amount" id="chpaid_amount"
-                                         readonly>
-                                 </div>
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Due') }}</label>
-                                     <input type="text" class="form-control" name="due_amount"
-                                         id="chdue_amount" readonly>
-                                 </div>
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Penalty Amount') }}</label>
-                                     <input type="number" class="form-control" name="penalty_amount"
-                                         id="chpenalty_amount" value="0">
-                                 </div>
-
-                             </div>
-                             <div class="row px-3 d-none" id="append_if_chdue">
-                                <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Paying Amount') }}</label>
-                                     <input type="text" class="form-control" name="paying_amount" id="chpaying_amount"
-                                         readonly>
-                                 </div>
-                                 <div class="form-group col-md-6">
-                                     <label for="">{{ __('admin_local.Payment Method') }}</label>
-                                     <select class="form-control" name="payment_method" id="cpayment_method" radonly>
-                                         <option value="CASH" selected>CASH</option>
-                                     </select>
-                                 </div>
-                                 <div class="form-group col-md-12">
-                                     <label for="">{{ __('admin_local.Note') }}</label>
-                                     <textarea class="form-control" name="checkout_note" id="checkout_note"></textarea>
-                                 </div>
-                             </div>
-                             <div class="row px-3">
-                                 <div class="form-group col-md-6">
-
-                                 </div>
-                                 <div class="div col-md-12">
-                                    <button class="btn btn-danger text-white font-weight-medium waves-effect text-start"
-                                         data-bs-dismiss="modal" style="float: right"
-                                         type="button">{{ __('admin_local.Close') }}</button>
-                                     <button class="btn btn-success mx-1" style="float:right"
-                                         type="submit">{{ __('admin_local.Checkout') }}</button>
-                                 </div>
-                             </div>
-                         </form>
-                     </div>
-                 </div>
-
-             </div>
-             <!-- /.modal-content -->
-         </div>
-         <!-- /.modal-dialog -->
-     </div>
 
 
      <div class="container-fluid">
@@ -516,13 +249,13 @@
              <div class="col-lg-12 mx-auto">
                  <div class="card">
                      <div class="card-header py-3" style="border-bottom: 2px dashed gray">
-                         <h3 class="card-title mb-0 text-center">{{ __('admin_local.Booking List') }}</h3>
+                         <h3 class="card-title mb-0 text-center">{{ __('admin_local.Checkout List') }}</h3>
                      </div>
 
                      <div class="card-body">
                          <div class="row">
                              <div class="col-md-12 mx-auto">
-                                 <form action="{{ route('admin.booking.index') }}" method="GET">
+                                 <form action="{{ route('admin.booking.getCheckedoutBooking') }}" method="GET">
                                      <div class="row bg-info p-4 mb-4 text-center">
                                          <div class="col-md-2">
                                              <label for="">{{ __('admin_local.Start Date') }}</label>
@@ -552,7 +285,7 @@
                                              <label for=""> <span class="text-info"> &nbsp;</span></label><br>
                                              <input type="submit" class="btn btn-primary"
                                                  value="{{ __('admin_local.Search') }}">
-                                             <a href="{{ route('admin.booking.index') }}" class="btn btn-danger">{{ __('admin_local.Reset') }}</a>
+                                             <a href="{{ route('admin.booking.getCheckedoutBooking') }}" class="btn btn-danger">{{ __('admin_local.Reset') }}</a>
                                          </div>
                                      </div>
                                  </form>
@@ -582,8 +315,8 @@
                                          <th>{{ __('admin_local.Total Payable') }}</th>
                                          <th>{{ __('admin_local.Total Paid') }}</th>
                                          <th>{{ __('admin_local.Total Due') }}</th>
-                                         <th>{{ __('admin_local.Payment Status') }}</th>
-                                         <th>{{ __('admin_local.Action') }}</th>
+                                         <th>{{ __('admin_local.Status') }}</th>
+                                         <th>{{ __('admin_local.Actions') }}</th>
                                      </tr>
                                  </thead>
                                  <tbody>
@@ -607,11 +340,8 @@
                                              <td>{{ $booking->total_payable ?? 0 }}</td>
                                              <td>{{ $booking->total_paid ?? 0 }}</td>
                                              <td>{{ $booking->total_due ?? 0 }}</td>
-                                             <td>{!! $booking->total_payable == $booking->total_paid
-                                                 ? '<span class="badge badge-success">' . __('admin_local.Paid') . '</span'
-                                                 : ($booking->total_paid == 0
-                                                     ? '<span class="badge badge-danger">' . __('admin_local.Unpaid') . '</span'
-                                                     : '<span class="badge badge-warning">' . __('admin_local.Prtially Paid') . '</span') !!}</td>
+                                             <td><span class="badge badge-danger">{{ __('admin_local.Checked Out') }}</span>
+                                             </td>
                                              {{-- <td>{{ $booking->total_window }}</td> --}}
                                              {{-- <td>{{ $booking->total_fan }}</td>
                                             <td>{{ $booking->total_light }}</td> --}}
@@ -634,18 +364,12 @@
                                                              class="btn btn-info text-white px-2 py-1 dropbtn">{{ __('admin_local.Action') }}
                                                              <i class="fa fa-angle-down"></i></button>
                                                          <div class="dropdown-content">
-                                                             @if (hasPermission(['booking-payment']) && $booking->payment_status != 1)
+                                                             @if (hasPermission(['booking-payment']))
                                                                  <a style="cursor: pointer;" href="#"
                                                                      data-bs-toggle="modal"
                                                                      data-bs-target="#booking-payment-modal"
                                                                      id="show_payments"><i class=" fa fa-money mx-1"></i>
                                                                      {{ __('admin_local.Payment') }}</a>
-                                                             @endif
-                                                             @if (hasPermission(['booking-update']))
-                                                                 <a style="cursor: pointer;"
-                                                                     href="{{ route('admin.booking.edit', $booking->id) }}"><i
-                                                                         class=" fa fa-edit mx-1"></i>
-                                                                     {{ __('admin_local.Edit') }}</a>
                                                              @endif
                                                              @if (hasPermission(['booking-prinInvoice']))
                                                                  <a target="__blank" style="cursor: pointer;"
@@ -653,20 +377,7 @@
                                                                          class=" fa fa-print mx-1"></i>
                                                                      {{ __('admin_local.Print Invoice') }}</a>
                                                              @endif
-                                                             @if (hasPermission(['booking-cancel']))
-                                                                 <a class="text-danger" style="cursor: pointer;"
-                                                                     data-bs-toggle="modal"
-                                                                     data-bs-target="#booking-cancel-modal"
-                                                                     id="cancel_btn"><i class="fa fa-trash mx-1"></i>
-                                                                     {{ __('admin_local.Cancel') }}</a>
-                                                             @endif
-                                                             @if (hasPermission(['booking-checkout']))
-                                                                 <a class="text-warning" style="cursor: pointer;"
-                                                                     data-bs-toggle="modal"
-                                                                     data-bs-target="#checkout-modal"
-                                                                     id="checkout_btn"><i class="fa fa-sign-out mx-1"></i>
-                                                                     {{ __('admin_local.Checkout') }}</a>
-                                                             @endif
+
                                                          </div>
                                                      </div>
                                                  @else
@@ -733,14 +444,9 @@
              `{{ __('admin_local.Once cancel, you will not be able to recover this data') }}`;
          var cancelswal_cancel_text = `{{ __('admin_local.Cancel request declied successfully') }}`;
 
-          var checkout_swal_title = `{{ __('admin_local.Are you sure?') }}`;
-         var checkout_swal_text =
-             `{{ __('admin_local.Once checkout, you will not be able to recover this data') }}`;
-         var checkoutswal_cancel_text = `{{ __('admin_local.Checkout request declied successfully') }}`;
-
          var base_url = `{{ \URL::to('/') }}/`;
 
          var no_file = `{{ __('admin_local.No file') }}`;
      </script>
-     <script src="{{ asset('public/admin/custom/booking/booking_list.js') }}"></script>
+     <script src="{{ asset('public/admin/custom/booking/cancelled.js') }}"></script>
  @endpush

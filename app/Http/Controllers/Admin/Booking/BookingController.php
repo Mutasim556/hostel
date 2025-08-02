@@ -7,11 +7,16 @@ use App\Models\Admin\Booking;
 use App\Models\Admin\BookingInvoice;
 use App\Models\Admin\BookingPayment;
 use App\Models\Admin\BookingPerson;
+use App\Models\Admin\CancelBooking;
+use App\Models\Admin\CancelPolicy;
+use App\Models\Admin\Checkout;
+use App\Models\Admin\Otp;
 use App\Models\Admin\Room;
 use App\Models\Admin\Seat;
 use App\Models\Admin\ServiceType;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -25,7 +30,44 @@ class BookingController extends Controller
      */
     public function index()
     {
-        $bookings  = BookingInvoice::with('bookingperson', 'rooms')->orderBy('id', 'DESC')->get();
+        $start_date = NULL;
+        $end_date = NULL;
+        $invoice_id = NULL;
+        $phone_number = NULL;
+        if (isset(request()->start_date)) {
+            $start_date = request()->start_date;
+        }
+        if (isset(request()->end_date)) {
+            $end_date = request()->end_date;
+        }
+
+        if (isset(request()->invoice_id)) {
+            $invoice_id = ltrim(request()->invoice_id,'0');
+        }
+        if (isset(request()->phone_number)) {
+            $phone_number = request()->phone_number;
+        }
+
+        $bookings  = BookingInvoice::with('bookingperson', 'rooms')
+            ->where([['cancel_status', 0], ['checkeout_status', 0]])
+            ->when($start_date!=NULL,function($query)use($start_date){
+                return $query->whereDate('created_at', '>=', $start_date);
+            })
+            ->when($end_date!=NULL,function($query)use($end_date){
+                return $query->whereDate('created_at', '<=', $end_date);
+            })
+            ->when($invoice_id!=NULL,function($query)use($invoice_id){
+                return $query->where('id', $invoice_id);
+            })
+            ->when($phone_number!=NULL,function($query)use($phone_number){
+                return $query->whereHas('bookingperson',function($q) use($phone_number){
+                        $q->where('booking_phone_number',$phone_number);
+                });
+            })
+            ->when(($start_date==NULL &&  $end_date==NULL && $invoice_id==NULL && $phone_number==NULL),function($query){
+                return $query->limit(50);
+            })
+            ->orderBy('id', 'DESC')->get();
         return view('backend.blade.booking.index', compact('bookings'));
     }
 
@@ -295,7 +337,7 @@ class BookingController extends Controller
         $bookingI->discount = $data->booking_total_discount;
         $bookingI->discount_price = $data->booking_total_payable;
 
-        $payable_diff = $bookingI->total_payable-$data->booking_total_payable;
+        $payable_diff = $bookingI->total_payable - $data->booking_total_payable;
 
 
 
@@ -316,7 +358,7 @@ class BookingController extends Controller
                 $bookingPay = BookingPayment::where([['id', $payment->id]])->firstOrFail();
                 $bookingPay->payable_amount = $bookingI->total_payable;
                 // $bookingPay->pay_amount = $bookingI->total_paid;
-                $bookingPay->due_amount = $bookingI->total_payable-$bookingPay->pay_amount;
+                $bookingPay->due_amount = $bookingI->total_payable - $bookingPay->pay_amount;
                 $bookingPay->payment_method = 'CASH';
                 $bookingPay->note = 'Initial Payment';
                 $bookingPay->invoice_status = $bookingI->payment_status;
@@ -325,7 +367,7 @@ class BookingController extends Controller
             } else {
                 $bookingPay = BookingPayment::where([['id', $payment->id]])->firstOrFail();
                 $bookingPay->payable_amount = $prev_due;
-                $bookingPay->due_amount = $prev_due-$bookingPay->pay_amount;
+                $bookingPay->due_amount = $prev_due - $bookingPay->pay_amount;
                 $bookingPay->payment_method = 'CASH';
                 $bookingPay->note = 'Initial Payment';
                 $bookingPay->invoice_status = $bookingI->payment_status;
@@ -336,7 +378,7 @@ class BookingController extends Controller
             $prev_due = $bookingPay->due_amount;
         }
 
-        return back()->with('success',1);
+        return back()->with('success', 1);
     }
 
     /**
@@ -365,32 +407,39 @@ class BookingController extends Controller
                 $seats1 = Seat::when(isset($data->hostel), function ($q) use ($data) {
                     return $q->where('hostel_id', $data->hostel);
                 })
-                    ->when(isset($data->building), function ($q) use ($data) {
-                        return $q->where('building_id', $data->building);
-                    })
-                    ->when(isset($data->floor), function ($q) use ($data) {
-                        return $q->where('floor', $data->floor);
-                    })
-                    ->when(isset($room->id), function ($q) use ($room) {
-                        return $q->where('room_id', $room->id);
-                    })
-                    ->whereDate('last_booking_end_date', '<', $data->start_date)->get();
-
-                $seats2 = Seat::when(isset($data->hostel), function ($q) use ($data) {
-                    return $q->where('hostel_id', $data->hostel);
+                ->when(isset($data->building), function ($q) use ($data) {
+                    return $q->where('building_id', $data->building);
                 })
-                    ->when(isset($data->building), function ($q) use ($data) {
-                        return $q->where('building_id', $data->building);
-                    })
-                    ->when(isset($data->floor), function ($q) use ($data) {
-                        return $q->where('floor', $data->floor);
-                    })
-                    ->when(isset($room->id), function ($q) use ($room) {
-                        return $q->where('room_id', $room->id);
-                    })
-                    ->where('last_booking_end_date', null)->get();
+                ->when(isset($data->floor), function ($q) use ($data) {
+                    return $q->where('floor', $data->floor);
+                })
+                ->when(isset($room->id), function ($q) use ($room) {
+                    return $q->where('room_id', $room->id);
+                })
+                ->whereDoesntHave('bookings', function($query) use ($data) {
+                    $query->whereDate('booking_start_date', '<=', $data->end_date)
+                        ->whereDate('booking_end_date', '>', $data->start_date)
+                        ->whereDoesntHave('invoice',function($q){
+                            $q->where('cancel_status',1);
+                        });
+                })
+                ->get();
 
-                $rooms[$key]->seats = $seats1->merge($seats2);
+                // $seats2 = Seat::when(isset($data->hostel), function ($q) use ($data) {
+                //     return $q->where('hostel_id', $data->hostel);
+                // })
+                // ->when(isset($data->building), function ($q) use ($data) {
+                //     return $q->where('building_id', $data->building);
+                // })
+                // ->when(isset($data->floor), function ($q) use ($data) {
+                //     return $q->where('floor', $data->floor);
+                // })
+                // ->when(isset($room->id), function ($q) use ($room) {
+                //     return $q->where('room_id', $room->id);
+                // })
+                // ->where('last_booking_end_date', null)->get();
+
+                $rooms[$key]->seats = $seats1;
             }
             return $rooms;
         }
@@ -406,8 +455,8 @@ class BookingController extends Controller
         $data = [
             'bookingI' => $bookingI,
         ];
-        $pdf = Pdf::loadView('backend.blade.booking.pdf.booking', $data);
-        return $pdf->stream('invoice.pdf');
+        $pdf = Pdf::loadView('backend.blade.booking.pdf.checkoutclearace', $data);
+        return $pdf->stream('checkout_clearace.pdf');
     }
 
 
@@ -490,4 +539,386 @@ class BookingController extends Controller
             'confirmButtonText' => __('admin_local.Ok'),
         ]);
     }
+
+    public function getBookingCancelData(string $id)
+    {
+        $invoice = BookingInvoice::select('id', 'seat_service_charge', 'total_payable', 'total_paid', 'booking_start_date', 'booking_end_date')->findOrFail($id);
+        $total_payable = $invoice->total_payable;
+        $total_paid = $invoice->total_paid;
+        $seat_service_charge = $invoice->seat_service_charge;
+        // $total_payable = $invoice->total_payable;
+
+        $policies = CancelPolicy::first();
+
+        $refund_type = '';
+
+        if ($invoice->booking_start_date >= date('Y-m-d')) {
+            $refund_type = 'before';
+        } elseif ($invoice->booking_end_date <= date('Y-m-d')) {
+            $refund_type = 'checkout';
+        } else {
+            $refund_type = 'after';
+        }
+        $refund_amount = 0;
+        $refund_sc_amount = 0;
+        if ($refund_type == 'before') {
+            $date1 = new DateTime(date('Y-m-d', strtotime($invoice->booking_start_date)));
+            $date2 = new DateTime(date('Y-m-d'));
+
+            $diff = $date1->diff($date2);
+            // dd($diff->days);
+            if ($diff->days == 1 && $policies->has_policy_before_one_day == 1) {
+                /** Payable deduction */
+                $ref_net_amount =  $total_payable - $seat_service_charge;
+                $ref_pay_ded_amount = $ref_net_amount * ($policies->one_day_deduction / 100);
+
+                /** Service charge deduction */
+                $ref_sc_ded_amount = $seat_service_charge * ($policies->one_day_service_charge_deduction / 100);
+
+
+
+                $total_deduction = $ref_pay_ded_amount + $ref_sc_ded_amount;
+                //  dd($total_deduction);
+                $refund_sc_amount = $seat_service_charge - $ref_sc_ded_amount;
+                $refund_amount = $total_paid - $total_deduction;
+
+                if ($refund_amount > 0 && $policies->one_day_maximum_refund > 0) {
+                    $refund_amount = $refund_amount < $policies->one_day_maximum_refund ? $refund_amount : $policies->one_day_maximum_refund;
+                }
+            } else if ($diff->days == 2 && $policies->has_policy_before_two_day == 1) {
+                /** Payable deduction */
+                $ref_net_amount =  $total_payable - $seat_service_charge;
+                $ref_pay_ded_amount = $ref_net_amount * ($policies->two_day_deduction / 100);
+
+                /** Service charge deduction */
+                $ref_sc_ded_amount = $seat_service_charge * ($policies->two_day_service_charge_deduction / 100);
+
+
+
+                $total_deduction = $ref_pay_ded_amount + $ref_sc_ded_amount;
+                //  dd($total_deduction);
+                $refund_sc_amount = $seat_service_charge - $ref_sc_ded_amount;
+                $refund_amount = $total_paid - $total_deduction;
+
+                if ($refund_amount > 0 && $policies->two_day_maximum_refund > 0) {
+                    $refund_amount = $refund_amount < $policies->two_day_maximum_refund ? $refund_amount : $policies->two_day_maximum_refund;
+                }
+            } else if ($diff->days == 3 && $policies->has_policy_before_three_day == 1) {
+                /** Payable deduction */
+                $ref_net_amount =  $total_payable - $seat_service_charge;
+                $ref_pay_ded_amount = $ref_net_amount * ($policies->three_day_deduction / 100);
+
+                /** Service charge deduction */
+                $ref_sc_ded_amount = $seat_service_charge * ($policies->three_day_service_charge_deduction / 100);
+
+
+
+                $total_deduction = $ref_pay_ded_amount + $ref_sc_ded_amount;
+                //  dd($total_deduction);
+                $refund_sc_amount = $seat_service_charge - $ref_sc_ded_amount;
+                $refund_amount = $total_paid - $total_deduction;
+
+                if ($refund_amount > 0 && $policies->three_day_maximum_refund > 0) {
+                    $refund_amount = $refund_amount < $policies->three_day_maximum_refund ? $refund_amount : $policies->three_day_maximum_refund;
+                }
+            } else if ($diff->days > 3 && $diff->days <= 5 && $policies->has_policy_before_five_day == 1) {
+                /** Payable deduction */
+                $ref_net_amount =  $total_payable - $seat_service_charge;
+                $ref_pay_ded_amount = $ref_net_amount * ($policies->five_day_deduction / 100);
+
+                /** Service charge deduction */
+                $ref_sc_ded_amount = $seat_service_charge * ($policies->five_day_service_charge_deduction / 100);
+
+
+
+                $total_deduction = $ref_pay_ded_amount + $ref_sc_ded_amount;
+                //  dd($total_deduction);
+                $refund_sc_amount = $seat_service_charge - $ref_sc_ded_amount;
+                $refund_amount = $total_paid - $total_deduction;
+
+                if ($refund_amount > 0 && $policies->five_day_maximum_refund > 0) {
+                    $refund_amount = $refund_amount < $policies->five_day_maximum_refund ? $refund_amount : $policies->five_day_maximum_refund;
+                }
+            } else if ($diff->days > 5 && $diff->days <= 7 && $policies->has_policy_before_seven_day == 1) {
+                /** Payable deduction */
+                $ref_net_amount =  $total_payable - $seat_service_charge;
+                $ref_pay_ded_amount = $ref_net_amount * ($policies->seven_day_deduction / 100);
+
+                /** Service charge deduction */
+                $ref_sc_ded_amount = $seat_service_charge * ($policies->seven_day_service_charge_deduction / 100);
+
+
+
+                $total_deduction = $ref_pay_ded_amount + $ref_sc_ded_amount;
+                //  dd($total_deduction);
+                $refund_sc_amount = $seat_service_charge - $ref_sc_ded_amount;
+                $refund_amount = $total_paid - $total_deduction;
+
+                if ($refund_amount > 0 && $policies->seven_day_maximum_refund > 0) {
+                    $refund_amount = $refund_amount < $policies->seven_day_maximum_refund ? $refund_amount : $policies->seven_day_maximum_refund;
+                }
+            } else if ($diff->days > 7 && $policies->has_policy_before_eight_day == 1) {
+                /** Payable deduction */
+                $ref_net_amount =  $total_payable - $seat_service_charge;
+                $ref_pay_ded_amount = $ref_net_amount * ($policies->eight_day_deduction / 100);
+
+                /** Service charge deduction */
+                $ref_sc_ded_amount = $seat_service_charge * ($policies->eight_day_service_charge_deduction / 100);
+
+
+
+                $total_deduction = $ref_pay_ded_amount + $ref_sc_ded_amount;
+                //  dd($total_deduction);
+                $refund_sc_amount = $seat_service_charge - $ref_sc_ded_amount;
+                $refund_amount = $total_paid - $total_deduction;
+
+                if ($refund_amount > 0 && $policies->eight_day_maximum_refund > 0) {
+                    $refund_amount = $refund_amount < $policies->eight_day_maximum_refund ? $refund_amount : $policies->eight_day_maximum_refund;
+                }
+            }
+        } elseif ($refund_type == 'after') {
+            if ($policies->has_policy_after_booking_started == 1) {
+                /** Payable deduction */
+
+                $ref_net_amount =  $total_payable - $seat_service_charge;
+                $ref_pay_ded_amount = $ref_net_amount * ($policies->started_deduction / 100);
+                //  dd($ref_pay_ded_amount);
+                /** Service charge deduction */
+                $ref_sc_ded_amount = $seat_service_charge * ($policies->started_service_charge_deduction / 100);
+
+
+
+                $total_deduction = $ref_pay_ded_amount + $ref_sc_ded_amount;
+                //  dd($total_deduction);
+                $refund_sc_amount = $seat_service_charge - $ref_sc_ded_amount;
+                $refund_amount = $total_paid - $total_deduction;
+
+                if ($refund_amount > 0 && $policies->started_maximum_refund > 0) {
+                    $refund_amount = $refund_amount < $policies->started_maximum_refund ? $refund_amount : $policies->started_maximum_refund;
+                }
+            }
+        }
+
+
+        return response([
+            'invoice' => $invoice,
+            'refund_type' => $refund_type,
+            'refund_sc_amount' => $refund_sc_amount,
+            'refund_amount' => $refund_amount,
+        ]);
+    }
+    public function getBookingCancel(Request $data, string $id)
+    {
+        // dd($data->all());
+        $data->validate([
+            'cancel_otp' => 'required',
+        ]);
+        $invoice = BookingInvoice::with('bookingperson')->where('id', $id)->first();
+        $check = Otp::where([['otp_type', 'booking_cancellation'], ['receiver_number', $invoice->bookingperson->booking_phone_number], ['otp_end_time', '>', Carbon::now()], ['otp', $data->cancel_otp]])->first();
+        if ($check) {
+            if ($data->refund_amount < 0) {
+                $data->merge([
+                    'paying_amount' => (int) $data->input('paying_amount'),
+                ]);
+                $data->validate([
+                    'paying_amount' => 'required|integer|min:1',
+                ], [
+                    'paying_amount.min' => __('admin_local.Paying amount is required')
+                ]);
+                $invoice = BookingInvoice::where('id', $id)->firstOrFail();
+                $invoice->total_paid = $invoice->total_paid + $data->paying_amount;
+                $invoice->total_due = $invoice->total_due - $data->paying_amount;
+                $invoice->payment_status = $invoice->total_due == 0 ? 1 : 2;
+                $invoice->save();
+
+
+                $bookingPay = new BookingPayment();
+                $bookingPay->invoice_id = $invoice->id;
+                $bookingPay->payment_date = Carbon::now();
+                $bookingPay->payable_amount = $data->payable_amount;
+                $bookingPay->pay_amount = $data->paying_amount;
+                $bookingPay->due_amount = $invoice->total_due;
+                $bookingPay->payment_method = $data->payment_method;
+                $bookingPay->note = 'CANCEL_PAYMENT';
+                $bookingPay->invoice_status = $invoice->payment_status;
+                $bookingPay->created_by = Auth::guard('admin')->user()->id;
+                $bookingPay->save();
+            }
+
+            $invoice = BookingInvoice::where('id', $id)->firstOrFail();
+            $invoice->cancel_status = 1;
+            $invoice->save();
+
+            $cancel = new CancelBooking();
+            $cancel->invoice_id = $invoice->id;
+            $cancel->total_payable = $invoice->total_payable;
+            $cancel->total_paid = $invoice->total_paid;
+            $cancel->total_service_charge = $invoice->seat_service_charge;
+            $cancel->service_charge_refund = $data->refund_service_charge > 0 ? $data->refund_service_charge : 0;
+            $cancel->refund_amount = $data->refund_amount > 0 ? $data->refund_amount : 0;
+            $cancel->refund_otp = $data->cancel_otp;
+            $cancel->paying_amount = $data->refund_amount <= 0 ? $data->paying_amount : 0;
+            $cancel->payment_method = $data->refund_amount <= 0 ? $data->payment_method : 0;
+            $cancel->type = $data->refund_amount < 0 ? 'IN' : ($data->refund_amount == 0 ? 'NUTTRAL' : 'OUT');
+
+            $cancel->save();
+            return response([
+                'title' => __('admin_local.Congratulations !'),
+                'text' => __('admin_local.Invoice canceled successfully.'),
+                'confirmButtonText' => __('admin_local.Ok'),
+            ]);
+        } else {
+            return response([
+                'message' => __('admin_local.Invalid OTP')
+            ], 401);
+        }
+    }
+
+
+    public function getCanceledBooking()
+    {
+        $start_date = NULL;
+        $end_date = NULL;
+        $invoice_id = NULL;
+        $phone_number = NULL;
+        if (isset(request()->start_date)) {
+            $start_date = request()->start_date;
+        }
+        if (isset(request()->end_date)) {
+            $end_date = request()->end_date;
+        }
+
+        if (isset(request()->invoice_id)) {
+            $invoice_id = ltrim(request()->invoice_id,'0');
+        }
+        if (isset(request()->phone_number)) {
+            $phone_number = request()->phone_number;
+        }
+
+
+        $bookings  = BookingInvoice::with('bookingperson', 'rooms')
+            ->where([['cancel_status', 1], ['checkeout_status', 0]])
+            ->when($start_date!=NULL,function($query)use($start_date){
+                return $query->whereDate('cancel_date', '>=', $start_date);
+            })
+            ->when($end_date!=NULL,function($query)use($end_date){
+                return $query->whereDate('cancel_date', '<=', $end_date);
+            })
+            ->when($invoice_id!=NULL,function($query)use($invoice_id){
+                return $query->where('id', $invoice_id);
+            })
+            ->when($phone_number!=NULL,function($query)use($phone_number){
+                return $query->whereHas('bookingperson',function($q) use($phone_number){
+                        $q->where('booking_phone_number',$phone_number);
+                });
+            })
+            ->when(($start_date==NULL &&  $end_date==NULL && $invoice_id==NULL && $phone_number==NULL),function($query){
+                return $query->limit(50);
+            })
+            ->orderBy('id', 'DESC')->get();
+        return view('backend.blade.booking.canceled', compact('bookings'));
+    }
+
+    /** Checkout Methods START*/
+
+    public function getBookingCheckoutData(string $id)
+    {
+        $invoice = BookingInvoice::where('id', $id)->select('id', 'total_payable','total_due','total_paid')->first();
+        return $invoice;
+    }
+
+
+    public function getBookingCheckout(Request $data,string $id){
+        $invoice = BookingInvoice::where('id', $id)->firstOrFail();
+        $invoice->total_paid = $data->paid_amount+$data->due_amount;
+        $invoice->total_due = 0;
+        $invoice->payment_status =  $invoice->total_due==0?1:2;
+        $invoice->checkeout_status =  1;
+        $invoice->checkout_date =  Carbon::now();
+        $invoice->save();
+        if($data->paying_amount>0){
+            $bookingPay = new BookingPayment();
+            $bookingPay->invoice_id = $invoice->id;
+            $bookingPay->payment_date = Carbon::now();
+            $bookingPay->payable_amount = $data->payable_amount;
+            $bookingPay->pay_amount = $data->paying_amount;
+            $bookingPay->due_amount = 0;
+            $bookingPay->payment_method = $data->payment_method;
+            $bookingPay->note = 'CHECKOUT_PAYMENT';
+            $bookingPay->invoice_status = $invoice->payment_status;
+            $bookingPay->created_by = Auth::guard('admin')->user()->id;
+            $bookingPay->save();
+        }
+
+        $invoice = BookingInvoice::with('bookingperson')->where('id', $id)->firstOrFail();
+        $checkout = new Checkout();
+        $checkout->invoice_id = $invoice->id;
+        $checkout->booking_person = $invoice->bookingperson->id;
+        $checkout->booking_person_name = $invoice->bookingperson->booking_person_name;
+        $checkout->booking_phone_number = $invoice->bookingperson->booking_phone_number;
+        $checkout->booking_person_email = $invoice->bookingperson->booking_person_email;
+        $checkout->total_service_charge = $invoice->seat_service_charge;
+        $checkout->total_payable = $data->payable_amount;
+        $checkout->total_paid = $data->paid_amount;
+        $checkout->total_due = $data->due_amount;
+        $checkout->total_penalty = $data->penalty_amount;
+        $checkout->paying_amount = $data->paying_amount;
+        $checkout->paying_method = $data->payment_method;
+        $checkout->customer_review = $data->checkout_note;
+
+        $checkout->save();
+
+
+        return response([
+            'title' => __('admin_local.Congratulations !'),
+            'text' => __('admin_local.Checkout successfully done.'),
+            'confirmButtonText' => __('admin_local.Ok'),
+        ]);
+    }
+
+    public function getCheckedoutBooking(){
+        $start_date = NULL;
+        $end_date = NULL;
+        $invoice_id = NULL;
+        $phone_number = NULL;
+        if (isset(request()->start_date)) {
+            $start_date = request()->start_date;
+        }
+        if (isset(request()->end_date)) {
+            $end_date = request()->end_date;
+        }
+
+        if (isset(request()->invoice_id)) {
+            $invoice_id = ltrim(request()->invoice_id,'0');
+        }
+        if (isset(request()->phone_number)) {
+            $phone_number = request()->phone_number;
+        }
+
+
+        $bookings  = BookingInvoice::with('bookingperson', 'rooms')
+            ->where([['cancel_status', 0], ['checkeout_status', 1]])
+            ->when($start_date!=NULL,function($query)use($start_date){
+                return $query->whereDate('checkout_date', '>=', $start_date);
+            })
+            ->when($end_date!=NULL,function($query)use($end_date){
+                return $query->whereDate('checkout_date', '<=', $end_date);
+            })
+            ->when($invoice_id!=NULL,function($query)use($invoice_id){
+                return $query->where('id', $invoice_id);
+            })
+            ->when($phone_number!=NULL,function($query)use($phone_number){
+                return $query->whereHas('bookingperson',function($q) use($phone_number){
+                        $q->where('booking_phone_number',$phone_number);
+                });
+            })
+            ->when(($start_date==NULL &&  $end_date==NULL && $invoice_id==NULL && $phone_number==NULL),function($query){
+                return $query->limit(50);
+            })
+            ->orderBy('id', 'DESC')->get();
+        return view('backend.blade.booking.checkedout', compact('bookings'));
+    }
+
+
+    /** Checkout Methods END */
 }

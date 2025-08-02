@@ -3,7 +3,7 @@ $(document).on('click', '#show_payments', function () {
     let invoice = $(this).closest('tr').data('id');
     $.ajax({
         type: "get",
-        url: 'get/booking/payments/' + invoice,
+        url: base_url+'admin/get/booking/payments/' + invoice,
         dataType: 'JSON',
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -368,3 +368,207 @@ $(document).on('click','#delete_button',function(){
         }
     })
 });
+
+$(document).on('click','#cancel_btn',function(e){
+    let invoice_id = $(this).closest('tr').data('id');
+    $.ajax({
+        type: "get",
+        url: 'get/booking/cancel/data/' + invoice_id,
+        dataType: 'JSON',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (data) {
+
+            $('#cancel_form #cpayment_invoice_id').val(data.invoice.id);
+            $('#cancel_form #cpayable_amount').val(data.invoice.total_payable);
+            $('#cancel_form #cpaid_amount').val(data.invoice.total_paid);
+            $('#cancel_form #refund_service_charge').val(data.refund_sc_amount);
+            $('#cancel_form #refund_amount').val(data.refund_amount);
+
+            var number =data.invoice.id;
+            var padded = number.toString().padStart(8, '0');
+            console.log(padded);
+
+            $('#cinvoice_id_append').empty().append(' #'+padded);
+
+            if(parseFloat(data.refund_amount)<0){
+                $('#append_if_due').removeClass('d-none');
+                $('#cancel_form #cpaying_amount').val(Math.abs(parseFloat(data.refund_amount)));
+            }else{
+                $('#append_if_due').addClass('d-none');
+            }
+
+
+
+        },
+        error: function (err) {
+            var err_message = err.responseJSON.message.split("(");
+            swal({
+                icon: "warning",
+                title: "Warning !",
+                text: err_message[0],
+                confirmButtonText: "Ok",
+            });
+        }
+    });
+})
+
+$(document).on('click','#send_cancel_otp_btn',function(e){
+    $.ajax({
+        type: "get",
+        url: 'get/otp/'+"booking_cancellation/"+$('#cpayment_invoice_id').val(),
+        dataType: 'JSON',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (data) {
+            $('#cancel_otp').val(data);
+        },
+        error: function (err) {
+            var err_message = err.responseJSON.message.split("(");
+            swal({
+                icon: "warning",
+                title: "Warning !",
+                text: err_message[0],
+                confirmButtonText: "Ok",
+            });
+        }
+    });
+})
+$(document).on('submit','#cancel_form',function(e){
+    e.preventDefault();
+    let invoice_id = $('#cpayment_invoice_id',this).val();
+    var formData = $(this).serialize();
+     swal({
+        title: cancel_swal_title,
+        text: cancel_swal_text,
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    }).then((willDelete) => {
+        if (willDelete) {
+            $.ajax({
+                type: "put",
+                url: 'post/booking/cancel/'+invoice_id,
+                data: formData,
+                success: function (data) {
+                    swal({
+                        icon: "success",
+                        title: data.title,
+                        text: data.text,
+                        confirmButtonText: data.confirmButtonText,
+                    }).then(function () {
+                        window.location.reload();
+                    });
+                },
+                error: function (err) {
+                    var err_message = err.responseJSON.message.split("(");
+                    swal({
+                        icon: "warning",
+                        title: "Warning !",
+                        text: err_message[0],
+                        confirmButtonText: "Ok",
+                    });
+                }
+            });
+
+        } else {
+            swal(cancelswal_cancel_text);
+        }
+    })
+});
+
+
+$(document).on('click','#checkout_btn',function(e){
+    let invoice_id = $(this).closest('tr').data('id');
+    $.ajax({
+        type: "get",
+        url: 'get/booking/checkout/data/' + invoice_id,
+        dataType: 'JSON',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (data) {
+
+            $('#checkout_form #chpayment_invoice_id').val(data.id);
+            $('#checkout_form #chpayable_amount').val(data.total_payable);
+            $('#checkout_form #chpaid_amount').val(data.total_paid);
+            $('#checkout_form #chdue_amount').val(data.total_due);
+
+            var number =data.id;
+            var padded = number.toString().padStart(8, '0');
+            console.log(padded);
+
+            $('#chinvoice_id_append').empty().append(' #'+padded);
+
+            if(parseFloat(data.total_due)>0){
+                $('#append_if_chdue').removeClass('d-none');
+                $('#checkout_form #chpaying_amount').val(Math.abs(parseFloat(data.total_due)));
+            }else{
+                $('#append_if_chdue').addClass('d-none');
+            }
+
+
+
+        },
+        error: function (err) {
+            var err_message = err.responseJSON.message.split("(");
+            swal({
+                icon: "warning",
+                title: "Warning !",
+                text: err_message[0],
+                confirmButtonText: "Ok",
+            });
+        }
+    });
+})
+
+
+$(document).on('submit','#checkout_form',function(e){
+    e.preventDefault();
+    let invoice_id = $('#chpayment_invoice_id',this).val();
+    var formData = $(this).serialize();
+     swal({
+        title: checkout_swal_title,
+        text: checkout_swal_text,
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    }).then((willDelete) => {
+        if (willDelete) {
+            $.ajax({
+                type: "put",
+                url: 'post/booking/checkout/'+invoice_id,
+                data: formData,
+                success: function (data) {
+                    swal({
+                        icon: "success",
+                        title: data.title,
+                        text: data.text,
+                        confirmButtonText: data.confirmButtonText,
+                    }).then(function () {
+                        window.location.reload();
+                    });
+                },
+                error: function (err) {
+                    var err_message = err.responseJSON.message.split("(");
+                    swal({
+                        icon: "warning",
+                        title: "Warning !",
+                        text: err_message[0],
+                        confirmButtonText: "Ok",
+                    });
+                }
+            });
+
+        } else {
+            swal(checkoutswal_cancel_text);
+        }
+    })
+});
+
+$(document).on('input','#chpenalty_amount',function(){
+    let tot_amount = parseInt($('#checkout_form #chdue_amount').val())+parseInt($(this).val());
+    $('#checkout_form #chpaying_amount').val(tot_amount);
+})

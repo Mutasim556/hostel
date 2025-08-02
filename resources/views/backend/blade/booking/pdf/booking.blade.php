@@ -53,6 +53,20 @@
             display: inline-block;
             padding-top: 5px;
         }
+        .paid-stamp {
+             text-align: right;
+             margin-top: 10px;
+             color: green;
+             font-weight: bold;
+             font-size: 2.2em;
+         }
+         .paid-stamp2 {
+             text-align: right;
+             margin-top: 10px;
+             color: rgb(255, 4, 25);
+             font-weight: bold;
+             font-size: 2.2em;
+         }
     </style>
 </head>
 <body>
@@ -63,7 +77,7 @@
             <table>
                 <tr>
                     <td class="label">Invoice ID:</td>
-                    <td>#{{ str_pad( $bookingI->id, 8, '0', STR_PAD_LEFT); }}</td>
+                    <td>#{{ str_pad( $bookingI->id, 8, '0', STR_PAD_LEFT); }} [ {{ date('Y-m-d h:i:s A',strtotime($bookingI->created_at)) }} ]</td>
                 </tr>
                 <tr>
                     <td class="label">Bookig Person :</td>
@@ -119,11 +133,11 @@
                 </tr>
                 <tr>
                     <td class="label">Booking Date:</td>
-                    <td>{{ date('d M , Y',strtotime($bookingI->booking_start_date)) }}</td>
+                    <td>{{ date('d M , Y',strtotime($bookingI->booking_start_date)) }} - {{ date('d M , Y',strtotime($bookingI->booking_end_date)) }}</td>
                 </tr>
                 <tr>
                     <td class="label">Total Fee:</td>
-                    <td> BDT {{ $bookingI->seat_price+$bookingData->seat_service_charge }}</td>
+                    <td> BDT {{ $bookingI->seat_price }} + BDT {{ $bookingI->seat_service_charge }} [ Service Charge ]</td>
                 </tr>
                 <tr>
                     <td class="label">Discount:</td>
@@ -131,7 +145,7 @@
                 </tr>
                 <tr>
                     <td class="label">Payable :</td>
-                    <td> BDT {{ $bookingI->total_payable }}</td>
+                    <td> BDT {{ $bookingI->total_payable }} </td>
                 </tr>
                 <tr>
                     <td class="label">Paid :</td>
@@ -142,6 +156,12 @@
                     <td> BDT {{ $bookingI->total_due }}</td>
                 </tr>
             </table>
+            @if($bookingI->cancel_status==1)
+            <div class="paid-stamp2">✖ CANCELLED</div>
+            @elseif($bookingI->checkeout_status==1)
+             <div class="paid-stamp">✔ PAID</div>
+            @endif
+
         </div>
 
         <div class="signature">
