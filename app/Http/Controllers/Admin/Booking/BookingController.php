@@ -451,10 +451,11 @@ class BookingController extends Controller
     }
     public function getBookingInvoices(string $id)
     {
-        $bookingI = BookingInvoice::with('bookings', 'bookingperson', 'service')->where('id', $id)->first();
+        $bookingI = BookingInvoice::with('bookings', 'bookingperson', 'service','canceled')->where('id', $id)->first();
         $data = [
             'bookingI' => $bookingI,
         ];
+        // dd($bookingI);
         $pdf = Pdf::loadView('backend.blade.booking.pdf.checkoutclearace', $data);
         return $pdf->stream('checkout_clearace.pdf');
     }
@@ -552,15 +553,14 @@ class BookingController extends Controller
 
         $refund_type = '';
 
-        if ($invoice->booking_start_date >= date('Y-m-d')) {
+        if ($invoice->booking_start_date > date('Y-m-d')) {
             $refund_type = 'before';
-        } elseif ($invoice->booking_end_date <= date('Y-m-d')) {
-            $refund_type = 'checkout';
         } else {
             $refund_type = 'after';
         }
         $refund_amount = 0;
         $refund_sc_amount = 0;
+        // dd($refund_type);
         if ($refund_type == 'before') {
             $date1 = new DateTime(date('Y-m-d', strtotime($invoice->booking_start_date)));
             $date2 = new DateTime(date('Y-m-d'));
@@ -684,7 +684,7 @@ class BookingController extends Controller
                 $ref_pay_ded_amount = $ref_net_amount * ($policies->started_deduction / 100);
                 //  dd($ref_pay_ded_amount);
                 /** Service charge deduction */
-                $ref_sc_ded_amount = $seat_service_charge * ($policies->started_service_charge_deduction / 100);
+                $ref_sc_ded_amount = $policies->started_service_charge_deduction>0?$seat_service_charge * ($policies->started_service_charge_deduction / 100):0;
 
 
 
@@ -796,7 +796,7 @@ class BookingController extends Controller
         }
 
 
-        $bookings  = BookingInvoice::with('bookingperson', 'rooms')
+        $bookings  = BookingInvoice::with('bookingperson', 'rooms','canceled')
             ->where([['cancel_status', 1], ['checkeout_status', 0]])
             ->when($start_date!=NULL,function($query)use($start_date){
                 return $query->whereDate('cancel_date', '>=', $start_date);
@@ -816,6 +816,7 @@ class BookingController extends Controller
                 return $query->limit(50);
             })
             ->orderBy('id', 'DESC')->get();
+           
         return view('backend.blade.booking.canceled', compact('bookings'));
     }
 

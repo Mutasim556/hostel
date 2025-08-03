@@ -137,6 +137,9 @@
         @foreach ($bookingI->payments as $key=>$payment)
         @php
             $total_amount = $total_amount+$payment->pay_amount;
+            if($payment->pay_amount==0){
+              continue;
+            }
         @endphp
         <tr>
           <td>{{ $payment->payment_date }}</td>
@@ -150,12 +153,61 @@
       <thead>
         <tr>
           <td colspan="3">Total </td>
-          <td>= {{ $total_amount }} BDT</td>
+          <td>= {{ $total_amount==0?'N/A':$total_amount." BDT" }} </td>
         </tr>
       </thead>
     </table>
+    @if ($bookingI->cancel_status==1)
+    <u><h4 style="text-align: center;">Refund</h4></u>
+    <table>
+      <thead>
+        <tr>
+          <th>Cancel Date</th>
+          <th>Seat Charge</th>
+          <th>Service Charge</th>
+        </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td>{{ date('d M , Y h:i A',strtotime($bookingI->cancel_date)) }}</td>
+        <td>{{ $bookingI->canceled->refund_amount }} BDT</td>
+        <td>{{ $bookingI->canceled->service_charge_refund }} BDT</td>
+       </tr>
 
-    <div class="totals">
+      </tbody>
+    </table>
+    @endif
+
+    @if ($bookingI->checkout_status==1)
+    <u><h4 style="text-align: center;"></h4></u>
+    <table>
+      <thead>
+        <tr>
+          <th>Cancel Date</th>
+          <th>Seat Charge</th>
+          <th>Service Charge</th>
+        </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+       </tr>
+
+      </tbody>
+      <thead>
+        <tr>
+          <td colspan="2">Total </td>
+          <td>= {{ $total_amount==0?'N/A':$total_amount." BDT" }} </td>
+        </tr>
+      </thead>
+    </table>
+    @endif
+
+
+
+    {{-- <div class="totals">
       <span>Subtotal:</span>
       <strong>$135.00</strong>
     </div>
@@ -166,7 +218,7 @@
     <div class="totals">
       <span><strong>Grand Total:</strong></span>
       <strong>$148.50</strong>
-    </div>
+    </div> --}}
 
     <div class="footer">
       Thank you for your payment!<br/>
