@@ -66,6 +66,11 @@ class PermissionSeeder extends Seeder
         // Permission::create(['guard_name'=>'admin','name'=>'booking-delete','group_name'=>'Booking']);
         // Permission::create(['guard_name'=>'admin','name'=>'booking-payment','group_name'=>'Booking']);
         // Permission::create(['guard_name'=>'admin','name'=>'booking-invoice','group_name'=>'Booking']);
-        Permission::create(['guard_name'=>'admin','name'=>'cancel-policies','group_name'=>'Booking']);
+        // Permission::create(['guard_name'=>'admin','name'=>'cancel-policies','group_name'=>'Booking']);
+
+        Permission::create(['guard_name'=>'admin','name'=>'seat-wise-booking-report','group_name'=>'Booking Reports']);
+        Permission::create(['guard_name'=>'admin','name'=>'cancel-refund-report','group_name'=>'Booking Reports']);
+        Permission::create(['guard_name'=>'admin','name'=>'seat-wise-payment-report','group_name'=>'Booking Reports']);
+        Permission::create(['guard_name'=>'admin','name'=>'due-collection-view','group_name'=>'Booking Reports']);
     }
 }

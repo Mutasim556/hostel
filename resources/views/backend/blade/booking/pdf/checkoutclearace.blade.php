@@ -60,6 +60,12 @@
       justify-content: space-between;
       margin-bottom: 0.5rem;
       font-size: 1rem;
+      /* float: right; */
+      width: 300px;
+    }
+    .receipt .totals th,
+    .receipt .totals td{
+        padding: .3rem 1rem;
     }
 
     .receipt .totals strong {
@@ -68,7 +74,7 @@
 
     .receipt .footer {
       text-align: center;
-      margin-top: 2rem;
+      margin-top: 4rem;
       font-size: 0.85rem;
       color: #777;
     }
@@ -91,6 +97,17 @@
     <h2>Buddhijibi Hostel Clearance</h2>
     <div class="info">
       <div><strong>Invoice : #</strong> {{ str_pad( $bookingI->id, 8, '0', STR_PAD_LEFT); }} [ {{ date('Y-m-d h:i:s A',strtotime($bookingI->created_at)) }} ]</div>
+
+      <div><strong>Booking Info : </strong>{{ date('Y-m-d',strtotime($bookingI->booking_start_date)) }} to {{ date('Y-m-d',strtotime($bookingI->booking_end_date)) }} [
+        @php
+          foreach ($bookingI->bookings as $kk=>$value) {
+                echo $value->seat->seat_number;
+                if(count($bookingI->bookings)-2==$kk){
+                    echo ",";
+                }
+          }
+        @endphp
+       ]</div>
       <div><strong>Checkout Date : </strong>{{ date('Y-m-d h:i:s A',strtotime($bookingI->checkout_date)) }}</div>
       <div><strong>Customer Name : </strong>{{ $bookingI->bookingperson->booking_person_name }}</div>
       <div><strong>Customer Phone : </strong>{{ $bookingI->bookingperson->booking_phone_number }}</div>
@@ -162,63 +179,88 @@
     <table>
       <thead>
         <tr>
-          <th>Cancel Date</th>
-          <th>Seat Charge</th>
-          <th>Service Charge</th>
+            <th>Checkout Date</th>
+            <th>Service Charge Refund</th>
+            <th>Total Refund</th>
         </tr>
       </thead>
       <tbody>
        <tr>
         <td>{{ date('d M , Y h:i A',strtotime($bookingI->cancel_date)) }}</td>
-        <td>{{ $bookingI->canceled->refund_amount }} BDT</td>
         <td>{{ $bookingI->canceled->service_charge_refund }} BDT</td>
+        <td>{{ $bookingI->canceled->refund_amount }} BDT</td>
        </tr>
 
       </tbody>
     </table>
     @endif
 
-    @if ($bookingI->checkout_status==1)
+    @if ($bookingI->checkeout_status==1)
     <u><h4 style="text-align: center;"></h4></u>
     <table>
       <thead>
         <tr>
-          <th>Cancel Date</th>
-          <th>Seat Charge</th>
-          <th>Service Charge</th>
+          <th>Checkout Date</th>
+          <th>Note</th>
+          <th>Penalty</th>
         </tr>
       </thead>
       <tbody>
        <tr>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>{{ date('d M , Y h:i A',strtotime($bookingI->checkout_date))}}</td>
+        <td>{{ $bookingI->checkout->customer_review }}</td>
+        <td>{{ $bookingI->checkout->total_penalty }} BDT</td>
        </tr>
 
       </tbody>
       <thead>
         <tr>
           <td colspan="2">Total </td>
-          <td>= {{ $total_amount==0?'N/A':$total_amount." BDT" }} </td>
+          <td>= {{ $bookingI->checkout->total_penalty==0?'N/A':$bookingI->checkout->total_penalty." BDT" }} </td>
         </tr>
       </thead>
     </table>
     @endif
 
 
+    @if ($bookingI->cancel_status==1)
+    <div class="totals">
+        <table>
+            <tr>
+                <th>Total Payable </th>
+                <td>{{ $bookingI->total_payable }} /-</td>
+            </tr>
+            <tr>
+                <th>Total Paid</th>
+                <td>{{ $bookingI->total_paid }} /-<</td>
+            </tr>
+            <tr>
+                <th>Refund Amount</th>
+                <td>{{ $bookingI->canceled->refund_amount }} /-<</td>
+            </tr>
+        </table>
+    </div>
+    @elseif($bookingI->checkeout_status==1)
+    <div class="totals">
+        <table>
+            <tr>
+                <th>Total Payable </th>
+                <td>{{ $bookingI->total_payable }} /-</td>
+            </tr>
+            <tr>
+                <th>Penalty</th>
+                <td>{{ $bookingI->checkout->total_penalty }} /-<</td>
+            </tr>
+            <tr>
+                <th>Total Paid</th>
+                <td>{{ $bookingI->total_paid+$bookingI->checkout->total_penalty }} /-<</td>
+            </tr>
 
-    {{-- <div class="totals">
-      <span>Subtotal:</span>
-      <strong>$135.00</strong>
+        </table>
     </div>
-    <div class="totals">
-      <span>Tax (10%):</span>
-      <strong>$13.50</strong>
-    </div>
-    <div class="totals">
-      <span><strong>Grand Total:</strong></span>
-      <strong>$148.50</strong>
-    </div> --}}
+    @endif
+
+
 
     <div class="footer">
       Thank you for your payment!<br/>

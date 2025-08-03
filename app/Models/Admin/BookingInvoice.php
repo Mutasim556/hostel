@@ -38,7 +38,8 @@ class BookingInvoice extends Model
     public function canceled(){
         return $this->hasOne(CancelBooking::class,'invoice_id','id');
     }
-
-
+    public function checkout(){
+        return $this->hasOne(Checkout::class,'invoice_id','id');
+    }
 
 }

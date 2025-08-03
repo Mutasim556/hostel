@@ -451,7 +451,7 @@ class BookingController extends Controller
     }
     public function getBookingInvoices(string $id)
     {
-        $bookingI = BookingInvoice::with('bookings', 'bookingperson', 'service','canceled')->where('id', $id)->first();
+        $bookingI = BookingInvoice::with('bookings', 'bookingperson', 'service','canceled','checkout')->where('id', $id)->first();
         $data = [
             'bookingI' => $bookingI,
         ];
@@ -703,8 +703,8 @@ class BookingController extends Controller
         return response([
             'invoice' => $invoice,
             'refund_type' => $refund_type,
-            'refund_sc_amount' => $refund_sc_amount,
-            'refund_amount' => $refund_amount,
+            'refund_sc_amount' => ceil($refund_sc_amount),
+            'refund_amount' => ceil($refund_amount),
         ]);
     }
     public function getBookingCancel(Request $data, string $id)
@@ -816,7 +816,7 @@ class BookingController extends Controller
                 return $query->limit(50);
             })
             ->orderBy('id', 'DESC')->get();
-           
+
         return view('backend.blade.booking.canceled', compact('bookings'));
     }
 

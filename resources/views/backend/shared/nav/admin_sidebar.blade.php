@@ -88,6 +88,44 @@
             </ul>
         </li>
     @endif
+    @if (hasPermission(['seat-wise-booking-report', 'cancel-refund-report', 'seat-wise-payment-report', 'due-collection-report']))
+        <li class="sidebar-list">
+            <a class="sidebar-link sidebar-title" href="javascript:void(0)" aria-expanded="false">
+                <i data-feather="inbox"></i>
+                <span class="lan-3">{{ __('admin_local.Reports') }}</span>
+            </a>
+            <ul class="sidebar-submenu">
+                @if (hasPermission(['seat-wise-booking-report']))
+                <li>
+                    <a href="{{ route('admin.booking.create') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Seat Wise Booking') }} </span>
+                    </a>
+                </li>
+                @endif
+                @if (hasPermission(['cancel-refund-report']))
+                <li>
+                    <a href="{{ route('admin.booking.create') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Cancel/Refund') }} </span>
+                    </a>
+                </li>
+                @endif
+                @if (hasPermission(['seat-wise-payment-report']))
+                <li>
+                    <a href="{{ route('admin.booking.create') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Seat Wise Payment') }} </span>
+                    </a>
+                </li>
+                @endif
+                @if (hasPermission(['due-collection-report']))
+                <li>
+                    <a href="{{ route('admin.booking.create') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Due Collection') }} </span>
+                    </a>
+                </li>
+                @endif
+            </ul>
+        </li>
+    @endif
     @if (hasPermission(['user-index', 'user-create', 'user-update', 'user-delete']))
         <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="javascript:void(0)" aria-expanded="false">
