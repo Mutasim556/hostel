@@ -7,7 +7,7 @@
     @if (hasPermission(['room-index', 'room-create', 'room-update', 'room-delete']))
         <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="javascript:void(0)" aria-expanded="false">
-                <i data-feather="inbox"></i>
+                <i data-feather="archive"></i>
                 <span class="lan-3">{{ __('admin_local.Hostels') }}</span>
             </a>
             <ul class="sidebar-submenu">
@@ -22,7 +22,7 @@
     @if (hasPermission(['room-index', 'room-create', 'room-update', 'room-delete','seat-create']))
         <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="javascript:void(0)" aria-expanded="false">
-                <i data-feather="inbox"></i>
+                <i data-feather="box"></i>
                 <span class="lan-3">{{ __('admin_local.Rooms') }}</span>
             </a>
             <ul class="sidebar-submenu">
@@ -91,7 +91,7 @@
     @if (hasPermission(['seat-wise-booking-report', 'cancel-refund-report', 'seat-wise-payment-report', 'due-collection-report']))
         <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="javascript:void(0)" aria-expanded="false">
-                <i data-feather="inbox"></i>
+                <i data-feather="book-open"></i>
                 <span class="lan-3">{{ __('admin_local.Reports') }}</span>
             </a>
             <ul class="sidebar-submenu">
