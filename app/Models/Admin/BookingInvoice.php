@@ -41,5 +41,7 @@ class BookingInvoice extends Model
     public function checkout(){
         return $this->hasOne(Checkout::class,'invoice_id','id');
     }
-
+    // public function service(){
+    //     $this->belongsTo(ServiceType::class,'service_id','id');
+    // }
 }

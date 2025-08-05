@@ -97,7 +97,7 @@
             <ul class="sidebar-submenu">
                 @if (hasPermission(['seat-wise-booking-report']))
                 <li>
-                    <a href="{{ route('admin.booking.create') }}" class="sidebar-link">
+                    <a href="{{ route('admin.reports.seatWiseBooking') }}" class="sidebar-link">
                         <span> {{ __('admin_local.Seat Wise Booking') }} </span>
                     </a>
                 </li>

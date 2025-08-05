@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Localization\BackendLanguageController;
 use App\Http\Controllers\Admin\Localization\ChangeLanguageController;
 use App\Http\Controllers\Admin\Localization\LanguageController;
 use App\Http\Controllers\Admin\OtpController;
+use App\Http\Controllers\Admin\Reports\ReportsController;
 use App\Http\Controllers\Admin\Role\RoleAndPermissionController;
 use App\Http\Controllers\Admin\Rooms\RoomController;
 use App\Http\Controllers\Admin\Rooms\SeatController;
@@ -148,6 +149,15 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::get('cancel-policy',[CancelPolicyController::class,'index'])->name('cancelPolicy.index');
         Route::post('cancel-policy',[CancelPolicyController::class,'store'])->name('cancelPolicy.store');
         /** Cancel Policy End */
+
+        /** Reports Start */
+        Route::controller(ReportsController::class)->prefix('reports')->name('reports.')->group(function(){
+            Route::get('/seat-wise-booking-report','seatWiseBooking')->name('seatWiseBooking');
+            Route::get('/cancel-refund','cancelRefund');
+            Route::get('/seat-wise-payments','seatWisePayments');
+            Route::get('/due-collections','dueCollections');
+        });
+        /** Reports End */
 
         /** OTP Start */
          Route::get('/get/otp/{type}/{id?}',OtpController::class);
