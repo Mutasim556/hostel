@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Reports;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Booking;
+use App\Models\Admin\CancelBooking;
 use Illuminate\Http\Request;
 
 class ReportsController extends Controller
@@ -30,10 +31,36 @@ class ReportsController extends Controller
                         $q->where('service_id',$type);
                     });
                 })
-                // ->select('room.room_number')
                 ->get();
-// dd($type);
         $reports = $booked;
         return view('backend.blade.reports.seat_wise_booking_report',compact('reports'));
+    }
+
+
+    public function cancelRefund(){
+        $start_date = isset(request()->start_date)?request()->start_date:'';
+        $end_date = isset(request()->end_date)?request()->end_date:'';
+        // dd($end_date);
+        $room = isset(request()->room)?request()->room:'All';
+        $type = isset(request()->booking_type)?request()->booking_type:'All';
+        $cBooking = CancelBooking::with('invoice','invoice.bookings')
+                    ->whereHas('invoice',function($query)use($start_date,$end_date,$type){
+                        return $query->when($start_date!='',function($q)use($start_date){
+                            return $q->whereDate('cancel_date','>=',$start_date);
+                        })->when($end_date!='',function($q)use($end_date){
+                            return $q->whereDate('cancel_date','<=',$end_date);
+                        })
+                        ->when($type!='All',function($q)use($type){
+                            return $q->where('service_id',$type);
+                        });
+                    })
+                    ->whereHas('invoice.bookings',function($query)use($room){
+                        return $query->when($room!='All',function($q)use($room){
+                            return $q->where('room_id',$room);
+                        });
+                    })
+                    ->get();
+        // dd($cBooking);
+        return view('backend.blade.reports.cancel_refund_report',compact('cBooking'));
     }
 }

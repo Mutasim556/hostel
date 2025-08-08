@@ -104,7 +104,7 @@
                 @endif
                 @if (hasPermission(['cancel-refund-report']))
                 <li>
-                    <a href="{{ route('admin.booking.create') }}" class="sidebar-link">
+                    <a href="{{ route('admin.reports.cancelRefund') }}" class="sidebar-link">
                         <span> {{ __('admin_local.Cancel/Refund') }} </span>
                     </a>
                 </li>

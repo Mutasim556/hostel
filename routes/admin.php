@@ -153,7 +153,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         /** Reports Start */
         Route::controller(ReportsController::class)->prefix('reports')->name('reports.')->group(function(){
             Route::get('/seat-wise-booking-report','seatWiseBooking')->name('seatWiseBooking');
-            Route::get('/cancel-refund','cancelRefund');
+            Route::get('/cancel-refund','cancelRefund')->name('cancelRefund');
             Route::get('/seat-wise-payments','seatWisePayments');
             Route::get('/due-collections','dueCollections');
         });

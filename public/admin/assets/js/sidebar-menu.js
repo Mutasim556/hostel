@@ -189,10 +189,10 @@
     $(".sidebar-wrapper nav").find("a").removeClass("active");
     $(".sidebar-wrapper nav").find("li").removeClass("active");
   
-    var current = window.location.href;
+    var current = window.location.href.split('?')[0];
     $(".sidebar-wrapper nav ul li a").filter(function () {
       var link = $(this).attr("href");
-      if (link) {
+      if (current) {
         if (current==link) {
           $(this).parents().children("a").addClass("active");
           $(this).parents().parents().children("ul").css("display", "block");
