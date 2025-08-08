@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 24, 2025 at 12:55 PM
+-- Generation Time: Aug 08, 2025 at 11:40 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.12
 
@@ -94,6 +94,14 @@ CREATE TABLE `bookings` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `bookings`
+--
+
+INSERT INTO `bookings` (`id`, `invoice_id`, `hostel_id`, `building_id`, `floor`, `room_id`, `seat_id`, `booking_person`, `booking_start_date`, `booking_end_date`, `seat_price`, `seat_service_charge`, `discount`, `discount_price`, `total_payable`, `total_paid`, `total_due`, `payment_status`, `status`, `delete`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 1, '12th', 152, 152, 1, '2025-08-03', '2025-08-04', NULL, 0, 0, 0, NULL, NULL, NULL, 0, 1, 0, '2025-08-03 10:50:49', '2025-08-03 10:50:49'),
+(2, 2, 1, 1, '2nd', 12, 12, 1, '2025-08-08', '2025-08-09', NULL, 0, 0, 0, NULL, NULL, NULL, 0, 1, 0, '2025-08-06 06:49:29', '2025-08-06 06:49:29');
+
 -- --------------------------------------------------------
 
 --
@@ -114,6 +122,10 @@ CREATE TABLE `booking_invoices` (
   `total_paid` double NOT NULL,
   `total_due` double NOT NULL,
   `payment_status` int(11) NOT NULL DEFAULT 0 COMMENT '0=unpaid 1=paid 2=partially paid',
+  `cancel_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1=canceled and 0 = not canceled',
+  `cancel_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `checkeout_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1=checkeout and 0 = not checkeout',
+  `checkout_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `status` tinyint(1) NOT NULL,
   `delete` tinyint(1) NOT NULL,
   `created_by` bigint(20) UNSIGNED NOT NULL,
@@ -121,6 +133,14 @@ CREATE TABLE `booking_invoices` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `booking_invoices`
+--
+
+INSERT INTO `booking_invoices` (`id`, `booking_person`, `service_id`, `booking_start_date`, `booking_end_date`, `seat_price`, `seat_service_charge`, `discount`, `discount_price`, `total_payable`, `total_paid`, `total_due`, `payment_status`, `cancel_status`, `cancel_date`, `checkeout_status`, `checkout_date`, `status`, `delete`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 1, 2, '2025-08-03', '2025-08-04', 300, 0, 0, 300, 300, 100, 200, 2, 1, '2025-08-03 10:50:49', 0, '2025-08-03 10:50:49', 1, 0, 1, NULL, '2025-08-03 10:50:49', '2025-08-03 11:11:36'),
+(2, 1, 2, '2025-08-08', '2025-08-09', 300, 0, 0, 300, 300, 180, 120, 2, 1, '2025-08-06 06:49:29', 0, '2025-08-06 06:49:29', 1, 0, 1, NULL, '2025-08-06 06:49:29', '2025-08-06 06:52:04');
 
 -- --------------------------------------------------------
 
@@ -146,6 +166,16 @@ CREATE TABLE `booking_payments` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `booking_payments`
+--
+
+INSERT INTO `booking_payments` (`id`, `invoice_id`, `payment_date`, `payable_amount`, `pay_amount`, `due_amount`, `payment_method`, `note`, `invoice_status`, `status`, `delete`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 1, '2025-08-03 10:50:49', 300, 0, 300, 'CASH', 'Initial Payment', 2, 1, 0, 1, NULL, '2025-08-03 10:50:49', '2025-08-03 10:50:49'),
+(2, 1, '2025-08-03 10:53:40', 300, 100, 200, 'CASH', 'PAYMENT', 2, 1, 0, 1, NULL, '2025-08-03 10:53:40', '2025-08-03 10:53:40'),
+(3, 2, '2025-08-06 06:49:29', 300, 50, 250, 'CASH', 'Initial Payment', 2, 1, 0, 1, NULL, '2025-08-06 06:49:29', '2025-08-06 06:49:29'),
+(4, 2, '2025-08-06 06:52:04', 300, 130, 120, 'CASH', 'CANCEL_PAYMENT', 2, 1, 0, 1, NULL, '2025-08-06 06:52:04', '2025-08-06 06:52:04');
+
 -- --------------------------------------------------------
 
 --
@@ -167,6 +197,123 @@ CREATE TABLE `booking_persons` (
   `booking_person_nid` varchar(100) DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 1,
   `delete` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `booking_persons`
+--
+
+INSERT INTO `booking_persons` (`id`, `booking_phone_number`, `booking_person_email`, `booking_person_name`, `booking_person_gender`, `booking_person_dob`, `booking_nid_number`, `booking_person_address`, `booking_service_id`, `booking_person_workplace_address`, `booking_person_image`, `booking_person_nid`, `status`, `delete`, `created_at`, `updated_at`) VALUES
+(1, '01724698392', 'mutasimstore@gmail.com', 'Obaidul Kader', 'Male', '2025-08-01', '12345678', 'Noyanogor Mohila Madrasa , Noyanagar , Khilkhet', '123', 'Noyanogor Mohila Madrasa , Noyanagar , Khilkhet', 'public/admin/upload/person_image/1754218248bpimage.jpg', 'public/admin/upload/person_image/1754218248bpimage.jpg', 1, 0, '2025-08-03 10:50:49', '2025-08-03 10:50:49');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cancel_bookings`
+--
+
+CREATE TABLE `cancel_bookings` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `invoice_id` bigint(20) UNSIGNED NOT NULL,
+  `total_payable` double DEFAULT NULL,
+  `total_paid` double DEFAULT NULL,
+  `total_service_charge` double DEFAULT NULL,
+  `service_charge_refund` double NOT NULL DEFAULT 0,
+  `refund_amount` double DEFAULT NULL,
+  `refund_otp` double DEFAULT NULL,
+  `paying_amount` double DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `type` varchar(3) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `delete` tinyint(1) NOT NULL DEFAULT 0,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `updated_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cancel_bookings`
+--
+
+INSERT INTO `cancel_bookings` (`id`, `invoice_id`, `total_payable`, `total_paid`, `total_service_charge`, `service_charge_refund`, `refund_amount`, `refund_otp`, `paying_amount`, `payment_method`, `type`, `status`, `delete`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 1, 300, 100, 0, 0, 40, 917499, 0, '0', 'OUT', 1, 0, NULL, NULL, '2025-08-03 11:11:36', '2025-08-03 11:11:36'),
+(2, 2, 300, 180, 0, 0, 0, 256188, 130, 'CASH', 'IN', 1, 0, NULL, NULL, '2025-08-06 06:52:04', '2025-08-06 06:52:04');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cancel_policies`
+--
+
+CREATE TABLE `cancel_policies` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `has_policy_after_booking_started` tinyint(1) DEFAULT NULL,
+  `started_deduction` int(11) DEFAULT NULL,
+  `started_service_charge_deduction` tinyint(1) DEFAULT NULL,
+  `started_maximum_refund` int(11) DEFAULT NULL,
+  `has_policy_before_one_day` tinyint(1) DEFAULT NULL,
+  `one_day_deduction` int(11) DEFAULT NULL,
+  `one_day_service_charge_deduction` tinyint(1) DEFAULT NULL,
+  `one_day_maximum_refund` int(11) DEFAULT NULL,
+  `has_policy_before_two_day` tinyint(1) DEFAULT NULL,
+  `two_day_deduction` int(11) DEFAULT NULL,
+  `two_day_service_charge_deduction` tinyint(1) DEFAULT NULL,
+  `two_day_maximum_refund` int(11) DEFAULT NULL,
+  `has_policy_before_three_day` tinyint(1) DEFAULT NULL,
+  `three_day_deduction` int(11) DEFAULT NULL,
+  `three_day_service_charge_deduction` tinyint(1) DEFAULT NULL,
+  `three_day_maximum_refund` int(11) DEFAULT NULL,
+  `has_policy_before_five_day` tinyint(1) DEFAULT NULL,
+  `five_day_deduction` int(11) DEFAULT NULL,
+  `five_day_service_charge_deduction` tinyint(1) DEFAULT NULL,
+  `five_day_maximum_refund` int(11) DEFAULT NULL,
+  `has_policy_before_seven_day` tinyint(1) DEFAULT NULL,
+  `seven_day_deduction` int(11) DEFAULT NULL,
+  `seven_day_service_charge_deduction` tinyint(1) DEFAULT NULL,
+  `seven_day_maximum_refund` int(11) DEFAULT NULL,
+  `has_policy_before_eight_day` tinyint(1) DEFAULT NULL,
+  `eight_day_deduction` int(11) DEFAULT NULL,
+  `eight_day_service_charge_deduction` tinyint(1) DEFAULT NULL,
+  `eight_day_maximum_refund` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cancel_policies`
+--
+
+INSERT INTO `cancel_policies` (`id`, `has_policy_after_booking_started`, `started_deduction`, `started_service_charge_deduction`, `started_maximum_refund`, `has_policy_before_one_day`, `one_day_deduction`, `one_day_service_charge_deduction`, `one_day_maximum_refund`, `has_policy_before_two_day`, `two_day_deduction`, `two_day_service_charge_deduction`, `two_day_maximum_refund`, `has_policy_before_three_day`, `three_day_deduction`, `three_day_service_charge_deduction`, `three_day_maximum_refund`, `has_policy_before_five_day`, `five_day_deduction`, `five_day_service_charge_deduction`, `five_day_maximum_refund`, `has_policy_before_seven_day`, `seven_day_deduction`, `seven_day_service_charge_deduction`, `seven_day_maximum_refund`, `has_policy_before_eight_day`, `eight_day_deduction`, `eight_day_service_charge_deduction`, `eight_day_maximum_refund`, `created_at`, `updated_at`) VALUES
+(1, 1, 20, 0, 0, 1, 50, 50, 0, 1, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '2025-07-30 06:23:32', '2025-08-06 06:50:07');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `checkouts`
+--
+
+CREATE TABLE `checkouts` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `invoice_id` bigint(20) UNSIGNED NOT NULL,
+  `booking_person` bigint(20) UNSIGNED NOT NULL,
+  `booking_person_name` varchar(60) DEFAULT NULL,
+  `booking_phone_number` varchar(60) DEFAULT NULL,
+  `booking_person_email` varchar(60) DEFAULT NULL,
+  `total_service_charge` double DEFAULT NULL,
+  `total_payable` double DEFAULT NULL,
+  `total_paid` double DEFAULT NULL,
+  `total_due` double DEFAULT NULL,
+  `total_penalty` double DEFAULT NULL,
+  `paying_amount` double DEFAULT NULL,
+  `paying_method` varchar(20) DEFAULT NULL,
+  `customer_review` text DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `delete` tinyint(1) NOT NULL DEFAULT 0,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `updated_by` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -330,7 +477,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (25, '2025_07_18_122705_create_booking_payments_table', 1),
 (26, '2025_07_20_163930_create_service_types_table', 1),
 (27, '2025_07_20_171643_create_seat_service_types_table', 1),
-(28, '2025_07_20_235843_add_service_id_to_booking_invoices_table', 1);
+(28, '2025_07_20_235843_add_service_id_to_booking_invoices_table', 1),
+(29, '2025_07_26_112108_create_cancel_policies_table', 2),
+(30, '2025_08_01_152105_create_cancel_bookings_table', 3),
+(31, '2025_08_01_152210_create_otps_table', 3),
+(32, '2025_08_01_160758_add_cancel_status_booking_invoices_table', 3),
+(33, '2025_08_02_171356_add_cancel_date_booking_invoices_table', 3),
+(34, '2025_08_02_184136_create_checkouts_table', 3);
 
 -- --------------------------------------------------------
 
@@ -362,6 +515,30 @@ CREATE TABLE `model_has_roles` (
 
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 (1, 'App\\Models\\Admin', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `otps`
+--
+
+CREATE TABLE `otps` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `otp` varchar(20) NOT NULL,
+  `otp_type` varchar(100) NOT NULL,
+  `receiver_number` varchar(30) NOT NULL,
+  `otp_end_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `otps`
+--
+
+INSERT INTO `otps` (`id`, `otp`, `otp_type`, `receiver_number`, `otp_end_time`, `created_at`, `updated_at`) VALUES
+(1, '917499', 'booking_cancellation', '01724698392', '2025-08-03 11:16:26', '2025-08-03 11:11:26', '2025-08-03 11:11:26'),
+(2, '256188', 'booking_cancellation', '01724698392', '2025-08-06 06:57:00', '2025-08-06 06:52:00', '2025-08-06 06:52:00');
 
 -- --------------------------------------------------------
 
@@ -431,7 +608,11 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `group_name`, `created_at
 (34, 'booking-update', 'admin', 'Booking', '2025-07-24 04:26:45', '2025-07-24 04:26:45'),
 (35, 'booking-delete', 'admin', 'Booking', '2025-07-24 04:26:45', '2025-07-24 04:26:45'),
 (36, 'booking-payment', 'admin', 'Booking', '2025-07-24 04:26:45', '2025-07-24 04:26:45'),
-(37, 'booking-invoice', 'admin', 'Booking', '2025-07-24 04:26:45', '2025-07-24 04:26:45');
+(37, 'booking-invoice', 'admin', 'Booking', '2025-07-24 04:26:45', '2025-07-24 04:26:45'),
+(38, 'seat-wise-booking-report', 'admin', 'Booking Reports', '2025-08-04 02:32:52', '2025-08-04 02:32:52'),
+(39, 'cancel-refund-report', 'admin', 'Booking Reports', '2025-08-04 02:32:52', '2025-08-04 02:32:52'),
+(40, 'seat-wise-payment-report', 'admin', 'Booking Reports', '2025-08-04 02:32:52', '2025-08-04 02:32:52'),
+(41, 'due-collection-view', 'admin', 'Booking Reports', '2025-08-04 02:32:52', '2025-08-04 02:32:52');
 
 -- --------------------------------------------------------
 
@@ -722,7 +903,7 @@ INSERT INTO `seats` (`id`, `hostel_id`, `building_id`, `floor`, `block`, `room_i
 (9, 1, 1, '2nd', 'A', 9, '209', 'NON-AC', '209-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
 (10, 1, 1, '2nd', 'A', 10, '210', 'NON-AC', '210-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
 (11, 1, 1, '2nd', 'A', 11, '211', 'NON-AC', '211-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
-(12, 1, 1, '2nd', 'A', 12, '212', 'NON-AC', '212-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
+(12, 1, 1, '2nd', 'A', 12, '212', 'NON-AC', '212-A', 300, 100, 'day', 0, 0, '2025-08-08', '2025-08-09', 1, 1, 0, NULL, '2025-08-06 06:49:29'),
 (13, 1, 1, '3rd', 'A', 13, '301', 'NON-AC', '301-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
 (14, 1, 1, '3rd', 'A', 14, '302', 'NON-AC', '302-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
 (15, 1, 1, '3rd', 'A', 15, '303', 'NON-AC', '303-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
@@ -862,7 +1043,7 @@ INSERT INTO `seats` (`id`, `hostel_id`, `building_id`, `floor`, `block`, `room_i
 (149, 1, 1, '12th', 'A', 149, '1211', 'NON-AC', '1211-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
 (150, 1, 1, '12th', 'A', 150, '1212', 'NON-AC', '1212-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
 (151, 1, 1, '12th', 'A', 151, '1213', 'NON-AC', '1213-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
-(152, 1, 1, '12th', 'A', 152, '1214', 'NON-AC', '1214-A', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
+(152, 1, 1, '12th', 'A', 152, '1214', 'NON-AC', '1214-A', 300, 100, 'day', 0, 0, '2025-08-03', '2025-08-04', 1, 1, 0, NULL, '2025-08-03 10:50:49'),
 (153, 1, 1, '2nd', 'A', 1, '201', 'NON-AC', '201-B', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
 (154, 1, 1, '2nd', 'A', 2, '202', 'NON-AC', '202-B', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
 (155, 1, 1, '2nd', 'A', 3, '203', 'NON-AC', '203-B', 300, 100, 'day', 0, 0, NULL, NULL, 0, 1, 0, NULL, NULL),
@@ -1053,6 +1234,17 @@ CREATE TABLE `service_types` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `service_types`
+--
+
+INSERT INTO `service_types` (`id`, `service_code`, `service_type`, `service_name`, `room_type`, `charge`, `status`, `delete`, `created_at`, `updated_at`) VALUES
+(1, '100', 'GUEST', 'Guest', 'AC', 600, 1, 0, NULL, NULL),
+(2, '200', 'GUEST', 'Guest', 'NON-AC', 300, 1, 0, NULL, NULL),
+(3, '300', 'FTC', 'Foundation Training', 'NON-AC', 100, 1, 0, NULL, NULL),
+(4, '400', 'OTH', 'Other Courses', 'AC', 300, 1, 0, NULL, NULL),
+(5, '500', 'OTH', 'Other Courses', 'NON-AC', 150, 1, 0, NULL, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -1160,6 +1352,31 @@ ALTER TABLE `booking_persons`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `cancel_bookings`
+--
+ALTER TABLE `cancel_bookings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `cancel_bookings_invoice_id_foreign` (`invoice_id`),
+  ADD KEY `cancel_bookings_created_by_foreign` (`created_by`),
+  ADD KEY `cancel_bookings_updated_by_foreign` (`updated_by`);
+
+--
+-- Indexes for table `cancel_policies`
+--
+ALTER TABLE `cancel_policies`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `checkouts`
+--
+ALTER TABLE `checkouts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `checkouts_invoice_id_foreign` (`invoice_id`),
+  ADD KEY `checkouts_booking_person_foreign` (`booking_person`),
+  ADD KEY `checkouts_created_by_foreign` (`created_by`),
+  ADD KEY `checkouts_updated_by_foreign` (`updated_by`);
+
+--
 -- Indexes for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
@@ -1211,6 +1428,12 @@ ALTER TABLE `model_has_permissions`
 ALTER TABLE `model_has_roles`
   ADD PRIMARY KEY (`role_id`,`model_id`,`model_type`),
   ADD KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`);
+
+--
+-- Indexes for table `otps`
+--
+ALTER TABLE `otps`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `password_reset_tokens`
@@ -1315,24 +1538,42 @@ ALTER TABLE `api_keys`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `booking_invoices`
 --
 ALTER TABLE `booking_invoices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `booking_payments`
 --
 ALTER TABLE `booking_payments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `booking_persons`
 --
 ALTER TABLE `booking_persons`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `cancel_bookings`
+--
+ALTER TABLE `cancel_bookings`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `cancel_policies`
+--
+ALTER TABLE `cancel_policies`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `checkouts`
+--
+ALTER TABLE `checkouts`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -1369,13 +1610,19 @@ ALTER TABLE `maintenances`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- AUTO_INCREMENT for table `otps`
+--
+ALTER TABLE `otps`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -1411,7 +1658,7 @@ ALTER TABLE `seat_service_types`
 -- AUTO_INCREMENT for table `service_types`
 --
 ALTER TABLE `service_types`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `translations`
@@ -1456,6 +1703,23 @@ ALTER TABLE `booking_payments`
   ADD CONSTRAINT `booking_payments_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`),
   ADD CONSTRAINT `booking_payments_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `booking_invoices` (`id`),
   ADD CONSTRAINT `booking_payments_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `admins` (`id`);
+
+--
+-- Constraints for table `cancel_bookings`
+--
+ALTER TABLE `cancel_bookings`
+  ADD CONSTRAINT `cancel_bookings_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`),
+  ADD CONSTRAINT `cancel_bookings_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `booking_invoices` (`id`),
+  ADD CONSTRAINT `cancel_bookings_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `admins` (`id`);
+
+--
+-- Constraints for table `checkouts`
+--
+ALTER TABLE `checkouts`
+  ADD CONSTRAINT `checkouts_booking_person_foreign` FOREIGN KEY (`booking_person`) REFERENCES `booking_persons` (`id`),
+  ADD CONSTRAINT `checkouts_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`),
+  ADD CONSTRAINT `checkouts_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `booking_invoices` (`id`),
+  ADD CONSTRAINT `checkouts_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `admins` (`id`);
 
 --
 -- Constraints for table `hostel_buildings`
