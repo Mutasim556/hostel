@@ -98,12 +98,12 @@ class SeatController extends Controller
             ];
         }elseif($data[1]=='floor'){
             // dd($data);
-            $blocks = Room::where([['hostel_id',$data[2]],['floor',$data[0]]])->when($data[3]!=null,function($q)use($data){
+            $rooms = Room::where([['hostel_id',$data[2]],['floor',$data[0]]])->when($data[3]!=null,function($q)use($data){
                 return $q->where('building_id',$data[3]);
-            })->select('block')->distinct()->get();
+            })->select('room_number','id')->get();
 
             return [
-                'blocks'=>$blocks,
+                'rooms'=>$rooms,
             ];
         }elseif($data[1]=='block'){
             $rooms = Room::where([['hostel_id',$data[2]],['building_id',$data[3]],['floor',$data[4]]])->select('id','room_number','block','room_type')->get();

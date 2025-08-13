@@ -27,6 +27,24 @@
             color: rgb(255, 255, 255);
             border: 1px solid black;
         }
+        .select2-container--default.select2-container--focus .select2-selection--multiple,
+        .select2-container--default .select2-selection--multiple {
+        border: 1px solid black; /* Change this to your desired color */
+        border-radius: 0.25rem !important;
+        padding: 4px;              /* Optional: spacing */
+        transition: border-color 0.3s;
+        height : 40px !important;
+        }
+
+        /* On focus (when clicked or selected) */
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border-color: #0056b3;     /* Darker color on focus */
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        line-height: 28px !important;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice{
+            padding :0px important;
+        }
     </style>
 @endpush
 @section('content')
@@ -68,8 +86,9 @@
                                 <div class="col-md-3 mb-3">
                                     <label for="">{{ __('admin_local.Service Type') }}</label>
                                     <select name="booking_service_type" id="booking_service_type" class="form-control" >
-                                        
+
                                     </select>
+                                    <span class="text-danger err-mgs" id="booking_service_type_err"></span>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="">{{ __('admin_local.Booking Total Days') }}</label>
@@ -105,16 +124,18 @@
 
                                 <u><h5>{{ __('admin_local.Booking Person Informations') }}</h5></u>
                                 <div class="col-md-4 mb-3">
-                                    <label for="">{{ __('admin_local.Phone Number') }}</label>
+                                    <label for="">{{ __('admin_local.Phone Number') }} *</label>
                                     <input type="text" name="booking_phone_number" id="booking_phone_number" class="form-control">
+                                    <span class="text-danger err-mgs" id="booking_phone_number_err"></span>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="">{{ __('admin_local.Person Email') }}</label>
                                     <input type="text" name="booking_person_email" id="booking_person_email" class="form-control">
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="">{{ __('admin_local.Person Name') }}</label>
+                                    <label for="">{{ __('admin_local.Person Name') }} *</label>
                                     <input type="text" name="booking_person_name" id="booking_person_name" class="form-control">
+                                    <span class="text-danger err-mgs" id="booking_person_name_err"></span>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="">{{ __('admin_local.Gender') }}</label><br>
@@ -131,8 +152,9 @@
                                     <input type="text" name="booking_nid_number" id="booking_nid_number" class="form-control">
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="">{{ __('admin_local.Address') }}</label>
+                                    <label for="">{{ __('admin_local.Address') }} *</label>
                                     <textarea class="form-control" name="booking_person_address" id="booking_person_address" placeholder="Division,District,Thana,Village/Street/Road No"></textarea>
+                                    <span class="text-danger err-mgs" id="booking_person_address_err"></span>
                                 </div>
 
                                 <div class="col-md-4 mb-3">
@@ -318,7 +340,7 @@
                         <form id="search_form" action="{{ route('admin.booking.getAvailableSeats') }}" method="post">
                             @csrf
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label for="">{{ __('admin_local.Hostel') }}</label>
                                     <select class="form-control append-select2" name="hostel" id="hostel">
                                         <option value="">{{ __('admin_local.Select Please') }}</option>
@@ -330,30 +352,47 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label for="">{{ __('admin_local.Building') }}</label>
                                     <select class="form-control append-select2" name="building" id="building">
                                         <option value="">{{ __('admin_local.Select Please') }}</option>
                                     </select>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label for="">{{ __('admin_local.Floor') }}</label>
                                     <select class="form-control append-select2" name="floor" id="floor">
                                         <option value="">{{ __('admin_local.Select Please') }}</option>
-
+                                        @php
+                                            $floors = \App\Models\Admin\Room::where('building_id',1)->select('floor')->distinct()->get();
+                                        @endphp
+                                        @foreach ($floors as $floor)
+                                            <option value="{{ $floor->floor }}">{{ $floor->floor }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-6 mt-3">
+                                    <label for="">{{ __('admin_local.Room') }}</label>
+                                    <select class="form-control append-select2" name="room[]" id="room" multiple>
+                                        <option value="">{{ __('admin_local.Select Please') }}</option>
+                                        @php
+                                            $rooms = \App\Models\Admin\Room::where('building_id',1)->get();
+                                        @endphp
+                                        @foreach ($rooms as $room)
+                                            <option value="{{ $room->id }}">{{ $room->room_number }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mt-3">
                                     <label for="">{{ __('admin_local.Booking Type') }}</label>
                                     <select class="form-control append-select2" name="booking_type" id="booking_type">
                                         <option value="">{{ __('admin_local.Select Please') }}</option>
-                                        <option value="day">{{ __('admin_local.Per-Day') }}</option>
+                                        <option value="day" selected>{{ __('admin_local.Per-Day') }}</option>
                                         <option value="month">{{ __('admin_local.Per-Month') }}</option>
                                     </select>
                                 </div>
 
                             </div>
-                            <div class="row mt-3" id="per_day_div" style="display:none">
+                            <div class="row mt-3" id="per_day_div" >
                                 <div class="col-md-3">
                                     <label for="">{{ __('admin_local.From') }}</label>
                                     <input min="{{ date('Y-m-d') }}" type="date" class="form-control" name="start_date" id="start_date">
@@ -429,8 +468,10 @@
                     </div>
                     <div class="card-body" id="room_card_body" style="display:none">
                         <div class="row" id="append_room_div_main">
-                            <h4 class="text-center" id="append_room_div" style="display: none">{{ __('admin_local.Available Rooms/Seats') }}</h4>
- 
+                            <h4 class="text-center" id="append_room_div" style="display: none">{{ __('admin_local.Available Rooms/Seats') }}
+                                <input type="checkbox" id="check_uncheck_all_room">
+                            </h4>
+
                         </div>
                         <div class="row">
                             <div class="col-md-8">

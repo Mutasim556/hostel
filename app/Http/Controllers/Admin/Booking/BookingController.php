@@ -87,6 +87,12 @@ class BookingController extends Controller
     {
         $data->validate([
             'booking_total_paid' => 'required',
+            'booking_service_type' => 'required',
+            'booking_phone_number' => 'required',
+            'booking_person_name' => 'required',
+            'booking_person_address' => 'required',
+        ],[
+            'booking_service_type.required'=>__('admin_local.Service type required')
         ]);
         $check = BookingPerson::where([['booking_phone_number', $data->booking_phone_number]])->first();
         if (!$check) {
@@ -120,7 +126,7 @@ class BookingController extends Controller
                 $fileName = null;
             }
 
-            $bookingP->booking_person_nid = $file_name;
+            $bookingP->booking_person_nid = $fileName;
 
 
             $bookingP->save();
@@ -251,6 +257,7 @@ class BookingController extends Controller
     {
         $data->validate([
             'booking_total_paid' => 'required',
+            'booking_service_type' => 'required',
         ]);
         $check = BookingPerson::where([['booking_phone_number', $data->booking_phone_number]])->first();
         if (!$check) {
@@ -401,6 +408,9 @@ class BookingController extends Controller
                 ->when(isset($data->floor), function ($q) use ($data) {
                     return $q->where('floor', $data->floor);
                 })
+                ->when(isset($data->room), function ($q) use ($data) {
+                    return $q->whereIn('id', $data->room);
+                })
                 ->get();
 
             foreach ($rooms as $key => $room) {
@@ -446,18 +456,23 @@ class BookingController extends Controller
     }
     public function getBookingCustomer(string $phone)
     {
+        $Vcus = [];
         $customer = BookingPerson::where([['booking_phone_number', 'like', '%' . $phone . '%'], ['delete', 0], ['status', 1]])->first();
-        return $customer;
+        if($customer){
+            $Vcus =$customer;
+        }
+        return $Vcus;
     }
     public function getBookingInvoices(string $id)
     {
+        // $booking
         $bookingI = BookingInvoice::with('bookings', 'bookingperson', 'service','canceled','checkout')->where('id', $id)->first();
         $data = [
             'bookingI' => $bookingI,
         ];
         // dd($bookingI);
-        $pdf = Pdf::loadView('backend.blade.booking.pdf.checkoutclearace', $data);
-        return $pdf->stream('checkout_clearace.pdf');
+        $pdf = Pdf::loadView('backend.blade.booking.pdf.booking', $data);
+        return $pdf->stream('booking.pdf');
     }
 
 
