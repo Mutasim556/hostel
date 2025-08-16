@@ -46,7 +46,7 @@ $(document).on('change', '#building', function () {
 $(document).on('change', '#floor', function () {
     $.ajax({
         type: 'get',
-        url: base_url + '/admin/seats/' + $(this).val() + '-floor-' + $('#hostel').val() + "-" + $('#building').val(),
+        url: base_url + '/admin/seats/' + $(this).val() + '-booking_floor-' + $('#hostel').val() + "-" + $('#building').val(),
         success: function (data) {
             var room = `<option value="">Select Please</option>`;
             $.each(data.rooms, function (key, val) {
@@ -61,7 +61,10 @@ $(document).on('change', '#floor', function () {
 $(document).on('click', '#check_uncheck_all_room', function () {
     if ($(this).is(':checked')) {
         $('.booking-seats').each(function () {
-            $(this).addClass('selectedClass');
+            if ($(this).data('room-type') == $('#filter_by_room_type').val()) {
+                $(this).addClass('selectedClass');
+            }
+
         })
     } else {
         $('.booking-seats').each(function () {
@@ -75,6 +78,14 @@ $(document).on('click', '#check_uncheck_all_room', function () {
         $('#book_now_btn').prop('disabled', true);
     }
 })
+$(document).on('change', '#filter_by_room_type', function () {
+    $('.booking-seats').each(function () {
+        $(this).removeClass('selectedClass');
+    })
+    $('#check_uncheck_all_room').prop('checked',false);
+    $('#book_now_btn').prop('disabled', true);
+})
+
 $('#search_form').submit(function (e) {
     e.preventDefault();
     $('button[type=submit]', this).html(search_btn_after + '....');
@@ -104,9 +115,10 @@ $('#search_form').submit(function (e) {
                 $('#room_card_body').show('slow');
                 let seats = ``;
                 $.each(val.seats, function (k, v) {
-                    seats = seats + ` <span class="badge badge-success booking-seats p-2 mt-3" style="cursor:pointer" data-hostel="${val.hostel_id}" data-building="${val.building_id}" data-floor="${val.floor}" data-block="${val.block}" data-room-id="${val.id}" data-seat-number="${v.seat_number}" data-id="${v.id}" data-seat-min-price="${v.seat_minimum_price}" data-seat-max-price="${v.seat_maximum_price}" data-room-type="${val.room_type}" data-seat-service-charge="${v.service_charge}" id="booking_seats" >Seat ${v.seat_number}</span>`;
+                    seats = seats + ` <span class="badge badge-${v.booking_status == 1 ? 'success' : 'danger'} ${v.booking_status == 1 ? 'booking-seats' : ''} p-2 mt-3" style="cursor:pointer" data-hostel="${val.hostel_id}" data-building="${val.building_id}" data-floor="${val.floor}" data-block="${val.block}" data-room-id="${val.id}" data-seat-number="${v.seat_number}" data-id="${v.id}" data-seat-min-price="${v.seat_minimum_price}" data-seat-max-price="${v.seat_maximum_price}" data-room-type="${val.room_type}" data-seat-service-charge="${v.service_charge}" ${v.booking_status == 1 ? `id="booking_seats"` : ''} >Seat ${v.seat_number}</span>`;
                 })
-                $('#append_room_div').after(`
+                if (key == 0) {
+                    $('#append_room_div').after(`
                         <div class="col-md-4 px-3 rounded" style="padding:20px">
                             <div class="row">
                                 <div class="col-md-12" style="padding:20px;box-shadow:0px 0px 10px lightgray">
@@ -117,6 +129,20 @@ $('#search_form').submit(function (e) {
                             </div>
                         </div>
                     `);
+                } else {
+                    $('#append_room_div_main').append(`
+                        <div class="col-md-4 px-3 rounded" style="padding:20px">
+                            <div class="row">
+                                <div class="col-md-12" style="padding:20px;box-shadow:0px 0px 10px lightgray">
+                                    <h5>Block: ${val.block}</h5>
+                                    <h5>Room Number : ${val.room_number} ( ${val.room_type} )</h5>
+                                    ${seats}
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                }
+
 
 
             })
@@ -299,7 +325,15 @@ $('#add_booking_form').submit(function (e) {
                 text: rdata.text,
                 confirmButtonText: rdata.confirmButtonText,
             }).then(function () {
-                window.location.href = base_url + '/admin/get/booking/invoices/' + rdata.bookingI.id;
+                $('#book_now_btn').prop('disabled', true);
+                $("#search_form").submit();
+                $("#booking_close_btn").click();
+                $("#add_booking_form")[0].reset();
+                $("#add_booking_form").find("input, select, textarea").val("");
+                window.open(
+                    base_url + '/admin/get/booking/invoices/' + rdata.bookingI.id,
+                    '_blank'
+                );
 
             });
 
@@ -360,9 +394,9 @@ $('#booking_phone_number').on('blur', function () {
                 $('#booking_person_dob').val(data.booking_person_dob);
                 // $('#booking_phone_number').val(data.booking_phone_number !='' ? data.booking_phone_number : $('#booking_phone_number').val());
                 // alert(data.booking_person_email)
-                if(data.booking_person_email !== undefined){
+                if (data.booking_person_email !== undefined) {
                     $('#booking_phone_number').val(data.booking_phone_number)
-                }else{
+                } else {
                     $('#booking_phone_number').val($('#booking_phone_number').val());
                 }
                 $('#booking_person_address').val(data.booking_person_address);

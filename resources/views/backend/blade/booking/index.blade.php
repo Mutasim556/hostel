@@ -81,6 +81,10 @@
              font-weight: bold;
              font-size: 1.2em;
          }
+#basics-1 th:nth-child(3),
+#basics-1 td:nth-child(3) {
+    width: 150px !important;
+}
      </style>
  @endpush
  @section('content')
@@ -571,9 +575,9 @@
                              <table id="basics-1" class="display table-bordered" style="width: 1200px">
                                  <thead>
                                      <tr>
-                                         <th style="width: 100px">{{ __('admin_local.Booking Date') }}</th>
-                                         <th style="width: 100px">{{ __('admin_local.Checkout Date') }}</th>
-                                         <th>{{ __('admin_local.Room Number') }}</th>
+                                         <th style="width: 100px">{{ __('admin_local.Booking_Date') }}</th>
+                                         <th style="width: 100px">{{ __('admin_local.Checkout_Date') }}</th>
+                                         <th style="width: 100px;">{{ __('admin_local.Booked_Room_Number') }}</th>
                                          <th>{{ __('admin_local.Total Room') }}</th>
                                          <th>{{ __('admin_local.Booking Person') }}</th>
                                          <th>{{ __('admin_local.Phone Number') }}</th>
@@ -583,6 +587,7 @@
                                          <th>{{ __('admin_local.Total Paid') }}</th>
                                          <th>{{ __('admin_local.Total Due') }}</th>
                                          <th>{{ __('admin_local.Payment Status') }}</th>
+                                         
                                          <th>{{ __('admin_local.Action') }}</th>
                                      </tr>
                                  </thead>
@@ -592,10 +597,10 @@
                                              {{-- <td>{{ $booking-> }}</td> --}}
                                              <td>{{ date('d M ,Y', strtotime($booking->booking_start_date)) }}</td>
                                              <td>{{ date('d M ,Y', strtotime($booking->booking_end_date)) }}</td>
-                                             <td>
-                                                 @foreach ($booking->rooms as $room)
+                                             <td style="width: 100px;">
+                                                 @foreach ($booking->seats as $seat)
                                                      <span
-                                                         class="badge badge-primary mr-1 p-2">{{ $room->room_number }}</span>
+                                                         class="badge badge-primary m-1 p-2">{{ $seat->seat_number }}</span>
                                                  @endforeach
                                              </td>
                                              <td>{{ count($booking->rooms) }}</td>
@@ -607,6 +612,7 @@
                                              <td>{{ $booking->total_payable ?? 0 }}</td>
                                              <td>{{ $booking->total_paid ?? 0 }}</td>
                                              <td>{{ $booking->total_due ?? 0 }}</td>
+
                                              <td>{!! $booking->total_payable == $booking->total_paid
                                                  ? '<span class="badge badge-success">' . __('admin_local.Paid') . '</span'
                                                  : ($booking->total_paid == 0
@@ -708,8 +714,11 @@
              document.querySelector('.select2-search__field').focus();
          });
          var oTable = $("#basics-1").DataTable({
-             autoWidth: false,
-
+            autoWidth: false,
+            columnDefs: [
+                { width: "150px", targets: 2 } // 0-based index, so 2 = 3rd column
+            ],
+            order: [[0, 'desc']]
          });
 
          var payment_form_url = "{{ route('admin.booking.makeBookingPayments') }}";

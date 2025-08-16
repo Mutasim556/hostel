@@ -2,6 +2,7 @@
 
 namespace App\Models\Admin;
 
+use App\Models\Admin;
 use Illuminate\Database\Eloquent\Model;
 
 class BookingInvoice extends Model
@@ -30,7 +31,16 @@ class BookingInvoice extends Model
             'room_id'          // Foreign key on Booking (points to Room)
         );
     }
-
+    public function seats(){
+        return $this->hasManyThrough(
+            Seat::class,       // Final model
+            Booking::class,    // Intermediate model
+            'invoice_id',      // Foreign key on Booking (links to invoice)
+            'id',              // Local key on Room (primary key)
+            'id',              // Local key on BookingInvoice
+            'seat_id'          // Foreign key on Booking (points to Room)
+        );
+    }
     public function payments(){
         return $this->hasMany(BookingPayment::class,'invoice_id','id');
     }
@@ -40,6 +50,10 @@ class BookingInvoice extends Model
     }
     public function checkout(){
         return $this->hasOne(Checkout::class,'invoice_id','id');
+    }
+
+    public function createuser(){
+        return $this->belongsTo(Admin::class,'created_by','id');
     }
     // public function service(){
     //     $this->belongsTo(ServiceType::class,'service_id','id');

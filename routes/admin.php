@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\Auth\AdminLoginController;
 use App\Http\Controllers\Admin\Booking\BookingController;
+use App\Http\Controllers\Admin\Booking\ServiceTypeController;
 use App\Http\Controllers\Admin\CancelPolicyController;
 use App\Http\Controllers\Admin\Hostel\HostelController;
 use App\Http\Controllers\Admin\Localization\BackendLanguageController;
@@ -122,6 +123,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::post('/get/available/seats',[BookingController::class,'getAvailableSeats'])->name('booking.getAvailableSeats');
         Route::get('/get/booking/customer/{phone}',[BookingController::class,'getBookingCustomer'])->name('booking.getBookingCustomer');
         Route::get('/get/booking/invoices/{id}',[BookingController::class,'getBookingInvoices'])->name('booking.getBookingInvoices');
+        Route::get('/get/checkout/clearance/{id}',[BookingController::class,'getCheckoutClearance'])->name('booking.getCheckoutClearance');
         Route::get('/get/booking/payments/{id}',[BookingController::class,'getBookingPayments'])->name('booking.getBookingPayments');
         Route::get('/get/booking/payment/receipt/{id}',[BookingController::class,'getBookingPaymentReceipt'])->name('booking.getBookingPaymentReceipt');
         Route::delete('/get/booking/payment/delete/{id}',[BookingController::class,'getBookingPaymentDelete'])->name('booking.getBookingPaymentDelete');
@@ -150,12 +152,19 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::post('cancel-policy',[CancelPolicyController::class,'store'])->name('cancelPolicy.store');
         /** Cancel Policy End */
 
+        /** Service Type Start */
+        Route::resource('/service-type',ServiceTypeController::class);
+        Route::controller(ServiceTypeController::class)->prefix('service-type')->group(function(){
+            Route::get('update/status/{id}/{status}','updateStatus');
+        });
+        /** Service Type End */
+
         /** Reports Start */
         Route::controller(ReportsController::class)->prefix('reports')->name('reports.')->group(function(){
             Route::get('/seat-wise-booking-report','seatWiseBooking')->name('seatWiseBooking');
             Route::get('/cancel-refund','cancelRefund')->name('cancelRefund');
-            Route::get('/seat-wise-payments','seatWisePayments');
-            Route::get('/due-collections','dueCollections');
+            Route::get('/invoice-due-list','invoiceDueList')->name('invoiceDueList');
+            Route::get('/due-collections','dueCollections')->name('dueCollection');
         });
         /** Reports End */
 

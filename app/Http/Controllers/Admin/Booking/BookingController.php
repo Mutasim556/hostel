@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use PhpParser\Node\Expr\Cast\String_;
@@ -42,29 +43,31 @@ class BookingController extends Controller
         }
 
         if (isset(request()->invoice_id)) {
-            $invoice_id = ltrim(request()->invoice_id,'0');
+            $invoice_id = ltrim(request()->invoice_id, '0');
         }
         if (isset(request()->phone_number)) {
             $phone_number = request()->phone_number;
         }
 
-        $bookings  = BookingInvoice::with('bookingperson', 'rooms')
+        $bookings  = BookingInvoice::with(['bookingperson', 'rooms', 'seats' => function ($query) {
+            $query->orderBy('room_number', 'asc');
+        }])
             ->where([['cancel_status', 0], ['checkeout_status', 0]])
-            ->when($start_date!=NULL,function($query)use($start_date){
+            ->when($start_date != NULL, function ($query) use ($start_date) {
                 return $query->whereDate('created_at', '>=', $start_date);
             })
-            ->when($end_date!=NULL,function($query)use($end_date){
+            ->when($end_date != NULL, function ($query) use ($end_date) {
                 return $query->whereDate('created_at', '<=', $end_date);
             })
-            ->when($invoice_id!=NULL,function($query)use($invoice_id){
+            ->when($invoice_id != NULL, function ($query) use ($invoice_id) {
                 return $query->where('id', $invoice_id);
             })
-            ->when($phone_number!=NULL,function($query)use($phone_number){
-                return $query->whereHas('bookingperson',function($q) use($phone_number){
-                        $q->where('booking_phone_number',$phone_number);
+            ->when($phone_number != NULL, function ($query) use ($phone_number) {
+                return $query->whereHas('bookingperson', function ($q) use ($phone_number) {
+                    $q->where('booking_phone_number', $phone_number);
                 });
             })
-            ->when(($start_date==NULL &&  $end_date==NULL && $invoice_id==NULL && $phone_number==NULL),function($query){
+            ->when(($start_date == NULL &&  $end_date == NULL && $invoice_id == NULL && $phone_number == NULL), function ($query) {
                 return $query->limit(50);
             })
             ->orderBy('id', 'DESC')->get();
@@ -91,8 +94,8 @@ class BookingController extends Controller
             'booking_phone_number' => 'required',
             'booking_person_name' => 'required',
             'booking_person_address' => 'required',
-        ],[
-            'booking_service_type.required'=>__('admin_local.Service type required')
+        ], [
+            'booking_service_type.required' => __('admin_local.Service type required')
         ]);
         $check = BookingPerson::where([['booking_phone_number', $data->booking_phone_number]])->first();
         if (!$check) {
@@ -417,23 +420,50 @@ class BookingController extends Controller
                 $seats1 = Seat::when(isset($data->hostel), function ($q) use ($data) {
                     return $q->where('hostel_id', $data->hostel);
                 })
-                ->when(isset($data->building), function ($q) use ($data) {
-                    return $q->where('building_id', $data->building);
+                    ->when(isset($data->building), function ($q) use ($data) {
+                        return $q->where('building_id', $data->building);
+                    })
+                    ->when(isset($data->floor), function ($q) use ($data) {
+                        return $q->where('floor', $data->floor);
+                    })
+                    ->when(isset($room->id), function ($q) use ($room) {
+                        return $q->where('room_id', $room->id);
+                    })
+                    ->whereDoesntHave('bookings', function ($query) use ($data) {
+                        $query->whereDate('booking_start_date', '<=', $data->end_date)
+                            ->whereDate('booking_end_date', '>', $data->start_date)
+                            ->whereDoesntHave('invoice', function ($q) {
+                                $q->where('cancel_status', 1)->where('checkeout_status', 1);
+                            });
+                    })
+                    ->select('*')
+                    ->addSelect(DB::raw('1 as booking_status'))
+                    ->orderBy('room_number', 'DESC')
+                    ->get();
+
+                $seats2 = Seat::when(isset($data->hostel), function ($q) use ($data) {
+                    return $q->where('hostel_id', $data->hostel);
                 })
-                ->when(isset($data->floor), function ($q) use ($data) {
-                    return $q->where('floor', $data->floor);
-                })
-                ->when(isset($room->id), function ($q) use ($room) {
-                    return $q->where('room_id', $room->id);
-                })
-                ->whereDoesntHave('bookings', function($query) use ($data) {
-                    $query->whereDate('booking_start_date', '<=', $data->end_date)
-                        ->whereDate('booking_end_date', '>', $data->start_date)
-                        ->whereDoesntHave('invoice',function($q){
-                            $q->where('cancel_status',1);
-                        });
-                })
-                ->get();
+                    ->when(isset($data->building), function ($q) use ($data) {
+                        return $q->where('building_id', $data->building);
+                    })
+                    ->when(isset($data->floor), function ($q) use ($data) {
+                        return $q->where('floor', $data->floor);
+                    })
+                    ->when(isset($room->id), function ($q) use ($room) {
+                        return $q->where('room_id', $room->id);
+                    })
+                    ->whereHas('bookings', function ($query) use ($data) {
+                        $query->whereDate('booking_start_date', '<=', $data->end_date)
+                            ->whereDate('booking_end_date', '>', $data->start_date);
+                        // ->whereDoesntHave('invoice',function($q){
+                        //     $q->where('cancel_status',1)->where('checkeout_status',1);
+                        // });
+                    })
+                    ->select('*')
+                    ->addSelect(DB::raw('0 as booking_status'))
+                    ->orderBy('room_number', 'DESC')
+                    ->get();
 
                 // $seats2 = Seat::when(isset($data->hostel), function ($q) use ($data) {
                 //     return $q->where('hostel_id', $data->hostel);
@@ -449,7 +479,7 @@ class BookingController extends Controller
                 // })
                 // ->where('last_booking_end_date', null)->get();
 
-                $rooms[$key]->seats = $seats1;
+                $rooms[$key]->seats = $seats1->merge($seats2);
             }
             return $rooms;
         }
@@ -458,15 +488,15 @@ class BookingController extends Controller
     {
         $Vcus = [];
         $customer = BookingPerson::where([['booking_phone_number', 'like', '%' . $phone . '%'], ['delete', 0], ['status', 1]])->first();
-        if($customer){
-            $Vcus =$customer;
+        if ($customer) {
+            $Vcus = $customer;
         }
         return $Vcus;
     }
     public function getBookingInvoices(string $id)
     {
         // $booking
-        $bookingI = BookingInvoice::with('bookings', 'bookingperson', 'service','canceled','checkout')->where('id', $id)->first();
+        $bookingI = BookingInvoice::with('bookings', 'bookingperson', 'service', 'canceled', 'checkout')->where('id', $id)->first();
         $data = [
             'bookingI' => $bookingI,
         ];
@@ -699,7 +729,7 @@ class BookingController extends Controller
                 $ref_pay_ded_amount = $ref_net_amount * ($policies->started_deduction / 100);
                 //  dd($ref_pay_ded_amount);
                 /** Service charge deduction */
-                $ref_sc_ded_amount = $policies->started_service_charge_deduction>0?$seat_service_charge * ($policies->started_service_charge_deduction / 100):0;
+                $ref_sc_ded_amount = $policies->started_service_charge_deduction > 0 ? $seat_service_charge * ($policies->started_service_charge_deduction / 100) : 0;
 
 
 
@@ -804,30 +834,30 @@ class BookingController extends Controller
         }
 
         if (isset(request()->invoice_id)) {
-            $invoice_id = ltrim(request()->invoice_id,'0');
+            $invoice_id = ltrim(request()->invoice_id, '0');
         }
         if (isset(request()->phone_number)) {
             $phone_number = request()->phone_number;
         }
 
 
-        $bookings  = BookingInvoice::with('bookingperson', 'rooms','canceled')
+        $bookings  = BookingInvoice::with('bookingperson', 'rooms', 'canceled')
             ->where([['cancel_status', 1], ['checkeout_status', 0]])
-            ->when($start_date!=NULL,function($query)use($start_date){
+            ->when($start_date != NULL, function ($query) use ($start_date) {
                 return $query->whereDate('cancel_date', '>=', $start_date);
             })
-            ->when($end_date!=NULL,function($query)use($end_date){
+            ->when($end_date != NULL, function ($query) use ($end_date) {
                 return $query->whereDate('cancel_date', '<=', $end_date);
             })
-            ->when($invoice_id!=NULL,function($query)use($invoice_id){
+            ->when($invoice_id != NULL, function ($query) use ($invoice_id) {
                 return $query->where('id', $invoice_id);
             })
-            ->when($phone_number!=NULL,function($query)use($phone_number){
-                return $query->whereHas('bookingperson',function($q) use($phone_number){
-                        $q->where('booking_phone_number',$phone_number);
+            ->when($phone_number != NULL, function ($query) use ($phone_number) {
+                return $query->whereHas('bookingperson', function ($q) use ($phone_number) {
+                    $q->where('booking_phone_number', $phone_number);
                 });
             })
-            ->when(($start_date==NULL &&  $end_date==NULL && $invoice_id==NULL && $phone_number==NULL),function($query){
+            ->when(($start_date == NULL &&  $end_date == NULL && $invoice_id == NULL && $phone_number == NULL), function ($query) {
                 return $query->limit(50);
             })
             ->orderBy('id', 'DESC')->get();
@@ -839,20 +869,21 @@ class BookingController extends Controller
 
     public function getBookingCheckoutData(string $id)
     {
-        $invoice = BookingInvoice::where('id', $id)->select('id', 'total_payable','total_due','total_paid')->first();
+        $invoice = BookingInvoice::where('id', $id)->select('id', 'total_payable', 'total_due', 'total_paid')->first();
         return $invoice;
     }
 
 
-    public function getBookingCheckout(Request $data,string $id){
+    public function getBookingCheckout(Request $data, string $id)
+    {
         $invoice = BookingInvoice::where('id', $id)->firstOrFail();
-        $invoice->total_paid = $data->paid_amount+$data->due_amount;
+        $invoice->total_paid = $data->paid_amount + $data->due_amount;
         $invoice->total_due = 0;
-        $invoice->payment_status =  $invoice->total_due==0?1:2;
+        $invoice->payment_status =  $invoice->total_due == 0 ? 1 : 2;
         $invoice->checkeout_status =  1;
         $invoice->checkout_date =  Carbon::now();
         $invoice->save();
-        if($data->paying_amount>0){
+        if ($data->paying_amount > 0) {
             $bookingPay = new BookingPayment();
             $bookingPay->invoice_id = $invoice->id;
             $bookingPay->payment_date = Carbon::now();
@@ -881,6 +912,7 @@ class BookingController extends Controller
         $checkout->paying_amount = $data->paying_amount;
         $checkout->paying_method = $data->payment_method;
         $checkout->customer_review = $data->checkout_note;
+        $checkout->created_by = Auth::guard('admin')->user()->id;
 
         $checkout->save();
 
@@ -892,7 +924,8 @@ class BookingController extends Controller
         ]);
     }
 
-    public function getCheckedoutBooking(){
+    public function getCheckedoutBooking()
+    {
         $start_date = NULL;
         $end_date = NULL;
         $invoice_id = NULL;
@@ -905,34 +938,53 @@ class BookingController extends Controller
         }
 
         if (isset(request()->invoice_id)) {
-            $invoice_id = ltrim(request()->invoice_id,'0');
+            $invoice_id = ltrim(request()->invoice_id, '0');
         }
         if (isset(request()->phone_number)) {
             $phone_number = request()->phone_number;
         }
 
 
-        $bookings  = BookingInvoice::with('bookingperson', 'rooms')
+        $bookings  = BookingInvoice::with('bookingperson', 'rooms','checkout')
             ->where([['cancel_status', 0], ['checkeout_status', 1]])
-            ->when($start_date!=NULL,function($query)use($start_date){
+            ->when($start_date != NULL, function ($query) use ($start_date) {
                 return $query->whereDate('checkout_date', '>=', $start_date);
             })
-            ->when($end_date!=NULL,function($query)use($end_date){
+            ->when($end_date != NULL, function ($query) use ($end_date) {
                 return $query->whereDate('checkout_date', '<=', $end_date);
             })
-            ->when($invoice_id!=NULL,function($query)use($invoice_id){
+            ->when($invoice_id != NULL, function ($query) use ($invoice_id) {
                 return $query->where('id', $invoice_id);
             })
-            ->when($phone_number!=NULL,function($query)use($phone_number){
-                return $query->whereHas('bookingperson',function($q) use($phone_number){
-                        $q->where('booking_phone_number',$phone_number);
+            ->when($phone_number != NULL, function ($query) use ($phone_number) {
+                return $query->whereHas('bookingperson', function ($q) use ($phone_number) {
+                    $q->where('booking_phone_number', $phone_number);
                 });
             })
-            ->when(($start_date==NULL &&  $end_date==NULL && $invoice_id==NULL && $phone_number==NULL),function($query){
+            ->when(($start_date == NULL &&  $end_date == NULL && $invoice_id == NULL && $phone_number == NULL), function ($query) {
                 return $query->limit(50);
             })
+            ->when(request()->user,function($q){
+                return $q->whereHas('checkout',function($query){
+                    return $query->where('created_by',request()->user);
+                });
+            })
             ->orderBy('id', 'DESC')->get();
+
+
         return view('backend.blade.booking.checkedout', compact('bookings'));
+    }
+
+
+    public function getCheckoutClearance(string $id)
+    {
+        $bookingI = BookingInvoice::with('bookings', 'bookingperson', 'service', 'canceled', 'checkout')->where('id', $id)->first();
+        $data = [
+            'bookingI' => $bookingI,
+        ];
+        // dd($bookingI);
+        $pdf = Pdf::loadView('backend.blade.booking.pdf.checkoutclearace', $data);
+        return $pdf->stream('checkout.pdf');
     }
 
 

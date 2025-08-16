@@ -180,7 +180,7 @@
                         <div class="row mt-4 mb-2">
                             <div class="form-group col-lg-12">
                                 <button class="btn btn-danger text-white font-weight-medium waves-effect text-start"
-                                    data-bs-dismiss="modal" style="float: right" type="button">{{ __('admin_local.Close') }}</button>
+                                    data-bs-dismiss="modal" id="booking_close_btn" style="float: right" type="button">{{ __('admin_local.Close') }}</button>
                                 <button class="btn btn-primary mx-2" style="float: right"
                                     type="submit">{{ __('admin_local.Submit') }}</button>
                             </div>
@@ -387,7 +387,7 @@
                                     <select class="form-control append-select2" name="booking_type" id="booking_type">
                                         <option value="">{{ __('admin_local.Select Please') }}</option>
                                         <option value="day" selected>{{ __('admin_local.Per-Day') }}</option>
-                                        <option value="month">{{ __('admin_local.Per-Month') }}</option>
+                                        {{-- <option value="month">{{ __('admin_local.Per-Month') }}</option> --}}
                                     </select>
                                 </div>
 
@@ -469,6 +469,10 @@
                     <div class="card-body" id="room_card_body" style="display:none">
                         <div class="row" id="append_room_div_main">
                             <h4 class="text-center" id="append_room_div" style="display: none">{{ __('admin_local.Available Rooms/Seats') }}
+                                <select style="font-size: 14px" id="filter_by_room_type" id="">
+                                    <option value="NON-AC">NON-AC</option>
+                                    <option value="AC">AC</option>
+                                </select>
                                 <input type="checkbox" id="check_uncheck_all_room">
                             </h4>
 

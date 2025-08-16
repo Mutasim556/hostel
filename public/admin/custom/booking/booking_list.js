@@ -548,7 +548,13 @@ $(document).on('submit','#checkout_form',function(e){
                         text: data.text,
                         confirmButtonText: data.confirmButtonText,
                     }).then(function () {
-                        window.location.reload();
+                        window.open(
+                            base_url + 'admin/get/checkout/clearance/' + invoice_id,
+                            '_blank'
+                        );
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
                     });
                 },
                 error: function (err) {

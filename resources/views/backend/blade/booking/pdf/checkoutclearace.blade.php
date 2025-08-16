@@ -24,7 +24,13 @@
 
     .receipt h2 {
       text-align: center;
+      margin-bottom: 0px;
+      color: #333;
+    }
+    .receipt h5 {
+      text-align: center;
       margin-bottom: 1rem;
+      margin-top: -.1rem;
       color: #333;
     }
 
@@ -95,6 +101,7 @@
 <body>
   <div class="receipt">
     <h2>Buddhijibi Hostel Clearance</h2>
+    <h5>Phone : 01321742746</h5>
     <div class="info">
       <div><strong>Invoice : #</strong> {{ str_pad( $bookingI->id, 8, '0', STR_PAD_LEFT); }} [ {{ date('Y-m-d h:i:s A',strtotime($bookingI->created_at)) }} ]</div>
 

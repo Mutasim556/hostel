@@ -85,6 +85,13 @@
                     </a>
                 </li>
                 @endif
+                @if (hasPermission(['service-type-index']))
+                <li>
+                    <a href="{{ route('admin.service-type.index') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Service Types') }} </span>
+                    </a>
+                </li>
+                @endif
             </ul>
         </li>
     @endif
@@ -111,14 +118,14 @@
                 @endif
                 @if (hasPermission(['seat-wise-payment-report']))
                 <li>
-                    <a href="{{ route('admin.booking.create') }}" class="sidebar-link">
-                        <span> {{ __('admin_local.Seat Wise Payment') }} </span>
+                    <a href="{{ route('admin.reports.invoiceDueList') }}" class="sidebar-link">
+                        <span> {{ __('admin_local.Invoice Due List') }} </span>
                     </a>
                 </li>
                 @endif
                 @if (hasPermission(['due-collection-report']))
                 <li>
-                    <a href="{{ route('admin.booking.create') }}" class="sidebar-link">
+                    <a href="{{ route('admin.reports.dueCollection') }}" class="sidebar-link">
                         <span> {{ __('admin_local.Due Collection') }} </span>
                     </a>
                 </li>

@@ -136,7 +136,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-lg-4">
-                                    <label for="" class="lebelcolor"><strong>{{ _('Username') }}</strong></label>
+                                    <label for="" class="lebelcolor"><strong>{{ __('admin_local.Username') }}</strong></label>
                                 </div>
                                 <div class="col-lg-8">
                                     <input type="text" class="form-control" value="{{ $profile_info->username }}"

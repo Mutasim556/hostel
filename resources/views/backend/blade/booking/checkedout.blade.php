@@ -269,7 +269,7 @@
                                                  value="{{ isset(request()->end_date) ? request()->end_date : '' }}"
                                                  class="form-control">
                                          </div>
-                                         <div class="col-md-2">
+                                         <div class="col-md-3">
                                              <label for="">{{ __('admin_local.Phone Number') }}</label>
                                              <input type="text" name="phone_number"
                                                  value="{{ isset(request()->phone_number) ? request()->phone_number : '' }}"
@@ -281,7 +281,17 @@
                                                  value="{{ isset(request()->invoice_id) ? request()->invoice_id : '' }}"
                                                  class="form-control">
                                          </div>
-                                         <div class="col-md-4">
+                                         <div class="col-md-3">
+                                             <label for="">{{ __('admin_local.Checkout User') }}</label>
+                                             <select name="user" id="user" class="form-control js-example-basic-single">
+                                                <option value="">{{ __('admin_local.Select Please') }}</option>
+                                                @foreach (\App\Models\Admin::where([['status',1],['delete',0]])->get() as $admin)
+                                                    <option value="{{ $admin->id }}" {{ request()->user==$admin->id?'selected':'' }}>{{ $admin->name }}</option>
+                                                @endforeach
+                                             </select>
+                                         </div>
+                                         <div class="col-md-8" style="float: right"></div>
+                                         <div class="col-md-4" style="float: right">
                                              <label for=""> <span class="text-info"> &nbsp;</span></label><br>
                                              <input type="submit" class="btn btn-primary"
                                                  value="{{ __('admin_local.Search') }}">
@@ -304,9 +314,9 @@
                              <table id="basics-1" class="display table-bordered" style="width: 1200px">
                                  <thead>
                                      <tr>
-                                         <th style="width: 100px">{{ __('admin_local.Booking Date') }}</th>
-                                         <th style="width: 100px">{{ __('admin_local.Checkout Date') }}</th>
-                                         <th>{{ __('admin_local.Room Number') }}</th>
+                                         <th style="width: 100px">{{ __('admin_local.Booking_Date') }}</th>
+                                         <th style="width: 100px">{{ __('admin_local.Checkout_Date') }}</th>
+                                         <th style="width: 100px;">{{ __('admin_local.Booked_Room_Number') }}</th>
                                          <th>{{ __('admin_local.Total Room') }}</th>
                                          <th>{{ __('admin_local.Booking Person') }}</th>
                                          <th>{{ __('admin_local.Phone Number') }}</th>
@@ -316,6 +326,7 @@
                                          <th>{{ __('admin_local.Total Paid') }}</th>
                                          <th>{{ __('admin_local.Total Due') }}</th>
                                          <th>{{ __('admin_local.Status') }}</th>
+                                         <th>{{ __('admin_local.Checkedout By') }}</th>
                                          <th>{{ __('admin_local.Actions') }}</th>
                                      </tr>
                                  </thead>
@@ -340,8 +351,16 @@
                                              <td>{{ $booking->total_payable ?? 0 }}</td>
                                              <td>{{ $booking->total_paid ?? 0 }}</td>
                                              <td>{{ $booking->total_due ?? 0 }}</td>
+
                                              <td><span class="badge badge-danger">{{ __('admin_local.Checked Out') }}</span>
                                              </td>
+                                             @php
+                                                 $checkoutby = '';
+                                                 if($booking->checkout->created_by!=NULL){
+                                                    $checkoutby = \App\Models\Admin::where('id',$booking->checkout->created_by)->first();
+                                                 }
+                                             @endphp
+                                             <td>{{ $booking->checkout->created_by!=NULL?$checkoutby->name:'' }}</td>
                                              {{-- <td>{{ $booking->total_window }}</td> --}}
                                              {{-- <td>{{ $booking->total_fan }}</td>
                                             <td>{{ $booking->total_light }}</td> --}}
@@ -371,11 +390,17 @@
                                                                      id="show_payments"><i class=" fa fa-money mx-1"></i>
                                                                      {{ __('admin_local.Payment') }}</a>
                                                              @endif
-                                                             @if (hasPermission(['booking-prinInvoice']))
+                                                             @if (hasPermission(['booking-printInvoice']))
                                                                  <a target="__blank" style="cursor: pointer;"
                                                                      href="{{ route('admin.booking.getBookingInvoices', $booking->id) }}"><i
                                                                          class=" fa fa-print mx-1"></i>
                                                                      {{ __('admin_local.Print Invoice') }}</a>
+                                                             @endif
+                                                             @if (hasPermission(['booking-printClearance']))
+                                                                 <a target="__blank" style="cursor: pointer;"
+                                                                     href="{{ route('admin.booking.getCheckoutClearance', $booking->id) }}"><i
+                                                                         class=" fa fa-print mx-1"></i>
+                                                                     {{ __('admin_local.Print Clearance') }}</a>
                                                              @endif
 
                                                          </div>
@@ -409,9 +434,7 @@
          $('[data-toggle="switchery"]').each(function(idx, obj) {
              new Switchery($(this)[0], $(this).data());
          });
-         $('.js-example-basic-single').select2({
-             dropdownParent: $('#add-booking-modal')
-         });
+         $('.js-example-basic-single').select2();
          $('.js-example-basic-single1').select2({
              dropdownParent: $('#edit-booking-modal')
          });
